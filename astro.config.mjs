@@ -25,7 +25,7 @@ export default defineConfig({
     mdx(),
     react(),
     sitemap({
-      filter: (page) => !page.includes('/styleguide/'),
+      filter: (page) => !/\/(styleguide|vault|explainer-preview)\//.test(page),
     }),
   ],
   vite: {

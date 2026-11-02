@@ -21,11 +21,13 @@ function walk(dir: string): string[] {
 
 type Item = { file: string; line: number; text: string; private: boolean };
 const items: Item[] = [];
-for (const f of walk(join(ROOT, 'src')).filter((x) => /\.(mdx?|astro|ts|tsx|ya?ml|json)$/.test(x))) {
+const privateDir = join(ROOT, 'private');
+const roots = [join(ROOT, 'src'), ...(existsSync(privateDir) ? [privateDir] : [])];
+for (const f of roots.flatMap(walk).filter((x) => /\.(mdx?|astro|ts|tsx|ya?ml|json)$/.test(x))) {
   const rel = relative(ROOT, f).split(sep).join('/');
   if (SKIP_FILES.has(rel)) continue;
   const src = readFileSync(f, 'utf8');
-  const isPrivate = /^private:\s*true\s*$/m.test(src);
+  const isPrivate = rel.startsWith('private/') || /^private:\s*true\s*$/m.test(src);
   src.split('\n').forEach((line, i) => {
     // <Todo>text</Todo> in MDX, or "TODO(muja): text" in frontmatter/strings
     for (const m of line.matchAll(/<Todo[^>]*>([^<]+)<\/Todo>/g))

@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 import { readFileSync } from 'node:fs';
-import { sitemapRoutes, firstRoute } from './helpers';
+import { sitemapRoutes, firstRoute, privateRoutes } from './helpers';
 
 test('production build hides every TODO(muja) placeholder', async ({ page }) => {
   for (const route of sitemapRoutes()) {
@@ -11,7 +11,7 @@ test('production build hides every TODO(muja) placeholder', async ({ page }) => 
 });
 
 test('private entries are not built', async ({ page }) => {
-  for (const slug of [] as string[]) {
+  for (const slug of privateRoutes()) {
     const res = await page.goto(slug);
     expect(res?.status(), slug).toBe(404);
   }

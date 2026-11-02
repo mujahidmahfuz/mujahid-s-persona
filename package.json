@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "node scripts/todos.ts --list && astro build && node scripts/cv-pdf.mjs && pagefind --site dist",
+    "build": "node scripts/vault.ts && node scripts/todos.ts --list && astro build && node scripts/cv-pdf.mjs && pagefind --site dist",
     "preview": "astro preview",
     "astro": "astro",
     "lint": "eslint . && prettier --check .",
@@ -20,7 +20,8 @@
     "todos": "node scripts/todos.ts --list",
     "posters": "node scripts/posters.ts",
     "test:unit": "node --test \"src/explainers/**/*.test.ts\"",
-    "lighthouse": "lhci autorun --config=lighthouserc.cjs"
+    "lighthouse": "lhci autorun --config=lighthouserc.cjs",
+    "vault": "node scripts/vault.ts"
   },
   "dependencies": {
     "@astrojs/mdx": "^8.1.2",

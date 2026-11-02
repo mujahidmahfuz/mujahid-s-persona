@@ -217,6 +217,28 @@ if (existsSync(explainersDir)) {
   }
 }
 
+// 12. Nothing from private/ may appear in plaintext in the built site (it ships only encrypted).
+if (scanDist && existsSync(join(ROOT, 'private'))) {
+  const builtText = walk(join(ROOT, 'dist'), { skip: new Set(['pagefind']) })
+    .filter((f) => /\.(html|xml|json|txt|js)$/.test(f))
+    .map((f) => read(f))
+    .join('\n');
+  for (const f of walk(join(ROOT, 'private')).filter((x) => /\.mdx?$/.test(x))) {
+    const m = FM.exec(read(f));
+    let d = {};
+    try {
+      d = (m && parseYaml(m[1])) || {};
+    } catch {
+      /* ignore */
+    }
+    for (const field of ['title', 'summary']) {
+      const v = typeof d[field] === 'string' ? d[field] : '';
+      if (v.length > 12 && !v.startsWith('TODO(muja)') && builtText.includes(v))
+        fail(`${rel(f)} ${field} appears in plaintext in dist/`);
+    }
+  }
+}
+
 // Built site must not contain a quantum-cookbook route
 if (scanDist && existsSync(join(ROOT, 'dist/quantum-cookbook'))) fail('dist/quantum-cookbook exists');
 
