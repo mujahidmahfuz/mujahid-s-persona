@@ -6,6 +6,8 @@ import KeyFindings from '~/components/KeyFindings.astro';
 import VideoFacade from '~/components/VideoFacade.astro';
 import PrevNext from '~/components/PrevNext.astro';
 import Todo from '~/components/Todo.astro';
+import TiuBadges from '~/components/TiuBadges.astro';
+import SeasonBar from '~/components/charts/SeasonBar.astro';
 import { getPublic, formatRange, dateKey } from '~/lib/content';
 import { entryPath, withBase } from '~/lib/paths';
 import { show, visible, isTodo } from '~/lib/todo';
@@ -35,6 +37,14 @@ const title = `${d.team} — ${d.sport}`;
       <a href={withBase('/sports/')}>Sports</a>
     </p>
     <h1 class="mt-3">{title}</h1>
+    {d.org === 'Tokyo International University' && (
+      <div class="mt-6">
+        <TiuBadges team={d.team} leagues={d.leagues} />
+      </div>
+    )}
+    <div class="mt-8 max-w-3xl">
+      <SeasonBar start={d.start} end={d.end} />
+    </div>
     <dl class="mt-6 grid max-w-4xl gap-4 text-sm sm:grid-cols-2 lg:grid-cols-4">
       <div>
         <dt class="text-muted">Organisation</dt>
@@ -73,7 +83,7 @@ const title = `${d.team} — ${d.sport}`;
     {d.photos.length > 0 && (
       <section class="mt-12" aria-labelledby="photos">
         <h2 id="photos">Photos</h2>
-        <ul class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <ul class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3" data-reveal-group>
           {d.photos.map((p) => (
             <li>
               <Picture
@@ -93,7 +103,7 @@ const title = `${d.team} — ${d.sport}`;
     {videos.length > 0 && (
       <section class="mt-12" aria-labelledby="videos">
         <h2 id="videos">Videos</h2>
-        <ul class="mt-6 grid gap-6 md:grid-cols-2">
+        <ul class="mt-6 grid gap-6 md:grid-cols-2" data-reveal-group>
           {videos.map((v) => (
             <li>
               <VideoFacade videoId={v.data.videoId} title={v.data.title} start={v.data.start} />

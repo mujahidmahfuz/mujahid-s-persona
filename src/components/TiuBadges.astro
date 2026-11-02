@@ -1,0 +1,63 @@
+---
+/**
+ * TIU badges for the sports pages: the university seal (Wikimedia Commons, CC BY-SA 4.0 — credited
+ * below, as the licence requires) and badges for the leagues the team played in.
+ */
+import { Image } from 'astro:assets';
+import tiuSeal from '~/assets/sports/tiu-seal.png';
+
+interface Props {
+  team: string;
+  leagues: string[];
+  size?: 'sm' | 'lg';
+}
+const { team, leagues, size = 'lg' } = Astro.props;
+const px = size === 'lg' ? 112 : 64;
+---
+
+<div class="flex flex-wrap items-center gap-5" data-reveal>
+  <span class="tiu-badge shrink-0 rounded-2xl bg-white p-2 shadow-md ring-2 ring-blue-200">
+    <Image
+      src={tiuSeal}
+      alt="Tokyo International University seal"
+      width={px}
+      height={px}
+      style={`width:${px}px;height:${px}px`}
+    />
+  </span>
+  <div>
+    <p class="font-display text-lg font-bold text-blue">{team}</p>
+    <ul class="mt-2 flex flex-wrap gap-2" aria-label="Leagues">
+      {leagues.map((l) => (
+        <li class="inline-flex items-center gap-1.5 rounded-chip border-2 border-blue bg-white px-3 py-1 text-sm font-semibold text-blue">
+          <svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M12 2l3 6 6.5.9-4.7 4.6 1.1 6.5L12 17l-5.9 3 1.1-6.5L2.5 8.9 9 8z"
+              fill="#fd91cc"
+              stroke="#09318d"
+              stroke-width="1.5"
+            />
+          </svg>
+          {l}
+        </li>
+      ))}
+    </ul>
+  </div>
+</div>
+<p class="mt-2 text-xs text-muted">
+  Seal: Tokyo International University, via{' '}
+  <a href="https://commons.wikimedia.org/wiki/File:Tokyo_International_University_Logo.png">Wikimedia Commons</a>{' '}
+  (JeffFernandezJP,
+  <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>).
+</p>
+
+<style>
+  .tiu-badge {
+    transition: transform 300ms var(--ease-out);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .tiu-badge:hover {
+      transform: rotate(-6deg) scale(1.04);
+    }
+  }
+</style>

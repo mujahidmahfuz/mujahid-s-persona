@@ -1,0 +1,48 @@
+---
+/**
+ * Horizontal bar list — single series, one hue, direct labels (dataviz: no legend for one series,
+ * text in ink tokens, 4px rounded data end, 2px gaps). Bars grow when scrolled into view.
+ */
+import type { BarItem } from '~/lib/charts';
+
+interface Props {
+  title: string;
+  items: BarItem[];
+  note?: string;
+  onBlue?: boolean;
+}
+const { title, items, note, onBlue = false } = Astro.props;
+const max = Math.max(1, ...items.map((i) => i.value));
+---
+
+<figure data-reveal class="m-0" data-surface={onBlue ? 'blue' : undefined}>
+  <figcaption class:list={['text-sm font-semibold', onBlue ? 'text-white' : 'text-blue']}>{title}</figcaption>
+  <ul class="mt-3 space-y-[2px]">
+    {items.map((it, i) => (
+      <li class="grid min-h-6 grid-cols-[minmax(7rem,40%)_1fr_2.5rem] items-center gap-3 text-sm">
+        <span class:list={['truncate', onBlue ? 'text-white/90' : 'text-ink']} title={it.label}>
+          {it.href ? (
+            <a href={it.href} class="block min-h-6 leading-6 no-underline hover:underline">
+              {it.label}
+            </a>
+          ) : (
+            it.label
+          )}
+        </span>
+        <span class:list={['block h-6 rounded-r-[4px]', onBlue ? 'bg-white/10' : 'bg-blue-050']} aria-hidden="true">
+          <span
+            class:list={['chart-bar block h-full rounded-r-[4px]', onBlue ? 'bg-white' : 'bg-blue']}
+            style={`--f:${it.value / max};--d:${i * 70}ms`}
+          />
+        </span>
+        <span
+          class:list={['chart-value text-right font-semibold tabular-nums', onBlue ? 'text-white' : 'text-ink']}
+          style={`--d:${i * 70}ms`}
+        >
+          {it.value}
+        </span>
+      </li>
+    ))}
+  </ul>
+  {note && <p class:list={['mt-2 text-xs', onBlue ? 'text-white/80' : 'text-muted']}>{note}</p>}
+</figure>

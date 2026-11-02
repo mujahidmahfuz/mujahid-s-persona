@@ -20,7 +20,7 @@ const categories = [...new Set(all.map((v) => v.data.category))].sort();
           scope="videos"
           fields={[{ key: 'category', label: 'Category', options: categories.map((c) => ({ value: c, label: c })) }]}
         />
-        <ul class="grid gap-6 md:grid-cols-2 lg:grid-cols-3" data-filter-scope="videos">
+        <ul class="grid gap-6 md:grid-cols-2 lg:grid-cols-3" data-filter-scope="videos" data-reveal-group>
           {all.map((v) => (
             <li data-filter-item>
               <VideoCard entry={v} headingLevel={2} />

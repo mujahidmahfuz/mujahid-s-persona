@@ -4,6 +4,7 @@ import Card from '~/components/Card.astro';
 import VideoCard from '~/components/VideoCard.astro';
 import { getPublic, formatRange, dateKey } from '~/lib/content';
 import { entryPath } from '~/lib/paths';
+import TiuBadges from '~/components/TiuBadges.astro';
 
 const teams = (await getPublic('sports')).sort((a, b) => dateKey(b.data.start).localeCompare(dateKey(a.data.start)));
 const videos = (await getPublic('videos'))
@@ -16,9 +17,15 @@ const videos = (await getPublic('videos'))
     <h1>Sports</h1>
     <p class="mt-4 max-w-prose text-muted">Teams I have played for, the leagues we competed in, and match videos.</p>
 
+    {teams[0] && teams[0].data.org === 'Tokyo International University' && (
+      <div class="mt-8">
+        <TiuBadges team={`${teams[0].data.team} — ${teams[0].data.org}`} leagues={teams[0].data.leagues} />
+      </div>
+    )}
+
     <section class="mt-12" aria-labelledby="teams">
       <h2 id="teams">Teams</h2>
-      <ul class="mt-6 grid gap-6 md:grid-cols-2">
+      <ul class="mt-6 grid gap-6 md:grid-cols-2" data-reveal-group>
         {teams.map((t) => (
           <li>
             <Card
@@ -35,7 +42,7 @@ const videos = (await getPublic('videos'))
     <section class="mt-16" aria-labelledby="sports-videos">
       <h2 id="sports-videos">Videos</h2>
       {videos.length > 0 ? (
-        <ul class="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <ul class="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3" data-reveal-group>
           {videos.map((v) => (
             <li>
               <VideoCard entry={v} />

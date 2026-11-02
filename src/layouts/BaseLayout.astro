@@ -24,6 +24,9 @@ const { searchable = true, ...seo } = Astro.props;
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+    <script is:inline>
+      document.documentElement.classList.add('js');
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#09318d" />
     <meta name="generator" content={Astro.generator} />
@@ -47,5 +50,20 @@ const { searchable = true, ...seo } = Astro.props;
     <Footer />
     <SearchDialog />
     <slot name="end" />
+    <script>
+      // Scroll reveal: mark [data-reveal] / [data-reveal-group] once they enter the viewport.
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) {
+            if (e.isIntersecting) {
+              e.target.classList.add('is-in');
+              io.unobserve(e.target);
+            }
+          }
+        },
+        { rootMargin: '0px 0px -8% 0px' },
+      );
+      document.querySelectorAll('[data-reveal], [data-reveal-group]').forEach((el) => io.observe(el));
+    </script>
   </body>
 </html>

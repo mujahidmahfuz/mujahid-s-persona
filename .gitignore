@@ -14,13 +14,4 @@ playwright-report/
 # Muja's CV contains a phone number — never commit it. The site renders its own CV.
 *.pdf
 !public/**/*.pdf
-# raw material that may be pre-publication; keep local unless Muja decides otherwise
-content-source/
 .DS_Store
-# Private workspace — never pushed. Unpublished research/projects/notes live here and are
-# shown only in the password-locked /vault/ page (encrypted). See private/README.md.
-private/
-# Muja's personal notes: fact sheet, open questions, review. Kept locally.
-docs/CONTENT-INVENTORY.md
-TODO-MUJA.md
-REVIEW.md

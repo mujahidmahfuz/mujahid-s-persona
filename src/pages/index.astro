@@ -8,6 +8,13 @@ import { entryPath, withBase } from '~/lib/paths';
 import { SHORT_BIO } from '~/lib/bio';
 import { PROFILES, SITE } from '~/lib/site';
 import { show } from '~/lib/todo';
+import { Image } from 'astro:assets';
+import HeroNetwork from '~/components/HeroNetwork.astro';
+import StatTiles from '~/components/charts/StatTiles.astro';
+import BarList from '~/components/charts/BarList.astro';
+import ActivityChart from '~/components/charts/ActivityChart.astro';
+import { areaCounts, statusCounts, stats } from '~/lib/charts';
+import tiuSeal from '~/assets/sports/tiu-seal.png';
 
 const research = (await getResearch()).filter((r) => r.data.status !== 'concept');
 const featuredResearch = [...research]
@@ -16,10 +23,18 @@ const featuredResearch = [...research]
 const projects = await getPublic('projects');
 const featuredProjects = [...projects]
   .filter((p) => p.data.status !== 'concept')
-  .sort((a, b) => Number(b.data.featured) - Number(a.data.featured) || a.id.localeCompare(b.id))
+  .sort(
+    (a, b) =>
+      Number(b.data.featured) - Number(a.data.featured) ||
+      b.data.highlights.length - a.data.highlights.length ||
+      a.id.localeCompare(b.id),
+  )
   .slice(0, 3);
 const latestAward = (await getPublic('awards')).sort((a, b) => dateKey(b.data.date).localeCompare(dateKey(a.data.date)))[0];
 const sports = (await getPublic('sports'))[0];
+const headline = await stats();
+const byArea = await areaCounts();
+const byStatus = await statusCounts();
 
 const person = {
   '@context': 'https://schema.org',
@@ -37,10 +52,13 @@ const person = {
 ---
 
 <BaseLayout title={SITE.name} description={SHORT_BIO} jsonLd={person} type="profile">
-  <section class="bg-blue text-white" data-surface="blue" aria-labelledby="hero-title">
-    <div class="container-site py-16 md:py-24">
+  <section class="relative overflow-hidden bg-blue text-white" data-surface="blue" aria-labelledby="hero-title">
+    <div class="pointer-events-none absolute inset-y-0 right-0 w-full opacity-35 lg:w-1/2 lg:opacity-100" aria-hidden="true">
+      <HeroNetwork />
+    </div>
+    <div class="relative container-site py-16 md:py-24">
       <p class="font-semibold text-pink">Undergraduate researcher · Machine learning · Quantum computing</p>
-      <h1 id="hero-title" class="mt-4 max-w-4xl">
+      <h1 id="hero-title" class="mt-4 max-w-3xl">
         <span class="accent-underline">{SITE.name}</span>
       </h1>
       <p class="mt-6 max-w-2xl text-lg text-white/90">{SHORT_BIO}</p>
@@ -61,6 +79,9 @@ const person = {
           Contact
         </a>
       </div>
+      <div class="mt-12 max-w-3xl">
+        <StatTiles items={headline} />
+      </div>
     </div>
   </section>
 
@@ -73,7 +94,7 @@ const person = {
         All research →
       </a>
     </div>
-    <ul class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <ul class="grid gap-6 md:grid-cols-2 lg:grid-cols-3" data-reveal-group>
       {featuredResearch.map((r) => (
         <li>
           <Card
@@ -90,6 +111,28 @@ const person = {
     </ul>
   </section>
 
+  <section class="border-y border-blue-200 py-16" aria-labelledby="glance">
+    <div class="container-site">
+      <SectionHeading id="glance" eyebrow="At a glance">
+        The work in numbers
+      </SectionHeading>
+      <p class="-mt-2 mb-8 max-w-prose text-muted">
+        Counted from the research and project pages on this site, so these update whenever a page is added.
+      </p>
+      <div class="grid gap-10 md:grid-cols-2">
+        <BarList title="Research and projects by area" items={byArea} />
+        <BarList
+          title="Where each piece of work stands"
+          items={byStatus}
+          note="From idea to published. Concepts are plans, not results."
+        />
+      </div>
+      <div class="mt-12">
+        <ActivityChart />
+      </div>
+    </div>
+  </section>
+
   <section class="bg-blue-050 py-16" aria-labelledby="featured-projects">
     <div class="container-site">
       <div class="flex flex-wrap items-end justify-between gap-4">
@@ -100,7 +143,7 @@ const person = {
           All projects →
         </a>
       </div>
-      <ul class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <ul class="grid gap-6 md:grid-cols-2 lg:grid-cols-3" data-reveal-group>
         {featuredProjects.map((p) => (
           <li>
             <Card
@@ -118,7 +161,7 @@ const person = {
     </div>
   </section>
 
-  <div class="container-site grid gap-8 py-16 md:grid-cols-2">
+  <div class="container-site grid gap-8 py-16 md:grid-cols-2" data-reveal-group>
     {latestAward && (
       <section aria-labelledby="latest-achievement" class="rounded-card border border-blue-200 p-6">
         <p class="text-sm font-semibold tracking-wide text-pink-ink uppercase">Latest achievement</p>
@@ -134,7 +177,12 @@ const person = {
     )}
     {sports && (
       <section aria-labelledby="sports-strip" class="rounded-card bg-blue p-6 text-white" data-surface="blue">
-        <p class="text-sm font-semibold tracking-wide text-pink uppercase">Off the desk</p>
+        <div class="flex items-start justify-between gap-4">
+          <p class="text-sm font-semibold tracking-wide text-pink uppercase">Off the desk</p>
+          <span class="rounded-xl bg-white p-1.5">
+            <Image src={tiuSeal} alt="Tokyo International University seal" width={56} height={56} class="h-14 w-14" />
+          </span>
+        </div>
         <h2 id="sports-strip" class="mt-2 text-h3">
           <a href={entryPath(sports)}>{sports.data.team}</a>
         </h2>

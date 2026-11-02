@@ -52,7 +52,6 @@ const watch = `https://www.youtube.com/watch?v=${videoId}${start ? `&t=${start}s
 </div>
 
 <script>
-  document.documentElement.classList.add('js');
   document.querySelectorAll<HTMLElement>('[data-video-facade]').forEach((box) => {
     const btn = box.querySelector<HTMLButtonElement>('[data-video-play]');
     btn?.addEventListener('click', () => {

@@ -7,7 +7,7 @@ interface Props {
 const items = [...Astro.props.items].sort((a, b) => b.sortKey.localeCompare(a.sortKey));
 ---
 
-<ol class="relative ml-2 border-l-2 border-blue-200">
+<ol class="relative ml-2 border-l-2 border-blue-200" data-reveal-group>
   {items.map((i) => (
     <li class="relative mb-8 pl-6 last:mb-0">
       <span

@@ -12,7 +12,7 @@ const notes = (await getPublic('notes')).sort((a, b) => b.data.date.localeCompar
     <h1>Notes</h1>
     <p class="mt-4 max-w-prose text-muted">Short research notes. Also available as an RSS feed.</p>
     {notes.length > 0 ? (
-      <ul class="mt-10 grid gap-6 md:grid-cols-2">
+      <ul class="mt-10 grid gap-6 md:grid-cols-2" data-reveal-group>
         {notes.map((n) => (
           <li>
             <Card

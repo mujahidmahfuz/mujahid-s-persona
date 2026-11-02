@@ -1,0 +1,18 @@
+---
+/** Headline numbers (dataviz: a single number is a stat tile, not a chart). Counts come from content. */
+interface Props {
+  items: { value: number; label: string; href?: string | undefined }[];
+}
+const { items } = Astro.props;
+---
+
+<ul class="grid grid-cols-2 gap-3 md:grid-cols-4">
+  {items.map((s) => (
+    <li class="rounded-card border border-white/25 p-4">
+      <a href={s.href} class="block no-underline">
+        <span class="block font-display text-4xl font-bold tabular-nums">{s.value}</span>
+        <span class="mt-1 block text-sm text-white/85">{s.label}</span>
+      </a>
+    </li>
+  ))}
+</ul>

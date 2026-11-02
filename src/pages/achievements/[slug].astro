@@ -62,7 +62,7 @@ const date = formatDate(d.date);
       {d.evidenceUrl && isTodo(d.evidenceUrl) && <Todo text={d.evidenceUrl} />}
     </div>
     {d.photos.length > 0 && (
-      <ul class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <ul class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3" data-reveal-group>
         {d.photos.map((p) => (
           <li>
             <Image src={p.src} alt={p.alt} widths={[400, 800]} sizes="(min-width: 1024px) 380px, 100vw" class="rounded-card" />
@@ -73,7 +73,7 @@ const date = formatDate(d.date);
     {rel.length > 0 && (
       <section class="mt-12" aria-labelledby="related">
         <h2 id="related">Related</h2>
-        <ul class="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <ul class="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3" data-reveal-group>
           {rel.map((r) => (
             <li>
               <Card href={entryPath(r)} title={r.data.title} summary={r.data.summary} status={r.data.status} tags={r.data.tags} />

@@ -65,7 +65,7 @@ Playwright, Chromium only (pre-installed in CI with the official action):
 | Inventing metrics, awards, dates, co-authors | `TODO(muja)` + `TODO-MUJA.md` |
 | Typing author lists or titles by hand when DOI exists | Crossref sync |
 | Presenting concepts as completed work | `status` badge + "Research directions" grouping |
-| Saying "diagnose" for medical-AI screening work | "screen for / estimate risk" |
+| Saying "diagnose" for retinal work | "screen for / estimate risk" |
 | Overclaiming quantum advantage for QLNRS | Report states no demonstrated advantage — say so |
 | Marketing tone ("revolutionary", "cutting-edge", "world-class") | Plain, precise, evidence-first wording |
 

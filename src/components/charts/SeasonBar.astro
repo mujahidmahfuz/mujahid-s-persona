@@ -1,0 +1,46 @@
+---
+/** One team's period on a month axis (e.g. Nov 2023 – Jul 2025). Grows into view. */
+import { monthIndex } from '~/lib/charts';
+import { formatRange } from '~/lib/content';
+import { isTodo } from '~/lib/todo';
+
+interface Props {
+  start: string;
+  end?: string | undefined;
+}
+const { start, end } = Astro.props;
+const now = new Date();
+const s = monthIndex(start, 'start');
+const e = end && !isTodo(end) ? monthIndex(end, 'end') : now.getUTCFullYear() * 12 + now.getUTCMonth() + 1;
+const y0 = Math.floor(s / 12);
+const y1 = Math.ceil(e / 12);
+const span = (y1 - y0) * 12;
+const pct = (m: number) => ((m - y0 * 12) / span) * 100;
+const months = e - s;
+const duration = [
+  Math.floor(months / 12) && `${Math.floor(months / 12)} year${Math.floor(months / 12) > 1 ? 's' : ''}`,
+  months % 12 && `${months % 12} month${months % 12 > 1 ? 's' : ''}`,
+]
+  .filter(Boolean)
+  .join(' ');
+---
+
+<figure data-reveal class="m-0">
+  <figcaption class="text-sm font-semibold text-blue">
+    On the team: {formatRange(start, end)} · {duration}
+  </figcaption>
+  <div class="relative mt-3 pb-6">
+    <div class="relative h-8 rounded-[4px] bg-blue-050">
+      <span
+        class="chart-bar absolute top-0 h-full rounded-[4px] bg-blue"
+        style={`left:${pct(s)}%;width:${pct(e) - pct(s)}%;--d:150ms`}
+        aria-hidden="true"
+      ></span>
+    </div>
+    {Array.from({ length: y1 - y0 + 1 }, (_, i) => y0 + i).map((y) => (
+      <span class="absolute bottom-0 -translate-x-1/2 text-xs text-muted" style={`left:${pct(y * 12)}%`} aria-hidden="true">
+        {y}
+      </span>
+    ))}
+  </div>
+</figure>

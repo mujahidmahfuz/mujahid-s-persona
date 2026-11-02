@@ -246,3 +246,102 @@
     animation: none;
   }
 }
+
+/* ---------- Site-wide motion (DESIGN §4) ----------
+   Scroll reveal: opacity + ≤12 px travel, once per element. Hidden only when JS is present
+   (html.js), so content is never lost without JS. Reduced motion: no travel, no delay. */
+[data-reveal],
+[data-reveal-group] > * {
+  transition:
+    opacity 500ms var(--ease-out),
+    transform 500ms var(--ease-out);
+}
+.js [data-reveal]:not(.is-in),
+.js [data-reveal-group]:not(.is-in) > * {
+  opacity: 0;
+  transform: translateY(12px);
+}
+[data-reveal-group] > *:nth-child(2) {
+  transition-delay: 40ms;
+}
+[data-reveal-group] > *:nth-child(3) {
+  transition-delay: 80ms;
+}
+[data-reveal-group] > *:nth-child(4) {
+  transition-delay: 120ms;
+}
+[data-reveal-group] > *:nth-child(5) {
+  transition-delay: 160ms;
+}
+[data-reveal-group] > *:nth-child(6) {
+  transition-delay: 200ms;
+}
+[data-reveal-group] > *:nth-child(n + 7) {
+  transition-delay: 240ms;
+}
+
+/* Charts: bars grow from their start once their container is revealed. --f = fraction, --d = delay. */
+.chart-bar {
+  transform: scaleX(var(--f, 1));
+  transform-origin: 0 50%;
+  transition: transform 800ms var(--ease-out);
+  transition-delay: var(--d, 0ms);
+}
+.js [data-reveal]:not(.is-in) .chart-bar {
+  transform: scaleX(0);
+}
+.chart-value {
+  transition: opacity 400ms var(--ease-out);
+  transition-delay: calc(var(--d, 0ms) + 350ms);
+}
+.js [data-reveal]:not(.is-in) .chart-value {
+  opacity: 0;
+}
+
+/* Cards lift a little under a real pointer only (touch fires false hovers). */
+[data-card] {
+  transition:
+    box-shadow 200ms var(--ease-out),
+    transform 200ms var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  [data-card]:hover {
+    transform: translateY(-2px);
+  }
+}
+
+/* Page-to-page cross-fade (cross-document view transitions; no JS). The header stays put. */
+@view-transition {
+  navigation: auto;
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 200ms;
+  animation-timing-function: var(--ease-out);
+}
+header[data-site-header] {
+  view-transition-name: site-header;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .js [data-reveal]:not(.is-in),
+  .js [data-reveal-group]:not(.is-in) > * {
+    transform: none;
+  }
+  [data-reveal-group] > * {
+    transition-delay: 0ms !important;
+  }
+  @view-transition {
+    navigation: none;
+  }
+}
+@media print {
+  .js [data-reveal]:not(.is-in),
+  .js [data-reveal-group]:not(.is-in) > * {
+    opacity: 1;
+    transform: none;
+  }
+  .js [data-reveal]:not(.is-in) .chart-bar {
+    transform: scaleX(var(--f, 1));
+  }
+}

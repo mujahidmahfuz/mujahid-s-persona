@@ -21,15 +21,13 @@ export function firstRoute(prefix: string): string | undefined {
 export const KEY_PAGES = (): string[] =>
   ['', 'research/', firstRoute('research/'), firstRoute('projects/'), 'sports/'].filter((r): r is string => r !== undefined);
 
-/** Routes that would exist if a private/ entry leaked into the build (none in CI, where private/ is absent). */
+/** Routes of content entries marked `private: true` (they must not be built). */
 export function privateRoutes(): string[] {
-  const dir = join(process.cwd(), 'private');
-  if (!existsSync(dir)) return [];
-  return ['research', 'projects'].flatMap((section) =>
-    existsSync(join(dir, section))
-      ? readdirSync(join(dir, section))
-          .filter((f) => /\.mdx?$/.test(f))
-          .map((f) => `${section}/${f.replace(/\.mdx?$/, '')}/`)
-      : [],
-  );
+  return ['research', 'projects'].flatMap((section) => {
+    const dir = join(process.cwd(), 'src/content', section);
+    if (!existsSync(dir)) return [];
+    return readdirSync(dir)
+      .filter((f) => /\.mdx?$/.test(f) && /^private:\s*true\s*$/m.test(readFileSync(join(dir, f), 'utf8')))
+      .map((f) => `${section}/${f.replace(/\.mdx?$/, '')}/`);
+  });
 }

@@ -204,7 +204,7 @@ const description = isTodo(d.summary) ? SITE.description : d.summary;
       <h2 id="related" class="scroll-mt-24">
         Related
       </h2>
-      <ul class="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+      <ul class="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-3" data-reveal-group>
         {rel.map((r) => (
           <li>
             <Card href={entryPath(r)} title={r.data.title} summary={r.data.summary} status={r.data.status} tags={r.data.tags} />

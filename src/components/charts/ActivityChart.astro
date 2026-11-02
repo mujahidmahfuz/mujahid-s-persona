@@ -1,0 +1,111 @@
+---
+/**
+ * Gantt-style activity timeline from education / experience / sports / papers & awards.
+ * One hue (deep blue); identity comes from lane labels, not colour. Expected (future) spans are
+ * hatched; year-only dates are drawn as thin bands across the year. A pink "now" line marks the
+ * build date. Every segment is a focusable link with a hover/focus tooltip and screen-reader text.
+ */
+import { activityLanes, type Segment } from '~/lib/charts';
+
+const { lanes, minIdx, maxIdx, nowIdx, years } = await activityLanes();
+const span = maxIdx - minIdx;
+const pct = (m: number) => ((m - minIdx) / span) * 100;
+
+/** Greedy sub-rows so overlapping segments in one lane stack instead of colliding. */
+function rows(segments: Segment[]): Segment[][] {
+  const out: Segment[][] = [];
+  for (const s of [...segments].sort((a, b) => a.start - b.start)) {
+    const row = out.find((r) => r[r.length - 1]!.end <= s.start);
+    if (row) row.push(s);
+    else out.push([s]);
+  }
+  return out;
+}
+const nowLabel = new Date().toLocaleDateString('en-GB', { month: 'short', year: 'numeric', timeZone: 'UTC' });
+let k = 0;
+---
+
+<figure data-reveal class="m-0">
+  <figcaption class="text-sm font-semibold text-blue">Activity over time</figcaption>
+  <div class="mt-3 overflow-x-auto" tabindex="0" role="region" aria-label="Activity timeline (scrolls sideways on small screens)">
+    <div class="relative min-w-[40rem] pb-8">
+      {/* year grid */}
+      <div class="pointer-events-none absolute inset-y-0 right-0 left-32" aria-hidden="true">
+        {years.map((y) => (
+          <div class="absolute inset-y-0 border-l border-blue-050" style={`left:${pct(y * 12)}%`}>
+            <span class="absolute bottom-0 -translate-x-1/2 text-xs text-muted">{y}</span>
+          </div>
+        ))}
+        <div class="absolute inset-y-0 border-l-2 border-dashed border-pink" style={`left:${pct(nowIdx)}%`}>
+          <span class="absolute -top-1 right-1 rounded bg-pink-100 px-1 text-xs font-semibold whitespace-nowrap text-blue">
+            now · {nowLabel}
+          </span>
+        </div>
+      </div>
+
+      <ul class="relative space-y-3 pt-6">
+        {lanes.map((lane) => (
+          <li class="grid grid-cols-[8rem_1fr] items-start">
+            <span class="pt-0.5 text-sm font-semibold text-ink">{lane.name}</span>
+            <div class="relative space-y-[2px]">
+              {rows(lane.segments).map((row) => (
+                <div class="relative h-6">
+                  {row.map((s) => {
+                    const i = k++;
+                    const left = pct(s.start);
+                    const width = Math.max(pct(s.end) - left, 0.6);
+                    const label = width > 18 && !s.yearOnly;
+                    const Tag = s.href ? 'a' : 'span';
+                    return (
+                      <Tag
+                        href={s.href}
+                        tabindex={s.href ? undefined : 0}
+                        class:list={[
+                          'group/seg absolute top-0 h-full rounded-[4px] no-underline focus-visible:z-10',
+                          s.yearOnly && 'top-1.5 h-3',
+                        ]}
+                        style={`left:${left}%;width:${width}%`}
+                      >
+                        <span
+                          class:list={[
+                            'chart-bar block h-full rounded-[4px]',
+                            s.expected ? 'gantt-expected border border-blue' : s.yearOnly ? 'bg-blue-200' : 'bg-blue',
+                          ]}
+                          style={`--d:${i * 60}ms`}
+                          aria-hidden="true"
+                        >
+                          {label && <span class="block truncate px-2 text-xs leading-6 font-semibold text-white">{s.label}</span>}
+                        </span>
+                        <span class="sr-only">
+                          {lane.name}: {s.label}, {s.detail}
+                        </span>
+                        <span
+                          role="tooltip"
+                          class="pointer-events-none invisible absolute bottom-full left-0 z-20 mb-1 w-max max-w-64 rounded-lg bg-ink px-2 py-1 text-xs text-white opacity-0 shadow-lg transition-opacity duration-150 group-hover/seg:visible group-hover/seg:opacity-100 group-focus-visible/seg:visible group-focus-visible/seg:opacity-100"
+                          aria-hidden="true"
+                        >
+                          <strong class="block">{s.label}</strong>
+                          {s.detail}
+                        </span>
+                      </Tag>
+                    );
+                  })}
+                </div>
+              ))}
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+  <p class="mt-2 text-xs text-muted">
+    Hatched = expected; thin bands = only the year is known. Built from the education, experience, sports, publication and award
+    entries.
+  </p>
+</figure>
+
+<style is:global>
+  .gantt-expected {
+    background: repeating-linear-gradient(135deg, #c7d3f0 0 4px, #ffffff 4px 8px);
+  }
+</style>

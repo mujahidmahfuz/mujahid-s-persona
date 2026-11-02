@@ -4,6 +4,8 @@ import Card from '~/components/Card.astro';
 import FilterBar from '~/components/FilterBar.astro';
 import { getPublic, CATEGORY_LABEL, dateKey, yearOf, formatRange } from '~/lib/content';
 import { entryPath } from '~/lib/paths';
+import BarList from '~/components/charts/BarList.astro';
+import { statusCounts, categoryCounts } from '~/lib/charts';
 
 const all = (await getPublic('projects')).sort(
   (a, b) =>
@@ -11,6 +13,8 @@ const all = (await getPublic('projects')).sort(
     dateKey(b.data.period.start).localeCompare(dateKey(a.data.period.start)) ||
     a.id.localeCompare(b.id),
 );
+const byCategory = await categoryCounts();
+const byStatus = await statusCounts('projects');
 const uniq = <T,>(xs: T[]) => [...new Set(xs)];
 const slug = (s: string) =>
   s
@@ -31,6 +35,11 @@ const years = uniq(all.map((p) => yearOf(p.data.period.start)).filter((y): y is 
     <p class="mt-4 max-w-prose text-muted">
       Things I have built — apps, solvers, teaching material and hardware experiments — with an honest status for each.
     </p>
+    <div class="mt-10 grid gap-8 rounded-card border border-blue-200 p-6 md:grid-cols-2">
+      <BarList title="By category" items={byCategory} />
+      <BarList title="By status" items={byStatus} />
+    </div>
+
     <div class="mt-10">
       <FilterBar
         scope="projects"
@@ -41,7 +50,7 @@ const years = uniq(all.map((p) => yearOf(p.data.period.start)).filter((y): y is 
           ...(years.length ? [{ key: 'year', label: 'Year', options: years.map((y) => ({ value: y, label: y })) }] : []),
         ]}
       />
-      <ul class="grid gap-6 md:grid-cols-2 lg:grid-cols-3" data-filter-scope="projects">
+      <ul class="grid gap-6 md:grid-cols-2 lg:grid-cols-3" data-filter-scope="projects" data-reveal-group>
         {all.map((p) => (
           <li data-filter-item>
             <Card

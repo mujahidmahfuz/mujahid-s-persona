@@ -26,7 +26,7 @@ const groups = [...new Set(all.map((e) => TYPE_LABEL[e.data.type]!))];
     {groups.map((g) => (
       <section class="mt-12" aria-labelledby={`g-${g}`}>
         <h2 id={`g-${g}`}>{g}</h2>
-        <ul class="mt-6 grid gap-6 md:grid-cols-2">
+        <ul class="mt-6 grid gap-6 md:grid-cols-2" data-reveal-group>
           {all
             .filter((e) => TYPE_LABEL[e.data.type] === g)
             .map((e) => (

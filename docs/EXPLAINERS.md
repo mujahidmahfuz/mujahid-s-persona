@@ -61,8 +61,6 @@ If Claude Code cannot determine how a method works from the provided material, i
 
 ## 3. Explainer catalogue (starting plan — Muja confirms each)
 
-Plans for unpublished work are kept locally in `private/EXPLAINERS-private.md`.
-
 Inputs needed from Muja are marked **NEED**.
 
 | Page | 2D explainer | 3D explainer | NEED |
@@ -71,8 +69,15 @@ Inputs needed from Muja are marked **NEED**.
 | **QIP paper** (doi 10.1007/s11128-025-05044-6) | Decide after reading the paper (title/abstract pulled from Crossref) | Bloch sphere / state-space view **only if** the paper's subject is state evolution | PDF + Muja's one-paragraph plain summary |
 | **Sleep-inspired continual learning** | (1) Training timeline: batches with WAKE / micro / light / deep sleep events from a real run log; (2) Pareto plot: average accuracy vs sleep events for No Sleep / Fixed / Heuristic / Adaptive from the multi-seed results JSON; (3) forgetting curves per task | System Map of the scheduler (vital signs → trigger → sleep tier → replay buffer → network), or PCA trajectory of real checkpoints if exported | `results/*.json` from `run_experiments.py`; which numbers are final |
 | **Lossmap — photonic loss landscape inference** | Interactive 2D lattice: loss probability slider, connected cluster highlighted (percolation); readout of whether a spanning cluster exists | 3D lattice version of the same percolation view | 34-page report; the lattice type and parameters used in E001 |
+| **NV-centre magnetometry (computational)** | CW-ODMR spectrum vs field: slider for |B| and angle; shows how resonance lines overlap at low field (non-identifiability); posterior over parameters if Muja's inference code provides samples | Diamond lattice with the 4 NV axis orientations and an adjustable B-field vector; projection of B onto each axis drives the 2D spectrum | Muja's model equations and constants; confirm status |
 | **QLNRS — Fujitsu Quantum Simulator Challenge 2025-26** | Vehicle routes on a map; LNS step animation: risk-weighted destroy → CP-QAOA-based repair → accept/reject; honest results panel (no demonstrated quantum advantage; std = 0 note) | System Map: classical LNS loop ↔ quantum subproblem ↔ Fujitsu FX700 Slurm jobs | Final report PDF, one example instance and solution |
+| **Bee-venom peptide target prioritisation** (TNBC, GBM) | Pipeline (11 steps) + PPI hub network graph from real results | Peptide structures (e.g. melittin) and docking pose from Muja's docking output files | Docking output (PDB/PDBQT), hub list, permission to show pre-publication results |
+| **Retinal reliability (Retinal Reliability Score)** | Flow: fundus image → foundation model → risk estimate + reliability score + reason codes. Mock output clearly labelled "illustrative" until results exist. Vocabulary: "screens for / estimates risk", never "diagnoses" | System Map | Status and what may be shown publicly |
 | **PQC on Arduino UNO** | Memory budget bars: 32 KB Flash / 2 KB SRAM vs each algorithm's requirement (only SPHINCS+-SHA2-128s fits); SPHINCS+ hash-tree diagram | System Map (optional) | Measured sizes/timings from Muja's build |
 | **DoomBreak (Flutter app)** | Interactive session state machine (timer → reminders → lock overlay → Save Me); architecture Flutter ↔ Kotlin native usage tracking ↔ FastAPI ↔ LLM | System Map | Screenshots, store link when public |
+| **Quantum repeater Pauli-frame overhead** | Multi-hop repeater chain with dynamic topology; counter of classical messages per hop | 3D network graph (optional) | Report; note it re-derives known results (portfolio piece) |
+| **Dicke-state measurement timing** | Circuit diagram with a measurement-point slider; gate-savings readout from the corrected analysis | — | Corrected analysis numbers |
+| **Photonic QEC with AI** (concept) | Understand → Predict → Act diagram | — | Muja decides whether concepts are public |
+| **CampusOS / T2R / Music-inspired ML** | System/pipeline diagram | System Map | Muja decides visibility and status |
 
 Every row above is a plan, not a fact. Claude Code must not build an explainer whose NEED column is unmet; build the next one instead and list the blocker in `TODO-MUJA.md`.

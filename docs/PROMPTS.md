@@ -100,7 +100,7 @@ Follow the fidelity protocol in EXPLAINERS §2 step by step. Before coding, writ
 Leave verified:false — I will set it to true after checking.
 ```
 
-Recommended Part B order (inputs are simplest first): DoomBreak System Map → Sleep continual-learning timeline + Pareto (needs results JSON) → BWA barycenter (needs attribution arrays) → Lossmap percolation lattice 2D + 3D → QLNRS → others.
+Recommended Part B order (inputs are simplest first): DoomBreak System Map → Sleep continual-learning timeline + Pareto (needs results JSON) → BWA barycenter (needs attribution arrays) → Lossmap percolation lattice 2D + 3D → NV-centre ODMR 2D + 3D → QLNRS → others.
 
 ## Phase 5 — About, experience, achievements, sports, videos, CV
 

@@ -6,7 +6,7 @@ interface Props {
 const { id, title } = Astro.props;
 ---
 
-<section aria-labelledby={id} class="prose-site mt-12 first:mt-0">
+<section aria-labelledby={id} class="prose-site mt-12 first:mt-0" data-reveal>
   <h2 id={id} class="scroll-mt-24">
     {title}
   </h2>
