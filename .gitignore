@@ -1,0 +1,19 @@
+# build output
+dist/
+.astro/
+# deps
+node_modules/
+# tests / tools
+test-results/
+playwright-report/
+.lighthouseci/
+# env and local settings (STUDENT_ID_SHA256 lives in .env.local)
+.env
+.env.*
+.claude/settings.local.json
+# Muja's CV contains a phone number — never commit it. The site renders its own CV.
+*.pdf
+!public/**/*.pdf
+# raw material that may be pre-publication; keep local unless Muja decides otherwise
+content-source/
+.DS_Store
