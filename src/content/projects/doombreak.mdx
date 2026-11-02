@@ -1,0 +1,45 @@
+---
+title: DoomBreak
+summary: An Android app, built with Flutter and Kotlin, for managing doom-scrolling — session timers, a full-screen lock overlay, escalating reminders, Mission Mode and AI coaching. In closed testing on Google Play.
+status: prototype
+category: mobile-app
+stack: [Flutter, Dart, Kotlin, FastAPI, Groq, Llama 3.3 70B]
+role: 'TODO(muja): your role (e.g. sole developer)'
+period:
+  start: 'TODO(muja): start month (YYYY-MM)'
+links:
+  store: 'TODO(muja): Play Store link once public'
+  repo: 'TODO(muja): repository URL (if public)'
+highlights:
+  - text: Session timer built as a state machine, with a full-screen lock overlay, escalating reminders, Mission Mode and a “Save Me” action.
+    source: DoomBreak codebase (CONTENT-INVENTORY §4)
+  - text: AI coaching through a FastAPI backend calling Groq (Llama 3.3 70B).
+    source: DoomBreak codebase (CONTENT-INVENTORY §4)
+  - text: Native usage tracking in Kotlin, a Net Momentum score, streaks and CSV export.
+    source: DoomBreak codebase (CONTENT-INVENTORY §4)
+  - text: 41 model tests.
+    source: DoomBreak test suite (CONTENT-INVENTORY §4)
+learned: []
+areas: [hci, systems]
+tags: [flutter, android, digital-wellbeing, llm]
+featured: true
+---
+
+## Why it exists
+
+<Todo inline={false}>one paragraph: why you built DoomBreak and who it is for</Todo>
+
+<Explainer id="doombreak-architecture" />
+
+## Features
+
+- **Session timer** — a state machine that tracks a scrolling session.
+- **Lock overlay** — a full-screen overlay when a session runs too long.
+- **Escalating reminders** before the lock.
+- **Mission Mode** and a **“Save Me”** action.
+- **AI coaching** — the app calls a FastAPI service, which uses Groq to run Llama 3.3 70B.
+- **Native usage tracking** (Kotlin), a **Net Momentum** score, **streaks** and **CSV export**.
+
+The app is in closed testing on Google Play.
+
+<Explainer id="doombreak-system-map" />

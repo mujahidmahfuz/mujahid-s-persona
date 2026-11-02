@@ -1,0 +1,39 @@
+---
+title: Sleep-inspired adaptive replay for continual learning
+summary: Biologically inspired “sleep” — replay and consolidation — scheduled adaptively to reduce catastrophic forgetting, using fewer sleep events than a fixed schedule while keeping accuracy.
+status: in-progress
+kind: study
+myRole: Designed the sleep-inspired adaptive replay method.
+areas: [continual-learning, machine-learning]
+tags: [catastrophic-forgetting, replay, sleep, reinforcement-learning]
+date: 'TODO(muja): last-update date (YYYY-MM)'
+keyFindings:
+  - text: 'Binary-MNIST: the heuristic sleep gate used 239 sleep events versus 555 for a fixed-interval schedule, with accuracy maintained (about 57% fewer replay events).'
+    source: Muja's experiment summary (CONTENT-INVENTORY §3); CV, Nov 2026
+  - text: 'Split CIFAR-10, multi-head, graduated micro / light / deep sleep: average accuracy 0.8733 (Adaptive) vs 0.8665 (Fixed Deep) vs 0.7926 (No Sleep).'
+    source: Muja's experiment summary (CONTENT-INVENTORY §3); CV, Nov 2026
+limitations:
+  - The heuristic gate is the primary result. The learned policy (contextual bandit, REINFORCE) is documented as analysis, not as a result.
+  - Final numbers are being confirmed with a 5-seed run.
+featured: true
+---
+
+## The problem
+
+When a neural network learns tasks one after another, training on a new task tends to overwrite what it learned before. This is called catastrophic forgetting. This project borrows an idea from biology — sleep, during which the brain replays and consolidates memories — and asks when a network should “sleep” so that it forgets less without wasting effort.
+
+<Explainer id="sleep-timeline" />
+
+## Method
+
+The work proceeds in three phases:
+
+1. **Fixed-interval sleep** — a baseline that sleeps on a fixed schedule.
+2. **Heuristic gate** — sleep is triggered by a rule based on the network's state.
+3. **Learned policy** — a contextual bandit trained with REINFORCE decides when to sleep.
+
+On Split CIFAR-10, sleep comes in graduated tiers — micro, light and deep — rather than a single kind.
+
+<Todo inline={false}>the gate's trigger rule, what is replayed, and buffer size (from run_experiments.py / paper draft)</Todo>
+
+<Explainer id="sleep-scheduler-map" />

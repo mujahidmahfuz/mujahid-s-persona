@@ -1,0 +1,30 @@
+---
+title: Post-quantum signatures on Arduino UNO
+summary: Tests which post-quantum signature schemes fit an Arduino UNO's 32 KB Flash and 2 KB SRAM — SPHINCS+-SHA2-128s is the only viable one — plus a taxonomy of PQC-migration defects mined from 8 GitHub repositories.
+status: in-progress
+category: hardware
+stack: [Arduino UNO, SPHINCS+-SHA2-128s]
+role: 'TODO(muja): your role'
+period:
+  start: 'TODO(muja): start month (YYYY-MM)'
+highlights:
+  - text: SPHINCS+-SHA2-128s is the only viable post-quantum signature scheme under the Arduino UNO's 32 KB Flash / 2 KB SRAM.
+    source: CONTENT-INVENTORY §4
+  - text: A taxonomy of PQC-migration defects mined from 8 GitHub repositories.
+    source: CONTENT-INVENTORY §4
+areas: [cryptography, systems]
+tags: [post-quantum-cryptography, sphincs-plus, arduino, embedded]
+---
+
+## Why it exists
+
+Post-quantum cryptography (PQC) is designed to stay secure against quantum computers, but many schemes need more memory than small microcontrollers have. This project tests which post-quantum signature schemes fit on an Arduino UNO, with 32 KB of Flash and 2 KB of SRAM.
+
+<Explainer id="pqc-memory-budget" />
+
+## What it covers
+
+1. **Fit on the UNO** — SPHINCS+-SHA2-128s is the only viable scheme under these limits.
+2. **Migration defects** — a taxonomy of defects in PQC migrations, mined from 8 GitHub repositories.
+
+<Todo inline={false}>measured Flash/SRAM sizes and signing/verification timings</Todo>

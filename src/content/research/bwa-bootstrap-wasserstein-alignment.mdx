@@ -1,0 +1,52 @@
+---
+# Title, authors, venue and year are replaced by Crossref data at build (SPEC §5).
+title: Bootstrap Wasserstein Alignment for stable feature attribution in low-data regimes
+summary: Bootstrap Wasserstein Alignment (BWA) combines SHAP attributions from bootstrap replicates through an entropic Wasserstein barycenter, aiming for stable feature explanations when training data are scarce.
+status: published
+kind: journal-article
+doi: 10.1016/j.knosys.2026.117182
+venue: Knowledge-Based Systems
+year: 2026
+authors: [M. Islam, P. Dubey] # fallback only (CV); Crossref wins
+myRole: First author. Proposed Bootstrap Wasserstein Alignment.
+areas: [xai, machine-learning]
+tags: [shap, optimal-transport, feature-attribution, bootstrap]
+date: 2026
+links:
+  paper: https://doi.org/10.1016/j.knosys.2026.117182
+  code: 'TODO(muja): repository URL for BWA'
+keyFindings: []
+limitations: []
+featured: true
+---
+
+## The problem
+
+Feature-attribution methods such as SHAP explain a model's prediction by assigning each input feature a share of it. On small datasets, these attributions can be unstable: a model trained on a slightly different sample of the data may yield a noticeably different explanation. BWA targets stable feature attribution in this low-data regime.
+
+<Todo inline={false}>one-paragraph plain-language statement of the problem in your words (optional — the paragraph above uses only the title and CV wording)</Todo>
+
+<Explainer id="bwa-barycenter" />
+
+## Method
+
+BWA works in three steps:
+
+1. Draw bootstrap replicates of the training data and fit the model on each.
+2. Compute a SHAP attribution vector for each replicate.
+3. Combine the replicate attributions through an **entropic Wasserstein barycenter**, giving one aligned attribution.
+
+The paper describes two variants:
+
+- **BWA-v1** — a hard binomial sign test with global normalisation.
+- **BWA-v2** — a magnitude-weighted Bayesian soft sign with per-feature median-absolute scaling.
+
+For reference, the standard definition of an entropic Wasserstein barycenter of distributions <Math tex="\nu_1,\dots,\nu_K" /> with weights <Math tex="\lambda_k" /> is
+
+<Math display tex="\bar\mu = \arg\min_{\mu} \sum_{k=1}^{K} \lambda_k \, W_\varepsilon(\mu, \nu_k)" />
+
+where <Math tex="W_\varepsilon" /> is the entropy-regularised optimal-transport cost with regularisation strength <Math tex="\varepsilon" />.
+
+<Todo inline={false}>how the attribution vectors are turned into distributions, the weights used, and the value of ε (paper section numbers)</Todo>
+
+<Explainer id="bwa-transport-plan" />

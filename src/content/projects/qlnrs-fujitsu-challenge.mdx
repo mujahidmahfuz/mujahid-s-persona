@@ -1,0 +1,41 @@
+---
+title: QLNRS — Quantum Large Neighbourhood Risk Search
+summary: A hybrid quantum-classical vehicle-routing solver built for the Fujitsu Quantum Simulator Challenge 2025–26. The final report states plainly that no quantum advantage in route cost was demonstrated.
+status: archived
+category: competition
+stack: [CP-QAOA, Fujitsu FX700, Slurm]
+role: Built the QLNRS solver.
+period:
+  start: 'TODO(muja): start month (YYYY-MM)'
+  end: 'TODO(muja): end month (YYYY-MM)'
+links:
+  report: 'TODO(muja): link to the final report PDF (if public)'
+highlights:
+  - text: Classical large-neighbourhood search with a risk-weighted destroy step and a CP-QAOA repair step on a subspace simulator, using a transposition mixer and a k²-dimensional encoding.
+    source: QLNRS final report (CONTENT-INVENTORY §4)
+  - text: Experiments ran as Slurm jobs on Fujitsu's FX700 cluster.
+    source: CV, Nov 2026; CONTENT-INVENTORY §4
+  - text: No demonstrated quantum advantage in route cost.
+    source: QLNRS final report (CONTENT-INVENTORY §4)
+learned: []
+areas: [quantum-computing, optimization]
+tags: [vehicle-routing, qaoa, hybrid-quantum-classical, fujitsu-challenge]
+---
+
+## Why it exists
+
+QLNRS was built for the Fujitsu Quantum Simulator Challenge 2025–26. The task was vehicle routing: planning routes for a fleet of vehicles. The project tests whether a quantum subroutine can help inside a classical search method.
+
+<Explainer id="qlnrs-lns-step" />
+
+## How it works
+
+Large neighbourhood search (LNS) improves a solution by repeatedly destroying part of it and repairing it:
+
+1. **Destroy** — remove part of the current routes, chosen by a risk-weighted rule.
+2. **Repair** — rebuild the removed part with CP-QAOA run on a subspace simulator.
+3. **Accept or reject** the new solution, then repeat.
+
+The quantum part uses a transposition mixer and a k²-dimensional encoding. Jobs ran through Slurm on Fujitsu's FX700 cluster.
+
+<Explainer id="qlnrs-system-map" />
