@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build && pagefind --site dist",
+    "build": "node scripts/todos.ts --list && astro build && pagefind --site dist",
     "preview": "astro preview",
     "astro": "astro",
     "lint": "eslint . && prettier --check .",
@@ -16,7 +16,8 @@
     "guard": "node scripts/guard.mjs",
     "check": "astro check && tsc --noEmit && npm run lint && astro sync && node scripts/guard.mjs && npm run build && node scripts/guard.mjs --dist && node scripts/linkcheck.mjs",
     "test:e2e": "playwright test",
-    "sync:pubs": "node scripts/sync.ts"
+    "sync:pubs": "node scripts/sync.ts",
+    "todos": "node scripts/todos.ts --list"
   },
   "dependencies": {
     "@astrojs/mdx": "^8.1.2",

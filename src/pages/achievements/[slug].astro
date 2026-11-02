@@ -1,0 +1,91 @@
+---
+import { render, type CollectionEntry } from 'astro:content';
+import { Image } from 'astro:assets';
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import PrevNext from '~/components/PrevNext.astro';
+import Card from '~/components/Card.astro';
+import Todo from '~/components/Todo.astro';
+import { getPublic, getResearch, formatDate, dateKey } from '~/lib/content';
+import { entryPath, withBase } from '~/lib/paths';
+import { show, isTodo } from '~/lib/todo';
+
+export async function getStaticPaths() {
+  const list = (await getPublic('awards')).sort(
+    (a, b) => dateKey(b.data.date).localeCompare(dateKey(a.data.date)) || a.id.localeCompare(b.id),
+  );
+  return list.map((entry, i) => ({ params: { slug: entry.id }, props: { entry, prev: list[i - 1], next: list[i + 1] } }));
+}
+type A = CollectionEntry<'awards'>;
+interface Props {
+  entry: A;
+  prev?: A | undefined;
+  next?: A | undefined;
+}
+const { entry, prev, next } = Astro.props;
+const d = entry.data;
+const { Content } = await render(entry);
+const pool = [...(await getResearch()), ...(await getPublic('projects'))];
+const rel = pool.filter((p) => d.related.some((r) => r.collection === p.collection && r.id === p.id));
+const date = formatDate(d.date);
+---
+
+<BaseLayout title={d.title} description={isTodo(d.description) ? d.title : d.description}>
+  <article class="container-site py-12 md:py-16">
+    <p class="text-sm font-semibold text-pink-ink">
+      <a href={withBase('/achievements/')}>Achievements</a>
+    </p>
+    <h1 class="mt-3">{d.title}</h1>
+    <dl class="mt-6 grid max-w-3xl gap-4 text-sm sm:grid-cols-3">
+      <div>
+        <dt class="text-muted">Issuer</dt>
+        <dd class="font-semibold">{d.issuer}</dd>
+      </div>
+      <div>
+        <dt class="text-muted">Date</dt>
+        <dd class="font-semibold">{date ?? <Todo text={d.date} />}</dd>
+      </div>
+      {d.rank && (
+        <div>
+          <dt class="text-muted">Rank</dt>
+          <dd class="font-semibold">{d.rank}</dd>
+        </div>
+      )}
+    </dl>
+    <div class="prose-site mt-8">
+      {show(d.description) ? <p>{d.description}</p> : <Todo text={d.description} />}
+      <Content components={{ Todo }} />
+      {d.evidenceUrl && show(d.evidenceUrl) && (
+        <p>
+          <a href={d.evidenceUrl}>Evidence</a>
+        </p>
+      )}
+      {d.evidenceUrl && isTodo(d.evidenceUrl) && <Todo text={d.evidenceUrl} />}
+    </div>
+    {d.photos.length > 0 && (
+      <ul class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {d.photos.map((p) => (
+          <li>
+            <Image src={p.src} alt={p.alt} widths={[400, 800]} sizes="(min-width: 1024px) 380px, 100vw" class="rounded-card" />
+          </li>
+        ))}
+      </ul>
+    )}
+    {rel.length > 0 && (
+      <section class="mt-12" aria-labelledby="related">
+        <h2 id="related">Related</h2>
+        <ul class="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {rel.map((r) => (
+            <li>
+              <Card href={entryPath(r)} title={r.data.title} summary={r.data.summary} status={r.data.status} tags={r.data.tags} />
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+    <PrevNext
+      label="More achievements"
+      prev={prev && { href: entryPath(prev), title: prev.data.title }}
+      next={next && { href: entryPath(next), title: next.data.title }}
+    />
+  </article>
+</BaseLayout>

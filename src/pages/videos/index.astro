@@ -1,9 +1,35 @@
 ---
 import BaseLayout from '~/layouts/BaseLayout.astro';
+import FilterBar from '~/components/FilterBar.astro';
+import VideoCard from '~/components/VideoCard.astro';
+import { getPublic } from '~/lib/content';
+
+const all = (await getPublic('videos')).sort((a, b) => b.data.date.localeCompare(a.data.date));
+const categories = [...new Set(all.map((v) => v.data.category))].sort();
 ---
 
-<BaseLayout title="Videos">
-  <div class="container-site py-16">
+<BaseLayout title="Videos" description="Sports clips, talks and demos by Md Mujahidul Islam.">
+  <div class="container-site py-12 md:py-16">
     <h1>Videos</h1>
+    <p class="mt-4 max-w-prose text-muted">
+      Sports, talks and demos. Videos are hosted on YouTube and load only when you press play.
+    </p>
+    {all.length > 0 ? (
+      <div class="mt-10">
+        <FilterBar
+          scope="videos"
+          fields={[{ key: 'category', label: 'Category', options: categories.map((c) => ({ value: c, label: c })) }]}
+        />
+        <ul class="grid gap-6 md:grid-cols-2 lg:grid-cols-3" data-filter-scope="videos">
+          {all.map((v) => (
+            <li data-filter-item>
+              <VideoCard entry={v} headingLevel={2} />
+            </li>
+          ))}
+        </ul>
+      </div>
+    ) : (
+      <p class="mt-10 text-muted">No videos have been published yet.</p>
+    )}
   </div>
 </BaseLayout>

@@ -1,0 +1,53 @@
+---
+import { render, type CollectionEntry } from 'astro:content';
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import Chip from '~/components/Chip.astro';
+import PrevNext from '~/components/PrevNext.astro';
+import Todo from '~/components/Todo.astro';
+import MathTex from '~/components/Math.astro';
+import Explainer from '~/components/Explainer.astro';
+import { getPublic, formatDate } from '~/lib/content';
+import { entryPath, topicPath, withBase } from '~/lib/paths';
+
+export async function getStaticPaths() {
+  const list = (await getPublic('notes')).sort((a, b) => b.data.date.localeCompare(a.data.date));
+  return list.map((entry, i) => ({ params: { slug: entry.id }, props: { entry, prev: list[i - 1], next: list[i + 1] } }));
+}
+type N = CollectionEntry<'notes'>;
+interface Props {
+  entry: N;
+  prev?: N | undefined;
+  next?: N | undefined;
+}
+const { entry, prev, next } = Astro.props;
+const { Content } = await render(entry);
+---
+
+<BaseLayout title={entry.data.title} description={entry.data.summary} type="article">
+  <article class="container-site py-12 md:py-16">
+    <p class="text-sm font-semibold text-pink-ink">
+      <a href={withBase('/notes/')}>Notes</a>
+    </p>
+    <h1 class="mt-3">{entry.data.title}</h1>
+    <p class="mt-2 text-muted">
+      <time datetime={entry.data.date}>{formatDate(entry.data.date)}</time>
+    </p>
+    <div class="prose-site mt-8">
+      <Content components={{ Todo, Math: MathTex, Explainer }} />
+    </div>
+    <ul class="mt-8 flex flex-wrap gap-2" aria-label="Topics">
+      {entry.data.tags.map((t) => (
+        <li>
+          <Chip href={topicPath(t)} size="md">
+            #{t}
+          </Chip>
+        </li>
+      ))}
+    </ul>
+    <PrevNext
+      label="More notes"
+      prev={prev && { href: entryPath(prev), title: prev.data.title }}
+      next={next && { href: entryPath(next), title: next.data.title }}
+    />
+  </article>
+</BaseLayout>

@@ -1,9 +1,46 @@
 ---
 import BaseLayout from '~/layouts/BaseLayout.astro';
+import Card from '~/components/Card.astro';
+import { getPublic, formatRange, dateKey } from '~/lib/content';
+import { entryPath } from '~/lib/paths';
+import { show } from '~/lib/todo';
+
+const TYPE_LABEL: Record<string, string> = {
+  research: 'Research',
+  ta: 'Teaching',
+  sa: 'Teaching',
+  internship: 'Internships',
+  leadership: 'Leadership',
+  other: 'Other',
+};
+const all = (await getPublic('experience')).sort(
+  (a, b) => dateKey(b.data.start).localeCompare(dateKey(a.data.start)) || a.id.localeCompare(b.id),
+);
+const groups = [...new Set(all.map((e) => TYPE_LABEL[e.data.type]!))];
 ---
 
-<BaseLayout title="Experience">
-  <div class="container-site py-16">
+<BaseLayout title="Experience" description="Research, teaching-assistant and student-assistant roles held by Md Mujahidul Islam.">
+  <div class="container-site py-12 md:py-16">
     <h1>Experience</h1>
+    <p class="mt-4 max-w-prose text-muted">Research and teaching roles at Tokyo International University.</p>
+    {groups.map((g) => (
+      <section class="mt-12" aria-labelledby={`g-${g}`}>
+        <h2 id={`g-${g}`}>{g}</h2>
+        <ul class="mt-6 grid gap-6 md:grid-cols-2">
+          {all
+            .filter((e) => TYPE_LABEL[e.data.type] === g)
+            .map((e) => (
+              <li>
+                <Card
+                  href={entryPath(e)}
+                  title={e.data.course ? `${e.data.role} — ${e.data.course}` : e.data.role}
+                  summary={show(e.data.description) ? e.data.description : undefined}
+                  meta={[e.data.org, formatRange(e.data.start, e.data.end)].filter(Boolean).join(' · ')}
+                />
+              </li>
+            ))}
+        </ul>
+      </section>
+    ))}
   </div>
 </BaseLayout>

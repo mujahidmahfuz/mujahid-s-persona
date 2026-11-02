@@ -91,7 +91,7 @@ const banned = [
   [/example\.com/i, 'example.com'],
   [/John Doe/, 'John Doe'],
   [/console\.log\s*\(/, 'console.log'],
-  [/\bTODO\b(?!\(muja\))/, 'TODO not in TODO(muja): format'],
+  [/\bTODO\b(?!\\?\(muja\\?\)|-MUJA)/, 'TODO not in TODO(muja): format'],
 ];
 for (const f of srcText) {
   const r = rel(f);
@@ -149,7 +149,59 @@ for (const f of contentFiles.filter((x) => /\.(md|mdx)$/.test(x))) {
     }
   }
   for (const ex of data.explainers ?? []) if (ex?.verified === true) verifiedIds.add(ex.id);
+  // SPEC §4 fixed order: research bodies need "The problem" then "Method"; projects need "Why it exists".
+  const body = read(f).slice(m[0].length);
+  if (rel(f).startsWith('src/content/research/')) {
+    const a = body.indexOf('## The problem');
+    const b = body.indexOf('## Method');
+    if (a === -1 || b === -1 || b < a) fail(`${rel(f)} must contain "## The problem" followed by "## Method"`);
+  }
+  if (rel(f).startsWith('src/content/projects/') && data.private !== true && !body.includes('## Why it exists')) {
+    fail(`${rel(f)} must contain "## Why it exists"`);
+  }
 }
+// 11. References resolve (Astro only logs broken references; we fail on them)
+{
+  const ids = {};
+  const fmOf = new Map();
+  for (const f of contentFiles.filter((x) => /\.(md|mdx|ya?ml|json)$/.test(x))) {
+    const [, , col, ...rest] = rel(f).split('/');
+    const id = rest.join('/').replace(/\.(mdx?|ya?ml|json)$/, '');
+    (ids[col] ??= new Set()).add(id);
+    const text = read(f);
+    let data = {};
+    try {
+      if (/\.(ya?ml)$/.test(f)) data = parseYaml(text) ?? {};
+      else if (f.endsWith('.json')) data = JSON.parse(text);
+      else data = parseYaml(FM.exec(text)?.[1] ?? '') ?? {};
+    } catch {
+      /* reported above */
+    }
+    fmOf.set(f, { col, data });
+  }
+  const has = (col, id) => ids[col]?.has(id);
+  const refs = {
+    projects: [['relatedResearch', 'research']],
+    sports: [['videos', 'videos']],
+    talks: [
+      ['video', 'videos'],
+      ['research', 'research'],
+    ],
+    publications: [['research', 'research']],
+  };
+  for (const [f, { col, data }] of fmOf) {
+    for (const [field, target] of refs[col] ?? []) {
+      const v = data[field];
+      for (const id of Array.isArray(v) ? v : v ? [v] : [])
+        if (!has(target, id)) fail(`${rel(f)} ${field} → "${id}" does not exist in ${target}`);
+    }
+    for (const r of col === 'awards' ? (data.related ?? []) : [])
+      if (!has(r.collection, r.id)) fail(`${rel(f)} related → ${r.collection}/${r.id} does not exist`);
+    for (const r of col === 'videos' ? (data.related ?? []) : [])
+      if (!has(r.collection, r.slug)) fail(`${rel(f)} related → ${r.collection}/${r.slug} does not exist`);
+  }
+}
+
 if (existsSync(explainersDir)) {
   for (const name of readdirSync(explainersDir)) {
     const dir = join(explainersDir, name);

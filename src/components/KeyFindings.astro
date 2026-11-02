@@ -1,0 +1,18 @@
+---
+import { visible } from '~/lib/todo';
+interface Props {
+  items: { text: string; source: string }[];
+}
+const items = visible(Astro.props.items);
+---
+
+{items.length > 0 && (
+  <ul class="list-none space-y-4 !pl-0">
+    {items.map((f) => (
+      <li class="border-l-4 border-pink pl-4">
+        <p>{f.text}</p>
+        <p class="mt-1 text-small text-muted">Source: {f.source}</p>
+      </li>
+    ))}
+  </ul>
+)}

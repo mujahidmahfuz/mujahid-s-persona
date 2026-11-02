@@ -1,0 +1,114 @@
+---
+import { render, getEntries, type CollectionEntry } from 'astro:content';
+import { Picture } from 'astro:assets';
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import KeyFindings from '~/components/KeyFindings.astro';
+import VideoFacade from '~/components/VideoFacade.astro';
+import PrevNext from '~/components/PrevNext.astro';
+import Todo from '~/components/Todo.astro';
+import { getPublic, formatRange, dateKey } from '~/lib/content';
+import { entryPath, withBase } from '~/lib/paths';
+import { show, visible, isTodo } from '~/lib/todo';
+
+export async function getStaticPaths() {
+  const list = (await getPublic('sports')).sort((a, b) => dateKey(b.data.start).localeCompare(dateKey(a.data.start)));
+  return list.map((entry, i) => ({ params: { slug: entry.id }, props: { entry, prev: list[i - 1], next: list[i + 1] } }));
+}
+type S = CollectionEntry<'sports'>;
+interface Props {
+  entry: S;
+  prev?: S | undefined;
+  next?: S | undefined;
+}
+const { entry, prev, next } = Astro.props;
+const d = entry.data;
+const { Content } = await render(entry);
+const publicVideoIds = new Set((await getPublic('videos')).map((v) => v.id));
+const videos = (await getEntries(d.videos)).filter((v) => publicVideoIds.has(v.id));
+const highlights = visible(d.highlights);
+const title = `${d.team} — ${d.sport}`;
+---
+
+<BaseLayout title={title} description={`${d.team} (${d.org}), ${formatRange(d.start, d.end) ?? ''}. ${d.leagues.join(', ')}.`}>
+  <article class="container-site py-12 md:py-16">
+    <p class="text-sm font-semibold text-pink-ink">
+      <a href={withBase('/sports/')}>Sports</a>
+    </p>
+    <h1 class="mt-3">{title}</h1>
+    <dl class="mt-6 grid max-w-4xl gap-4 text-sm sm:grid-cols-2 lg:grid-cols-4">
+      <div>
+        <dt class="text-muted">Organisation</dt>
+        <dd class="font-semibold">{d.org}</dd>
+      </div>
+      <div>
+        <dt class="text-muted">Period</dt>
+        <dd class="font-semibold">{formatRange(d.start, d.end)}</dd>
+      </div>
+      {d.leagues.length > 0 && (
+        <div>
+          <dt class="text-muted">Leagues</dt>
+          <dd class="font-semibold">{d.leagues.join(', ')}</dd>
+        </div>
+      )}
+      {d.position && show(d.position) && (
+        <div>
+          <dt class="text-muted">Position</dt>
+          <dd class="font-semibold">{isTodo(d.position) ? <Todo text={d.position} /> : d.position}</dd>
+        </div>
+      )}
+    </dl>
+    <div class="prose-site mt-8">
+      <Content components={{ Todo }} />
+    </div>
+
+    {highlights.length > 0 && (
+      <section class="mt-12" aria-labelledby="highlights">
+        <h2 id="highlights">Highlights</h2>
+        <div class="mt-6 max-w-prose">
+          <KeyFindings items={highlights} />
+        </div>
+      </section>
+    )}
+
+    {d.photos.length > 0 && (
+      <section class="mt-12" aria-labelledby="photos">
+        <h2 id="photos">Photos</h2>
+        <ul class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {d.photos.map((p) => (
+            <li>
+              <Picture
+                src={p.src}
+                alt={p.alt}
+                widths={[400, 800, 1200]}
+                sizes="(min-width: 1024px) 380px, (min-width: 640px) 50vw, 100vw"
+                formats={['avif', 'webp']}
+                class="aspect-[4/3] w-full rounded-card object-cover"
+              />
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    {videos.length > 0 && (
+      <section class="mt-12" aria-labelledby="videos">
+        <h2 id="videos">Videos</h2>
+        <ul class="mt-6 grid gap-6 md:grid-cols-2">
+          {videos.map((v) => (
+            <li>
+              <VideoFacade videoId={v.data.videoId} title={v.data.title} start={v.data.start} />
+              <p class="mt-2 text-sm">
+                <a href={entryPath(v)}>{v.data.title}</a> — {v.data.description}
+              </p>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+    <PrevNext
+      label="More sports"
+      prev={prev && { href: entryPath(prev), title: prev.data.team }}
+      next={next && { href: entryPath(next), title: next.data.team }}
+    />
+  </article>
+</BaseLayout>

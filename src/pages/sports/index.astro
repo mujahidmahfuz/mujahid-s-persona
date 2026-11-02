@@ -1,9 +1,50 @@
 ---
 import BaseLayout from '~/layouts/BaseLayout.astro';
+import Card from '~/components/Card.astro';
+import VideoCard from '~/components/VideoCard.astro';
+import { getPublic, formatRange, dateKey } from '~/lib/content';
+import { entryPath } from '~/lib/paths';
+
+const teams = (await getPublic('sports')).sort((a, b) => dateKey(b.data.start).localeCompare(dateKey(a.data.start)));
+const videos = (await getPublic('videos'))
+  .filter((v) => v.data.category === 'sports')
+  .sort((a, b) => b.data.date.localeCompare(a.data.date));
 ---
 
-<BaseLayout title="Sports">
-  <div class="container-site py-16">
+<BaseLayout title="Sports" description="Soccer with the Tokyo International University team — leagues, highlights and videos.">
+  <div class="container-site py-12 md:py-16">
     <h1>Sports</h1>
+    <p class="mt-4 max-w-prose text-muted">Teams I have played for, the leagues we competed in, and match videos.</p>
+
+    <section class="mt-12" aria-labelledby="teams">
+      <h2 id="teams">Teams</h2>
+      <ul class="mt-6 grid gap-6 md:grid-cols-2">
+        {teams.map((t) => (
+          <li>
+            <Card
+              href={entryPath(t)}
+              title={`${t.data.team} — ${t.data.sport}`}
+              summary={t.data.leagues.length ? `Competed in the ${t.data.leagues.join(' and the ')}.` : undefined}
+              meta={[t.data.org, formatRange(t.data.start, t.data.end)].filter(Boolean).join(' · ')}
+            />
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section class="mt-16" aria-labelledby="sports-videos">
+      <h2 id="sports-videos">Videos</h2>
+      {videos.length > 0 ? (
+        <ul class="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {videos.map((v) => (
+            <li>
+              <VideoCard entry={v} />
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="mt-4 text-muted">No match videos have been published yet.</p>
+      )}
+    </section>
   </div>
 </BaseLayout>

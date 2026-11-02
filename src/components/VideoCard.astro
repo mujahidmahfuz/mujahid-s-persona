@@ -1,0 +1,24 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import Card from './Card.astro';
+import { entryPath } from '~/lib/paths';
+import { formatDate } from '~/lib/content';
+
+interface Props {
+  entry: CollectionEntry<'videos'>;
+  headingLevel?: 2 | 3;
+}
+const { entry, headingLevel = 3 } = Astro.props;
+const d = entry.data;
+---
+
+<Card
+  variant="video"
+  href={entryPath(entry)}
+  title={d.title}
+  summary={d.description}
+  meta={[d.category, formatDate(d.date)].join(' · ')}
+  tags={d.tags}
+  headingLevel={headingLevel}
+  filters={{ category: d.category }}
+/>

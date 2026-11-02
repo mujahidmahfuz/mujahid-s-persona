@@ -1,0 +1,50 @@
+---
+/** Copy-BibTeX button. Fixed width (no layout shift); "Copied" announced via aria-live. */
+interface Props {
+  bibtex: string;
+  id: string;
+}
+const { bibtex, id } = Astro.props;
+---
+
+<div class="mt-4" data-bibtex>
+  <details class="rounded-card border border-blue-200">
+    <summary class="cursor-pointer px-4 py-2 text-sm font-semibold text-blue">Show BibTeX</summary>
+    <pre
+      id={`bibtex-${id}`}
+      class="overflow-x-auto border-t border-blue-200 bg-blue-050 p-4 text-xs leading-relaxed"
+    ><code>{bibtex}</code></pre>
+  </details>
+  <div class="mt-2 flex items-center gap-3">
+    <button
+      type="button"
+      class="invisible inline-flex w-36 justify-center rounded-chip border-2 border-blue bg-white px-4 py-1.5 text-sm font-semibold text-blue hover:bg-blue-050"
+      data-copy-target={`bibtex-${id}`}
+    >
+      Copy BibTeX
+    </button>
+    <span class="text-sm text-muted" role="status" aria-live="polite" data-copy-status></span>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('[data-copy-target]').forEach((btn) => {
+    if (!navigator.clipboard) return;
+    btn.classList.remove('invisible');
+    const status = btn.parentElement?.querySelector<HTMLElement>('[data-copy-status]');
+    btn.addEventListener('click', async () => {
+      const text = document.getElementById(btn.dataset.copyTarget ?? '')?.textContent ?? '';
+      try {
+        await navigator.clipboard.writeText(text);
+        btn.textContent = 'Copied';
+        if (status) status.textContent = 'BibTeX copied to clipboard';
+      } catch {
+        if (status) status.textContent = 'Copy failed — select the text above instead';
+      }
+      setTimeout(() => {
+        btn.textContent = 'Copy BibTeX';
+        if (status) status.textContent = '';
+      }, 2500);
+    });
+  });
+</script>

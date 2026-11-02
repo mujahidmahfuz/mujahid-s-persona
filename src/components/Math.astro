@@ -1,0 +1,14 @@
+---
+/** Build-time KaTeX (SPEC §4: no client JS for equations). */
+import katex from 'katex';
+import 'katex/dist/katex.min.css';
+
+interface Props {
+  tex: string;
+  display?: boolean;
+}
+const { tex, display = false } = Astro.props;
+const html = katex.renderToString(tex, { displayMode: display, throwOnError: true, output: 'htmlAndMathml' });
+---
+
+{display ? <div class="my-4 overflow-x-auto" set:html={html} /> : <span set:html={html} />}

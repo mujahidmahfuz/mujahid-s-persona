@@ -1,0 +1,42 @@
+---
+/** GitHub stats from the build-time cache (SPEC §5). Renders nothing if the repo isn't cached. */
+import { githubRepo, formatDate } from '~/lib/content';
+interface Props {
+  repo: string;
+}
+const { repo } = Astro.props;
+const r = githubRepo(repo);
+---
+
+{r && (
+  <section aria-labelledby="github" class="mt-12 rounded-card border border-blue-200 p-6">
+    <h2 id="github" class="scroll-mt-24 text-h3">
+      On GitHub
+    </h2>
+    <dl class="mt-4 grid grid-cols-2 gap-4 text-sm sm:grid-cols-4">
+      <div>
+        <dt class="text-muted">Repository</dt>
+        <dd>
+          <a href={r.htmlUrl} class="font-semibold break-all">
+            {repo}
+          </a>
+        </dd>
+      </div>
+      <div>
+        <dt class="text-muted">Stars</dt>
+        <dd class="font-semibold">{r.stars}</dd>
+      </div>
+      <div>
+        <dt class="text-muted">Language</dt>
+        <dd class="font-semibold">{r.language ?? '—'}</dd>
+      </div>
+      <div>
+        <dt class="text-muted">Last push</dt>
+        <dd class="font-semibold">
+          <time datetime={r.pushedAt}>{formatDate(r.pushedAt.slice(0, 10))}</time>
+        </dd>
+      </div>
+    </dl>
+    <p class="mt-3 text-xs text-muted">Fetched from the GitHub API at build time.</p>
+  </section>
+)}

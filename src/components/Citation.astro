@@ -1,0 +1,32 @@
+---
+/** APA-like citation: Authors (Year). Title. Venue, Volume(Issue), Pages. https://doi.org/… */
+import type { Citation } from '~/lib/content';
+import { isMe } from '~/lib/content';
+
+interface Props {
+  cite: Citation;
+}
+const { cite } = Astro.props;
+const vol = [cite.volume, cite.issue ? `(${cite.issue})` : ''].join('');
+const tail = [vol, cite.pages].filter(Boolean).join(', ');
+---
+
+<p class="citation text-[0.95rem] leading-relaxed" data-citation>
+  {cite.authors.map((a, i) => (
+    <>
+      {isMe(a) ? <strong>{a}</strong> : a}
+      {i < cite.authors.length - 2 ? ', ' : i === cite.authors.length - 2 ? ', & ' : ''}
+    </>
+  ))}
+  {cite.year && <> ({cite.year}).</>} {cite.title}. {cite.venue && <em>{cite.venue}</em>}
+  {tail && <>, {tail}</>}
+  {cite.venue && '.'}
+  {cite.doi && (
+    <>
+      {' '}
+      <a href={`https://doi.org/${cite.doi}`} class="break-all">
+        https://doi.org/{cite.doi}
+      </a>
+    </>
+  )}
+</p>

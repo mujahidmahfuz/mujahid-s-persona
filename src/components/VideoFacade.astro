@@ -1,0 +1,70 @@
+---
+/**
+ * Click-to-load YouTube facade (CLAUDE.md stack, DEPLOY §5). No request to any YouTube domain
+ * before the click: the thumbnail is a local brand-coloured poster, and the iframe
+ * (youtube-nocookie.com) is created only when the button is pressed.
+ * Without JS, the button is replaced by a plain link to the video.
+ */
+interface Props {
+  videoId: string;
+  title: string;
+  start?: number | undefined;
+}
+const { videoId, title, start } = Astro.props;
+const params = new URLSearchParams({ autoplay: '1', rel: '0', ...(start ? { start: String(start) } : {}) });
+const embed = `https://www.youtube-nocookie.com/embed/${videoId}?${params.toString()}`;
+const watch = `https://www.youtube.com/watch?v=${videoId}${start ? `&t=${start}s` : ''}`;
+---
+
+<div
+  class="video-facade relative aspect-video overflow-hidden rounded-card bg-blue"
+  data-video-facade
+  data-embed={embed}
+  data-title={title}
+  data-surface="blue"
+>
+  <svg viewBox="0 0 160 90" class="absolute inset-0 h-full w-full" aria-hidden="true" preserveAspectRatio="xMidYMid slice">
+    <rect width="160" height="90" fill="#061f5c"></rect>
+    <circle cx="140" cy="16" r="5" fill="#fd91cc"></circle>
+    <path d="M0 70 Q40 55 80 68 T160 62 V90 H0Z" fill="#09318d"></path>
+  </svg>
+  <button
+    type="button"
+    class="absolute inset-0 hidden w-full flex-col items-center justify-center gap-3 text-white [.js_&]:flex"
+    data-video-play
+  >
+    <span class="flex h-16 w-16 items-center justify-center rounded-full bg-white text-blue shadow-lg transition-transform duration-200 group-hover:scale-105">
+      <svg aria-hidden="true" width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M8 5v14l11-7z"></path>
+      </svg>
+    </span>
+    <span class="max-w-[90%] px-4 text-center font-semibold">
+      <span class="sr-only">Play video: </span>
+      {title}
+    </span>
+    <span class="text-xs text-white/85">Loads from youtube-nocookie.com</span>
+  </button>
+  <noscript>
+    <a href={watch} class="absolute inset-0 flex items-center justify-center p-4 text-center font-semibold">
+      Watch “{title}” on YouTube
+    </a>
+  </noscript>
+</div>
+
+<script>
+  document.documentElement.classList.add('js');
+  document.querySelectorAll<HTMLElement>('[data-video-facade]').forEach((box) => {
+    const btn = box.querySelector<HTMLButtonElement>('[data-video-play]');
+    btn?.addEventListener('click', () => {
+      const iframe = document.createElement('iframe');
+      iframe.src = box.dataset.embed ?? '';
+      iframe.title = box.dataset.title ?? 'Video';
+      iframe.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture';
+      iframe.allowFullscreen = true;
+      iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+      iframe.className = 'absolute inset-0 h-full w-full';
+      box.replaceChildren(iframe);
+      iframe.focus();
+    });
+  });
+</script>

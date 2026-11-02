@@ -1,0 +1,186 @@
+---
+/** Project page — section order from SPEC §4. */
+import { render, type CollectionEntry } from 'astro:content';
+import DetailLayout from '~/layouts/DetailLayout.astro';
+import StatusBadge from '~/components/StatusBadge.astro';
+import LinkRow from '~/components/LinkRow.astro';
+import Section from '~/components/Section.astro';
+import KeyFindings from '~/components/KeyFindings.astro';
+import Card from '~/components/Card.astro';
+import Chip from '~/components/Chip.astro';
+import PrevNext from '~/components/PrevNext.astro';
+import Todo from '~/components/Todo.astro';
+import Explainer from '~/components/Explainer.astro';
+import MathTex from '~/components/Math.astro';
+import GithubStats from '~/components/GithubStats.astro';
+import VideoFacade from '~/components/VideoFacade.astro';
+import { getPublic, getResearch, related, formatRange, CATEGORY_LABEL, githubRepo } from '~/lib/content';
+import { entryPath, topicPath, withBase } from '~/lib/paths';
+import { show, visible, isTodo } from '~/lib/todo';
+import { SITE } from '~/lib/site';
+
+export async function getStaticPaths() {
+  const list = (await getPublic('projects')).sort(
+    (a, b) => Number(b.data.featured) - Number(a.data.featured) || a.id.localeCompare(b.id),
+  );
+  return list.map((entry, i) => ({ params: { slug: entry.id }, props: { entry, prev: list[i - 1], next: list[i + 1] } }));
+}
+
+type P = CollectionEntry<'projects'>;
+interface Props {
+  entry: P;
+  prev?: P | undefined;
+  next?: P | undefined;
+}
+const { entry, prev, next } = Astro.props;
+const d = entry.data;
+const { Content, headings } = await render(entry);
+const research = await getResearch();
+const relatedResearch = research.filter((r) => d.relatedResearch.some((ref) => ref.id === r.id));
+const pool = [...research, ...(await getPublic('projects'))];
+const rel = related(entry, pool);
+const highlights = visible(d.highlights);
+const learned = visible(d.learned);
+const videos = (await getPublic('videos')).filter((v) =>
+  v.data.related.some((r) => r.collection === 'projects' && r.slug === entry.id),
+);
+const period = formatRange(d.period.start, d.period.end, 'ongoing');
+
+const toc = [
+  { id: 'tldr', label: 'TL;DR' },
+  ...headings.filter((h) => h.depth === 2).map((h) => ({ id: h.slug, label: h.text })),
+  ...(videos.length ? [{ id: 'demo', label: 'Demo' }] : []),
+  ...(highlights.length || !import.meta.env.PROD ? [{ id: 'highlights', label: 'Highlights' }] : []),
+  ...(learned.length || !import.meta.env.PROD ? [{ id: 'learned', label: 'What I learned' }] : []),
+  ...(show(d.role) ? [{ id: 'role', label: 'Role' }] : []),
+  ...(d.repo && githubRepo(d.repo) ? [{ id: 'github', label: 'GitHub' }] : []),
+  ...(rel.length || relatedResearch.length ? [{ id: 'related', label: 'Related' }] : []),
+];
+const links = [
+  { label: d.external ? 'Open the site' : 'Live', href: d.links.live },
+  { label: 'Repository', href: d.links.repo },
+  { label: 'Demo', href: d.links.demo },
+  { label: 'Store', href: d.links.store },
+  { label: 'Report', href: d.links.report },
+];
+const jsonLd = d.repo
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareSourceCode',
+      name: d.title,
+      description: isTodo(d.summary) ? undefined : d.summary,
+      codeRepository: `https://github.com/${d.repo}`,
+      author: { '@type': 'Person', name: SITE.name },
+    }
+  : undefined;
+---
+
+<DetailLayout
+  title={d.title}
+  description={isTodo(d.summary) ? SITE.description : d.summary}
+  toc={toc}
+  jsonLd={jsonLd}
+  ogImage={withBase(`/og/projects/${entry.id}.png`)}
+>
+  <header slot="header" class="max-w-4xl">
+    <p class="text-sm font-semibold text-pink-ink">
+      <a href={withBase('/projects/')}>Projects</a> · {CATEGORY_LABEL[d.category]}
+    </p>
+    <h1 class="mt-3">{d.title}</h1>
+    <div class="mt-4 flex flex-wrap items-center gap-3">
+      <StatusBadge status={d.status} />
+      {period && <span class="text-muted">{period}</span>}
+    </div>
+    {d.stack.length > 0 && (
+      <ul class="mt-4 flex flex-wrap gap-2" aria-label="Stack">
+        {d.stack.map((s) => (
+          <li>
+            <Chip size="md">{s}</Chip>
+          </li>
+        ))}
+      </ul>
+    )}
+    <div class="mt-4">
+      <LinkRow links={links} label="Project links" />
+    </div>
+  </header>
+
+  <Section id="tldr" title="TL;DR">
+    {show(d.summary) ? <p class="text-lg">{d.summary}</p> : <Todo text={d.summary} />}
+  </Section>
+
+  <div class="prose-site mt-12">
+    <Content components={{ Explainer, Todo, Math: MathTex }} />
+  </div>
+
+  {videos.length > 0 && (
+    <Section id="demo" title="Demo">
+      <div class="grid gap-6">
+        {videos.map((v) => (
+          <VideoFacade videoId={v.data.videoId} title={v.data.title} start={v.data.start} />
+        ))}
+      </div>
+    </Section>
+  )}
+
+  {(highlights.length > 0 || !import.meta.env.PROD) && (
+    <Section id="highlights" title="Highlights">
+      {highlights.length > 0 ? <KeyFindings items={highlights} /> : <Todo inline={false}>highlights, each with a source</Todo>}
+    </Section>
+  )}
+
+  {(learned.length > 0 || !import.meta.env.PROD) && (
+    <Section id="learned" title="What I learned & limitations">
+      {learned.length > 0 ? (
+        <ul>
+          {learned.map((l) => (
+            <li>{l}</li>
+          ))}
+        </ul>
+      ) : (
+        <Todo inline={false}>what you learned, and the project's limitations</Todo>
+      )}
+    </Section>
+  )}
+
+  {show(d.role) && (
+    <Section id="role" title="Role">
+      {isTodo(d.role) ? <Todo text={d.role} /> : <p>{d.role}</p>}
+    </Section>
+  )}
+
+  {d.repo && <GithubStats repo={d.repo} />}
+
+  {d.tags.length > 0 && (
+    <ul class="mt-12 flex flex-wrap gap-2" aria-label="Topics">
+      {d.tags.map((t) => (
+        <li>
+          <Chip href={topicPath(t)} size="md">
+            #{t}
+          </Chip>
+        </li>
+      ))}
+    </ul>
+  )}
+
+  {(rel.length > 0 || relatedResearch.length > 0) && (
+    <section aria-labelledby="related" class="mt-12">
+      <h2 id="related" class="scroll-mt-24">
+        Related
+      </h2>
+      <ul class="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        {[...relatedResearch, ...rel.filter((r) => !relatedResearch.some((x) => x.id === r.id))].slice(0, 3).map((r) => (
+          <li>
+            <Card href={entryPath(r)} title={r.data.title} summary={r.data.summary} status={r.data.status} tags={r.data.tags} />
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+
+  <PrevNext
+    label="More projects"
+    prev={prev && { href: entryPath(prev), title: prev.data.title }}
+    next={next && { href: entryPath(next), title: next.data.title }}
+  />
+</DetailLayout>

@@ -1,0 +1,221 @@
+---
+/** Research page — fixed section order from SPEC §4. */
+import { render } from 'astro:content';
+import DetailLayout from '~/layouts/DetailLayout.astro';
+import StatusBadge from '~/components/StatusBadge.astro';
+import AuthorList from '~/components/AuthorList.astro';
+import LinkRow from '~/components/LinkRow.astro';
+import Section from '~/components/Section.astro';
+import KeyFindings from '~/components/KeyFindings.astro';
+import Citation from '~/components/Citation.astro';
+import BibtexButton from '~/components/BibtexButton.astro';
+import Card from '~/components/Card.astro';
+import PrevNext from '~/components/PrevNext.astro';
+import Chip from '~/components/Chip.astro';
+import Todo from '~/components/Todo.astro';
+import Explainer from '~/components/Explainer.astro';
+import MathTex from '~/components/Math.astro';
+import {
+  getResearch,
+  getPublic,
+  related,
+  bibtex,
+  dateKey,
+  formatDate,
+  AREA_LABEL,
+  KIND_LABEL,
+  type Research,
+} from '~/lib/content';
+import { entryPath, topicPath, withBase } from '~/lib/paths';
+import { show, visible, isTodo } from '~/lib/todo';
+import { SITE } from '~/lib/site';
+
+export async function getStaticPaths() {
+  const list = (await getResearch()).sort(
+    (a, b) => dateKey(b.data.date).localeCompare(dateKey(a.data.date)) || a.id.localeCompare(b.id),
+  );
+  return list.map((entry, i) => ({
+    params: { slug: entry.id },
+    props: { entry, prev: list[i - 1], next: list[i + 1] },
+  }));
+}
+
+interface Props {
+  entry: Research;
+  prev?: Research | undefined;
+  next?: Research | undefined;
+}
+const { entry, prev, next } = Astro.props;
+const d = entry.data;
+const cite = entry.cite;
+const { Content, headings } = await render(entry);
+
+const pool = [...(await getResearch()), ...(await getPublic('projects'))];
+const rel = related(entry, pool);
+const bib = d.doi ? bibtex(d.doi) : undefined;
+const findings = visible(d.keyFindings);
+const limitations = visible(d.limitations);
+const hasCite = !!d.doi || d.status === 'published' || d.status === 'accepted';
+const dateLabel = formatDate(d.date);
+
+const toc = [
+  { id: 'tldr', label: 'TL;DR' },
+  ...headings.filter((h) => h.depth === 2).map((h) => ({ id: h.slug, label: h.text })),
+  ...(cite.abstract ? [{ id: 'abstract', label: 'Abstract' }] : []),
+  ...(findings.length || !import.meta.env.PROD ? [{ id: 'key-findings', label: 'Key findings' }] : []),
+  ...(limitations.length || !import.meta.env.PROD ? [{ id: 'limitations', label: 'Limitations & honest notes' }] : []),
+  ...(show(d.myRole) ? [{ id: 'my-role', label: 'My role' }] : []),
+  ...(hasCite ? [{ id: 'cite', label: 'Cite' }] : []),
+  ...(rel.length ? [{ id: 'related', label: 'Related' }] : []),
+];
+
+const links = [
+  { label: 'Paper', href: d.links.paper },
+  { label: 'PDF', href: d.links.pdf },
+  { label: 'Code', href: d.links.code },
+  { label: 'Data', href: d.links.data },
+  { label: 'Slides', href: d.links.slides },
+  { label: 'Poster', href: d.links.poster },
+  { label: 'arXiv', href: d.links.arxiv },
+  { label: 'BibTeX', href: bib ? '#cite' : undefined },
+];
+
+const jsonLd = d.doi
+  ? {
+      '@context': 'https://schema.org',
+      '@type': 'ScholarlyArticle',
+      headline: cite.title,
+      name: cite.title,
+      author: cite.authors.map((a) => ({ '@type': 'Person', name: a })),
+      datePublished: cite.year ? String(cite.year) : undefined,
+      isPartOf: cite.venue ? { '@type': 'Periodical', name: cite.venue } : undefined,
+      identifier: { '@type': 'PropertyValue', propertyID: 'DOI', value: d.doi },
+      sameAs: `https://doi.org/${d.doi}`,
+      url: new URL(entryPath(entry), Astro.site).href,
+      abstract: cite.abstract,
+    }
+  : undefined;
+const description = isTodo(d.summary) ? SITE.description : d.summary;
+---
+
+<DetailLayout
+  title={cite.title}
+  description={description}
+  toc={toc}
+  type="article"
+  jsonLd={jsonLd}
+  ogImage={withBase(`/og/research/${entry.id}.png`)}
+>
+  <header slot="header" class="max-w-4xl">
+    <p class="text-sm font-semibold text-pink-ink">
+      <a href={withBase('/research/')}>Research</a> · {KIND_LABEL[d.kind]}
+    </p>
+    <h1 class="mt-3">{cite.title}</h1>
+    <div class="mt-4 flex flex-wrap items-center gap-3">
+      <StatusBadge status={d.status} />
+      {(cite.venue || cite.year) && <span class="text-muted">{[cite.venue, cite.year].filter(Boolean).join(' · ')}</span>}
+      {!cite.year && dateLabel && <span class="text-muted">{dateLabel}</span>}
+    </div>
+    <div class="mt-3">
+      <AuthorList authors={cite.authors} />
+    </div>
+    {d.advisor && <p class="mt-1 text-sm text-muted">Advisor: {d.advisor}</p>}
+    <div class="mt-4">
+      <LinkRow links={links} label="Paper links" />
+    </div>
+    <ul class="mt-4 flex flex-wrap gap-2" aria-label="Areas">
+      {d.areas.map((a) => (
+        <li>
+          <Chip href={withBase(`/research/?area=${a}`)}>{AREA_LABEL[a]}</Chip>
+        </li>
+      ))}
+    </ul>
+  </header>
+
+  <Section id="tldr" title="TL;DR">
+    {show(d.summary) ? <p class="text-lg">{d.summary}</p> : <Todo text={d.summary} />}
+  </Section>
+
+  <div class="prose-site mt-12 [&>h2]:scroll-mt-24">
+    <Content components={{ Explainer, Todo, Math: MathTex }} />
+  </div>
+
+  {cite.abstract && (
+    <Section id="abstract" title="Abstract">
+      <p class="text-sm text-muted">From the publisher, via Crossref.</p>
+      <blockquote>
+        <p>{cite.abstract}</p>
+      </blockquote>
+    </Section>
+  )}
+
+  {(findings.length > 0 || !import.meta.env.PROD) && (
+    <Section id="key-findings" title="Key findings">
+      {findings.length > 0 ? (
+        <KeyFindings items={findings} />
+      ) : (
+        <Todo inline={false}>key findings, each with its source (paper section/table)</Todo>
+      )}
+    </Section>
+  )}
+
+  {(limitations.length > 0 || !import.meta.env.PROD) && (
+    <Section id="limitations" title="Limitations & honest notes">
+      {limitations.length > 0 ? (
+        <ul>
+          {limitations.map((l) => (
+            <li>{l}</li>
+          ))}
+        </ul>
+      ) : (
+        <Todo inline={false}>limitations and honest notes (required section)</Todo>
+      )}
+    </Section>
+  )}
+
+  {show(d.myRole) && (
+    <Section id="my-role" title="My role">
+      {isTodo(d.myRole) ? <Todo text={d.myRole} /> : <p>{d.myRole}</p>}
+    </Section>
+  )}
+
+  {hasCite && (
+    <Section id="cite" title="Cite">
+      <Citation cite={cite} />
+      {bib && <BibtexButton bibtex={bib} id={entry.id} />}
+    </Section>
+  )}
+
+  {d.tags.length > 0 && (
+    <ul class="mt-12 flex flex-wrap gap-2" aria-label="Topics">
+      {d.tags.map((t) => (
+        <li>
+          <Chip href={topicPath(t)} size="md">
+            #{t}
+          </Chip>
+        </li>
+      ))}
+    </ul>
+  )}
+
+  {rel.length > 0 && (
+    <section aria-labelledby="related" class="mt-12">
+      <h2 id="related" class="scroll-mt-24">
+        Related
+      </h2>
+      <ul class="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        {rel.map((r) => (
+          <li>
+            <Card href={entryPath(r)} title={r.data.title} summary={r.data.summary} status={r.data.status} tags={r.data.tags} />
+          </li>
+        ))}
+      </ul>
+    </section>
+  )}
+
+  <PrevNext
+    label="More research"
+    prev={prev && { href: entryPath(prev), title: prev.data.title }}
+    next={next && { href: entryPath(next), title: next.data.title }}
+  />
+</DetailLayout>

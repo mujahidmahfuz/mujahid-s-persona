@@ -1,9 +1,33 @@
 ---
 import BaseLayout from '~/layouts/BaseLayout.astro';
+import Card from '~/components/Card.astro';
+import { getPublic, formatDate, dateKey } from '~/lib/content';
+import { entryPath } from '~/lib/paths';
+import { show } from '~/lib/todo';
+
+const all = (await getPublic('awards')).sort(
+  (a, b) => dateKey(b.data.date).localeCompare(dateKey(a.data.date)) || a.id.localeCompare(b.id),
+);
 ---
 
-<BaseLayout title="Achievements">
-  <div class="container-site py-16">
+<BaseLayout title="Achievements" description="Competitions, awards and honours of Md Mujahidul Islam.">
+  <div class="container-site py-12 md:py-16">
     <h1>Achievements</h1>
+    <p class="mt-4 max-w-prose text-muted">Competitions, publications and honours.</p>
+    <ul class="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {all.map((a) => (
+        <li>
+          <Card
+            variant="award"
+            href={entryPath(a)}
+            title={a.data.title}
+            summary={show(a.data.description) ? a.data.description : undefined}
+            meta={[a.data.issuer, formatDate(a.data.date)].filter(Boolean).join(' · ')}
+            headingLevel={2}
+            tags={[a.data.category]}
+          />
+        </li>
+      ))}
+    </ul>
   </div>
 </BaseLayout>

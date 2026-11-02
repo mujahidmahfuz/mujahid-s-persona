@@ -1,9 +1,91 @@
 ---
 import BaseLayout from '~/layouts/BaseLayout.astro';
+import Card from '~/components/Card.astro';
+import FilterBar from '~/components/FilterBar.astro';
+import { getResearch, AREA_LABEL, KIND_LABEL, dateKey, yearOf, type Research } from '~/lib/content';
+import { entryPath } from '~/lib/paths';
+
+const all = (await getResearch()).sort(
+  (a, b) => dateKey(b.data.date).localeCompare(dateKey(a.data.date)) || a.id.localeCompare(b.id),
+);
+const work = all.filter((e) => e.data.status !== 'concept');
+const directions = all.filter((e) => e.data.status === 'concept');
+
+const uniq = <T,>(xs: T[]) => [...new Set(xs)];
+const areas = uniq(all.flatMap((e) => e.data.areas)).sort();
+const statuses = uniq(all.map((e) => e.data.status)).sort();
+const years = uniq(all.map((e) => yearOf(e.data.date)).filter((y): y is string => !!y))
+  .sort()
+  .reverse();
+const kinds = uniq(all.map((e) => e.data.kind)).sort();
+
+const meta = (e: Research) => [e.cite.venue, e.cite.year ?? yearOf(e.data.date)].filter(Boolean).join(' · ') || undefined;
 ---
 
-<BaseLayout title="Research">
-  <div class="container-site py-16">
+<BaseLayout
+  title="Research"
+  description="Research by Md Mujahidul Islam: explainable AI, continual learning and quantum computing."
+>
+  <div class="container-site py-12 md:py-16">
     <h1>Research</h1>
+    <p class="mt-4 max-w-prose text-muted">
+      Papers, studies and reports. Each has its own page with a plain-language summary, the method, sourced findings, and honest
+      notes on its limits. The status badge shows exactly where each piece of work stands.
+    </p>
+
+    <div class="mt-10">
+      <FilterBar
+        scope="research"
+        fields={[
+          { key: 'area', label: 'Area', options: areas.map((a) => ({ value: a, label: AREA_LABEL[a] ?? a })) },
+          { key: 'status', label: 'Status', options: statuses.map((s) => ({ value: s, label: s.replace('-', ' ') })) },
+          { key: 'year', label: 'Year', options: years.map((y) => ({ value: y, label: y })) },
+          { key: 'kind', label: 'Kind', options: kinds.map((k) => ({ value: k, label: KIND_LABEL[k] ?? k })) },
+        ]}
+        sort={[
+          { value: 'date', label: 'Newest first' },
+          { value: 'featured', label: 'Featured first' },
+        ]}
+      />
+      <ul class="grid gap-6 md:grid-cols-2 lg:grid-cols-3" data-filter-scope="research">
+        {work.map((e) => (
+          <li data-filter-item>
+            <Card
+              variant="research"
+              href={entryPath(e)}
+              title={e.data.title}
+              summary={e.data.summary}
+              status={e.data.status}
+              tags={e.data.tags}
+              meta={meta(e)}
+              cover={e.data.cover}
+              coverAlt={e.data.coverAlt}
+              headingLevel={2}
+              filters={{
+                area: e.data.areas.join(' '),
+                status: e.data.status,
+                year: yearOf(e.data.date) ?? '',
+                kind: e.data.kind,
+              }}
+              sorts={{ date: dateKey(e.data.date), featured: `${e.data.featured ? 1 : 0}${dateKey(e.data.date)}` }}
+            />
+          </li>
+        ))}
+      </ul>
+    </div>
+
+    {directions.length > 0 && (
+      <section class="mt-16" aria-labelledby="directions">
+        <h2 id="directions">Research directions</h2>
+        <p class="mt-2 max-w-prose text-muted">Ideas at the concept stage. These are plans, not results.</p>
+        <ul class="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {directions.map((e) => (
+            <li>
+              <Card href={entryPath(e)} title={e.data.title} summary={e.data.summary} status={e.data.status} tags={e.data.tags} />
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
   </div>
 </BaseLayout>

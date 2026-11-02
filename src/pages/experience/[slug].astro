@@ -1,0 +1,70 @@
+---
+import { render, type CollectionEntry } from 'astro:content';
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import PrevNext from '~/components/PrevNext.astro';
+import Chip from '~/components/Chip.astro';
+import Todo from '~/components/Todo.astro';
+import { getPublic, formatRange, dateKey } from '~/lib/content';
+import { entryPath, topicPath, withBase } from '~/lib/paths';
+import { show, isTodo } from '~/lib/todo';
+
+export async function getStaticPaths() {
+  const list = (await getPublic('experience')).sort(
+    (a, b) => dateKey(b.data.start).localeCompare(dateKey(a.data.start)) || a.id.localeCompare(b.id),
+  );
+  return list.map((entry, i) => ({ params: { slug: entry.id }, props: { entry, prev: list[i - 1], next: list[i + 1] } }));
+}
+type E = CollectionEntry<'experience'>;
+interface Props {
+  entry: E;
+  prev?: E | undefined;
+  next?: E | undefined;
+}
+const { entry, prev, next } = Astro.props;
+const d = entry.data;
+const { Content } = await render(entry);
+const title = d.course ? `${d.role} — ${d.course}` : d.role;
+const label = (e: E) => (e.data.course ? `${e.data.role} — ${e.data.course}` : e.data.role);
+---
+
+<BaseLayout title={title} description={isTodo(d.description) ? `${d.role}, ${d.org}` : d.description}>
+  <article class="container-site py-12 md:py-16">
+    <p class="text-sm font-semibold text-pink-ink">
+      <a href={withBase('/experience/')}>Experience</a>
+    </p>
+    <h1 class="mt-3">{title}</h1>
+    <p class="mt-3 text-lg text-muted">{d.org}</p>
+    <dl class="mt-6 grid max-w-2xl gap-4 text-sm sm:grid-cols-2">
+      <div>
+        <dt class="text-muted">Period</dt>
+        <dd class="font-semibold">{formatRange(d.start, d.end) ?? <Todo>dates</Todo>}</dd>
+      </div>
+      {d.supervisor && (
+        <div>
+          <dt class="text-muted">Supervisor</dt>
+          <dd class="font-semibold">{d.supervisor}</dd>
+        </div>
+      )}
+    </dl>
+    <div class="prose-site mt-8">
+      {show(d.description) ? <p>{d.description}</p> : <Todo text={d.description} />}
+      <Content components={{ Todo }} />
+    </div>
+    {d.tags.length > 0 && (
+      <ul class="mt-8 flex flex-wrap gap-2" aria-label="Topics">
+        {d.tags.map((t) => (
+          <li>
+            <Chip href={topicPath(t)} size="md">
+              #{t}
+            </Chip>
+          </li>
+        ))}
+      </ul>
+    )}
+    <PrevNext
+      label="More experience"
+      prev={prev && { href: entryPath(prev), title: label(prev) }}
+      next={next && { href: entryPath(next), title: label(next) }}
+    />
+  </article>
+</BaseLayout>

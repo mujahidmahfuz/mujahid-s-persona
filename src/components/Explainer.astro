@@ -1,0 +1,23 @@
+---
+/**
+ * Explainer slot used in MDX: <Explainer id="bwa-barycenter" />.
+ * Phase 2: renders nothing in production; in dev shows that an explainer is planned here.
+ * Phase 4 replaces this with the full poster + island implementation (EXPLAINERS §1).
+ */
+import { IS_PROD } from '~/lib/todo';
+
+interface Props {
+  id: string;
+}
+const { id } = Astro.props;
+---
+
+{!IS_PROD && (
+  <p
+    class="my-6 rounded-card border-2 border-dashed border-blue-200 p-4 text-sm text-muted"
+    data-explainer-slot={id}
+    data-pagefind-ignore
+  >
+    Explainer planned here: <code>{id}</code> (not built yet — see TODO-MUJA.md)
+  </p>
+)}

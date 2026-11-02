@@ -1,9 +1,70 @@
 ---
 import BaseLayout from '~/layouts/BaseLayout.astro';
+import Card from '~/components/Card.astro';
+import FilterBar from '~/components/FilterBar.astro';
+import { getPublic, CATEGORY_LABEL, dateKey, yearOf, formatRange } from '~/lib/content';
+import { entryPath } from '~/lib/paths';
+
+const all = (await getPublic('projects')).sort(
+  (a, b) =>
+    Number(b.data.featured) - Number(a.data.featured) ||
+    dateKey(b.data.period.start).localeCompare(dateKey(a.data.period.start)) ||
+    a.id.localeCompare(b.id),
+);
+const uniq = <T,>(xs: T[]) => [...new Set(xs)];
+const slug = (s: string) =>
+  s
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
+const categories = uniq(all.map((p) => p.data.category)).sort();
+const statuses = uniq(all.map((p) => p.data.status)).sort();
+const stacks = uniq(all.flatMap((p) => p.data.stack)).sort((a, b) => a.localeCompare(b));
+const years = uniq(all.map((p) => yearOf(p.data.period.start)).filter((y): y is string => !!y))
+  .sort()
+  .reverse();
 ---
 
-<BaseLayout title="Projects">
-  <div class="container-site py-16">
+<BaseLayout title="Projects" description="Software, hardware and research-tool projects by Md Mujahidul Islam.">
+  <div class="container-site py-12 md:py-16">
     <h1>Projects</h1>
+    <p class="mt-4 max-w-prose text-muted">
+      Things I have built — apps, solvers, teaching material and hardware experiments — with an honest status for each.
+    </p>
+    <div class="mt-10">
+      <FilterBar
+        scope="projects"
+        fields={[
+          { key: 'category', label: 'Category', options: categories.map((c) => ({ value: c, label: CATEGORY_LABEL[c] ?? c })) },
+          { key: 'status', label: 'Status', options: statuses.map((s) => ({ value: s, label: s.replace('-', ' ') })) },
+          { key: 'stack', label: 'Stack', options: stacks.map((s) => ({ value: slug(s), label: s })) },
+          ...(years.length ? [{ key: 'year', label: 'Year', options: years.map((y) => ({ value: y, label: y })) }] : []),
+        ]}
+      />
+      <ul class="grid gap-6 md:grid-cols-2 lg:grid-cols-3" data-filter-scope="projects">
+        {all.map((p) => (
+          <li data-filter-item>
+            <Card
+              variant="project"
+              href={entryPath(p)}
+              title={p.data.title}
+              summary={p.data.summary}
+              status={p.data.status}
+              tags={p.data.stack.length ? p.data.stack : p.data.tags}
+              meta={formatRange(p.data.period.start, p.data.period.end)}
+              cover={p.data.cover}
+              coverAlt={p.data.coverAlt}
+              headingLevel={2}
+              filters={{
+                category: p.data.category,
+                status: p.data.status,
+                stack: p.data.stack.map(slug).join(' '),
+                year: yearOf(p.data.period.start) ?? '',
+              }}
+            />
+          </li>
+        ))}
+      </ul>
+    </div>
   </div>
 </BaseLayout>

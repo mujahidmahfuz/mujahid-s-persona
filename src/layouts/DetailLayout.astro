@@ -1,0 +1,31 @@
+---
+/** Detail page shell: header slot, sticky TOC (≥1024px), long-form column. */
+import BaseLayout from './BaseLayout.astro';
+import TOC from '~/components/TOC.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+  toc: { id: string; label: string }[];
+  type?: 'website' | 'article' | 'profile';
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  ogImage?: string;
+}
+const { toc, ...rest } = Astro.props;
+---
+
+<BaseLayout {...rest}>
+  <div class="border-b border-blue-200 bg-blue-050">
+    <div class="container-site py-10 md:py-14">
+      <slot name="header" />
+    </div>
+  </div>
+  <div class="container-site grid gap-10 py-10 lg:grid-cols-[minmax(0,1fr)_14rem] lg:gap-16">
+    <div class="order-2 min-w-0 lg:order-1">
+      <slot />
+    </div>
+    <aside class="order-1 lg:order-2">
+      <TOC items={toc} />
+    </aside>
+  </div>
+</BaseLayout>
