@@ -1,0 +1,41 @@
+---
+/** Status badge styles — DESIGN §1 "Status badges". Status is always shown honestly (rule 3). */
+export type Status =
+  'published' | 'accepted' | 'under-review' | 'in-preparation' | 'in-progress' | 'prototype' | 'concept' | 'archived';
+
+interface Props {
+  status: Status;
+}
+const { status } = Astro.props;
+const label: Record<Status, string> = {
+  published: 'Published',
+  accepted: 'Accepted',
+  'under-review': 'Under review',
+  'in-preparation': 'In preparation',
+  'in-progress': 'In progress',
+  prototype: 'Prototype',
+  concept: 'Concept',
+  archived: 'Archived',
+};
+const style: Record<Status, string> = {
+  published: 'bg-blue text-white border-blue',
+  accepted: 'bg-blue text-white border-blue',
+  'under-review': 'bg-white text-blue border-blue',
+  'in-preparation': 'bg-white text-blue border-blue',
+  'in-progress': 'bg-pink-100 text-blue border-pink-100',
+  prototype: 'bg-pink-100 text-blue border-pink-100',
+  concept: 'bg-white text-blue border-blue border-dashed',
+  archived: 'bg-blue-050 text-muted border-blue-200',
+};
+---
+
+<span
+  class:list={[
+    'inline-flex items-center rounded-chip border-2 px-2.5 py-0.5 text-xs font-semibold whitespace-nowrap',
+    style[status],
+  ]}
+  data-status={status}
+>
+  <span class="sr-only">Status: </span>
+  {label[status]}
+</span>

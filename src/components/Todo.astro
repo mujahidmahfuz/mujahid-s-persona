@@ -1,0 +1,26 @@
+---
+/**
+ * Placeholder badge (SPEC §7). Dev: dashed pink border, blue text (pink text on white is
+ * forbidden). Production: renders nothing.
+ * Usage: <Todo>headshot photo</Todo>  or  <Todo text="TODO(muja): headshot photo" />
+ */
+import { IS_PROD, todoText } from '~/lib/todo';
+
+interface Props {
+  text?: string;
+  inline?: boolean;
+}
+const { text, inline = true } = Astro.props;
+const Tag = inline ? 'span' : 'p';
+---
+
+{!IS_PROD && (
+  <Tag
+    class="inline-flex items-center gap-1 rounded-chip border-2 border-dashed border-pink bg-pink-100 px-2 py-0.5 align-middle font-mono text-xs text-blue"
+    data-todo
+    data-pagefind-ignore
+  >
+    <span class="font-semibold">TODO(muja):</span>
+    {text ? todoText(text) : <slot />}
+  </Tag>
+)}

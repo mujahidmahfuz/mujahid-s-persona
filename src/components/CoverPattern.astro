@@ -1,0 +1,31 @@
+---
+/** Deterministic brand-colour pattern used when an entry has no cover image (SPEC §4). Decorative. */
+interface Props {
+  seed: string;
+}
+const { seed } = Astro.props;
+let h = 2166136261;
+for (const ch of seed) h = Math.imul(h ^ ch.charCodeAt(0), 16777619) >>> 0;
+const rand = () => {
+  h = Math.imul(h ^ (h >>> 15), 2246822507) >>> 0;
+  h = Math.imul(h ^ (h >>> 13), 3266489909) >>> 0;
+  return ((h ^= h >>> 16) >>> 0) / 4294967296;
+};
+const nodes = Array.from({ length: 9 }, () => ({ x: 20 + rand() * 360, y: 15 + rand() * 120 }));
+const accent = Math.floor(rand() * nodes.length);
+const edges: [number, number][] = [];
+nodes.forEach((_, i) => {
+  const j = (i + 1 + Math.floor(rand() * 3)) % nodes.length;
+  edges.push([i, j]);
+});
+---
+
+<svg viewBox="0 0 400 150" class="h-full w-full" aria-hidden="true" focusable="false" preserveAspectRatio="xMidYMid slice">
+  <rect width="400" height="150" fill="#09318d"></rect>
+  {edges.map(([a, b]) => (
+    <line x1={nodes[a]!.x} y1={nodes[a]!.y} x2={nodes[b]!.x} y2={nodes[b]!.y} stroke="#c7d3f0" stroke-opacity="0.35" />
+  ))}
+  {nodes.map((n, i) => (
+    <circle cx={n.x} cy={n.y} r={i === accent ? 6 : 3.5} fill={i === accent ? '#fd91cc' : '#ffffff'} />
+  ))}
+</svg>

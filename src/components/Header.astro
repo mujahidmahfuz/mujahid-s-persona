@@ -1,0 +1,69 @@
+---
+import { NAV, SITE } from '~/lib/site';
+import { withBase, stripBase } from '~/lib/paths';
+
+const current = stripBase(Astro.url.pathname);
+const isActive = (href: string) => current === href || current.startsWith(href);
+---
+
+<header class="sticky top-0 z-40 bg-blue text-white" data-surface="blue" data-pagefind-ignore="all">
+  <div class="container-site flex h-16 items-center justify-between gap-4">
+    <a href={withBase('/')} class="font-display text-lg font-bold no-underline">
+      <span class="accent-underline">{SITE.name}</span>
+    </a>
+
+    <nav aria-label="Main" class="hidden lg:block">
+      <ul class="flex items-center gap-1">
+        {NAV.map((item) => (
+          <li>
+            <a
+              href={withBase(item.href)}
+              class:list={[
+                'rounded-chip px-3 py-2 text-[0.95rem] no-underline transition-colors duration-200 hover:bg-blue-900',
+                isActive(item.href) && 'text-pink underline decoration-pink decoration-2 underline-offset-8',
+              ]}
+              aria-current={isActive(item.href) ? 'page' : undefined}
+            >
+              {item.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+
+    <div class="flex items-center gap-2">
+      <a
+        href={withBase('/search/')}
+        data-search-open
+        class="inline-flex items-center gap-2 rounded-chip border border-white/40 px-3 py-1.5 text-sm no-underline hover:border-pink"
+        aria-keyshortcuts="Control+K Meta+K"
+      >
+        <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="7"></circle>
+          <path d="m20 20-3.5-3.5"></path>
+        </svg>
+        <span class="sr-only sm:not-sr-only">Search</span>
+        <kbd aria-hidden="true" class="hidden rounded border border-white/40 px-1 text-xs sm:inline">Ctrl K</kbd>
+      </a>
+
+      <details class="relative lg:hidden" data-mobile-nav>
+        <summary class="cursor-pointer list-none rounded-chip border border-white/40 px-3 py-1.5 text-sm">Menu</summary>
+        <nav aria-label="Main (mobile)" class="absolute right-0 mt-2 w-56 rounded-card bg-blue-900 p-2 shadow-lg">
+          <ul>
+            {NAV.map((item) => (
+              <li>
+                <a
+                  href={withBase(item.href)}
+                  class:list={['block rounded-lg px-3 py-2 no-underline hover:bg-blue', isActive(item.href) && 'text-pink']}
+                  aria-current={isActive(item.href) ? 'page' : undefined}
+                >
+                  {item.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      </details>
+    </div>
+  </div>
+</header>

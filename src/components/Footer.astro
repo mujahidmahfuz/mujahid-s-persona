@@ -1,0 +1,46 @@
+---
+import { PROFILES, SITE } from '~/lib/site';
+import { withBase } from '~/lib/paths';
+
+const built = new Date().toISOString().slice(0, 10);
+---
+
+<footer class="mt-24 bg-blue-900 text-white" data-surface="blue" data-pagefind-ignore="all">
+  <div class="container-site grid gap-8 py-12 md:grid-cols-3">
+    <div>
+      <p class="font-display text-lg font-bold">{SITE.name}</p>
+      <p class="mt-2 text-sm text-white/85">{SITE.affiliation}</p>
+    </div>
+    <nav aria-label="Profiles">
+      <p class="text-sm font-semibold text-pink">Profiles</p>
+      <ul class="mt-2 space-y-1 text-sm">
+        {PROFILES.map((p) => (
+          <li>
+            <a href={p.href} rel="me noopener">
+              {p.label}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+    <div class="text-sm">
+      <p class="font-semibold text-pink">Site</p>
+      <ul class="mt-2 space-y-1">
+        <li>
+          <a href={withBase('/contact/')}>Contact</a>
+        </li>
+        <li>
+          <a href={withBase('/rss.xml')}>RSS (notes)</a>
+        </li>
+        <li>
+          <a href={SITE.sourceRepo} rel="noopener">
+            Source code
+          </a>
+        </li>
+      </ul>
+      <p class="mt-4 text-white/85">
+        Last updated <time datetime={built}>{built}</time>
+      </p>
+    </div>
+  </div>
+</footer>

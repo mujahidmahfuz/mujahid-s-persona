@@ -1,0 +1,205 @@
+---
+/** Design-system reference. Not in nav or sitemap; noindex. */
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import Button from '~/components/Button.astro';
+import Chip from '~/components/Chip.astro';
+import StatusBadge, { type Status } from '~/components/StatusBadge.astro';
+import Card from '~/components/Card.astro';
+import SectionHeading from '~/components/SectionHeading.astro';
+import LinkRow from '~/components/LinkRow.astro';
+import Todo from '~/components/Todo.astro';
+import { PALETTE, contrast } from '~/lib/contrast';
+
+const statuses: Status[] = [
+  'published',
+  'accepted',
+  'under-review',
+  'in-preparation',
+  'in-progress',
+  'prototype',
+  'concept',
+  'archived',
+];
+
+type Key = keyof typeof PALETTE;
+const pairs: { fg: Key; bg: Key; use: string; textAllowed: boolean }[] = [
+  { fg: 'white', bg: 'blue', use: 'Text on deep blue', textAllowed: true },
+  { fg: 'pink', bg: 'blue', use: 'Pink text / focus ring on blue', textAllowed: true },
+  { fg: 'white', bg: 'blue-900', use: 'Footer text', textAllowed: true },
+  { fg: 'pink', bg: 'blue-900', use: 'Pink on footer', textAllowed: true },
+  { fg: 'ink', bg: 'white', use: 'Body text', textAllowed: true },
+  { fg: 'blue', bg: 'white', use: 'Headings, links, focus ring', textAllowed: true },
+  { fg: 'muted', bg: 'white', use: 'Secondary text', textAllowed: true },
+  { fg: 'muted', bg: 'blue-050', use: 'Secondary text on tint', textAllowed: true },
+  { fg: 'pink-ink', bg: 'white', use: 'Pink-family text on white', textAllowed: true },
+  { fg: 'blue', bg: 'pink-100', use: 'Badge text on pink tint', textAllowed: true },
+  { fg: 'blue', bg: 'blue-050', use: 'Chip text', textAllowed: true },
+  { fg: 'pink', bg: 'white', use: 'NEVER as text — decoration only', textAllowed: false },
+];
+const rows = pairs.map((p) => {
+  const ratio = contrast(PALETTE[p.fg], PALETTE[p.bg]);
+  return { ...p, ratio, pass: ratio >= 4.5 };
+});
+---
+
+<BaseLayout title="Styleguide" noindex searchable={false}>
+  <div class="container-site space-y-16 py-16">
+    <header>
+      <h1>Styleguide</h1>
+      <p class="mt-3 max-w-prose text-muted">
+        Every component, colour pair and focus state. Not linked in navigation; excluded from the sitemap.
+      </p>
+    </header>
+
+    <section aria-labelledby="sg-colours">
+      <SectionHeading id="sg-colours">Colour pairs (contrast computed at build)</SectionHeading>
+      <div class="overflow-x-auto">
+        <table class="w-full min-w-[36rem] text-left text-sm">
+          <thead>
+            <tr class="border-b border-blue-200">
+              <th scope="col" class="py-2 pr-4">
+                Sample
+              </th>
+              <th scope="col" class="py-2 pr-4">
+                Foreground / background
+              </th>
+              <th scope="col" class="py-2 pr-4">
+                Ratio
+              </th>
+              <th scope="col" class="py-2 pr-4">
+                AA (4.5:1)
+              </th>
+              <th scope="col" class="py-2">
+                Use
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((r) => (
+              <tr class="border-b border-blue-050">
+                <td class="py-2 pr-4">
+                  {r.textAllowed ? (
+                    <span
+                      class="inline-block rounded px-3 py-1 font-semibold"
+                      style={`color:${PALETTE[r.fg]};background:${PALETTE[r.bg]};border:1px solid #c7d3f0`}
+                    >
+                      Aa
+                    </span>
+                  ) : (
+                    <span class="inline-block h-7 w-16 rounded border border-blue-200" style={`background:${PALETTE[r.bg]}`}>
+                      <span class="mx-auto mt-3 block h-1 w-10 rounded" style={`background:${PALETTE[r.fg]}`} />
+                    </span>
+                  )}
+                </td>
+                <td class="py-2 pr-4 font-mono">
+                  {r.fg} {PALETTE[r.fg]} / {r.bg} {PALETTE[r.bg]}
+                </td>
+                <td class="py-2 pr-4 font-mono" data-ratio={r.ratio.toFixed(2)}>
+                  {r.ratio.toFixed(2)}:1
+                </td>
+                <td class="py-2 pr-4 font-semibold">{r.pass ? 'Pass' : 'Fail'}</td>
+                <td class="py-2">{r.use}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section aria-labelledby="sg-type">
+      <SectionHeading id="sg-type">Typography</SectionHeading>
+      <p class="font-display text-h1 font-bold text-blue">Heading 1 · Space Grotesk</p>
+      <p class="font-display text-h2 font-bold text-blue">Heading 2</p>
+      <p class="font-display text-h3 font-bold text-blue">Heading 3</p>
+      <p class="max-w-prose">Body text in Inter at 1.0625 rem with 1.6 line height. Long-form columns stay within 44 rem.</p>
+      <p class="text-small text-muted">Small, muted secondary text.</p>
+      <p class="font-mono text-sm">JetBrains Mono — code and math</p>
+    </section>
+
+    <section aria-labelledby="sg-buttons">
+      <SectionHeading id="sg-buttons">Buttons and focus states</SectionHeading>
+      <p class="mb-4 text-sm text-muted">
+        Tab through these. On white the focus ring is deep blue with a light pink halo; on blue it is pink.
+      </p>
+      <div class="flex flex-wrap gap-3">
+        <Button href="#sg-buttons">Primary</Button>
+        <Button href="#sg-buttons" variant="secondary">
+          Secondary
+        </Button>
+      </div>
+      <div class="mt-6 flex flex-wrap gap-3 rounded-card bg-blue p-6" data-surface="blue">
+        <Button href="#sg-buttons" variant="on-blue">
+          On blue
+        </Button>
+        <a href="#sg-buttons" class="self-center">
+          Link on blue
+        </a>
+      </div>
+    </section>
+
+    <section aria-labelledby="sg-badges">
+      <SectionHeading id="sg-badges">Status badges and chips</SectionHeading>
+      <div class="flex flex-wrap gap-2">
+        {statuses.map((s) => (
+          <StatusBadge status={s} />
+        ))}
+      </div>
+      <div class="mt-4 flex flex-wrap gap-2">
+        <Chip>explainable-ai</Chip>
+        <Chip size="md">Flutter</Chip>
+        <Chip href="#sg-badges">linked chip</Chip>
+      </div>
+    </section>
+
+    <section aria-labelledby="sg-links">
+      <SectionHeading id="sg-links" eyebrow="Eyebrow">
+        Section heading and link row
+      </SectionHeading>
+      <LinkRow
+        links={[
+          { label: 'Paper', href: '#sg-links' },
+          { label: 'PDF', href: '#sg-links' },
+          { label: 'Code', href: '#sg-links' },
+          { label: 'Hidden (no URL)' },
+        ]}
+      />
+    </section>
+
+    <section aria-labelledby="sg-cards">
+      <SectionHeading id="sg-cards">Cards</SectionHeading>
+      <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <Card
+          href="#sg-cards"
+          variant="research"
+          title="Research card (styleguide sample)"
+          summary="Card summary text, clamped to three lines on index pages."
+          status="in-progress"
+          tags={['sample-tag', 'another-tag']}
+          meta="2026"
+        />
+        <Card
+          href="#sg-cards"
+          variant="project"
+          title="Project card (styleguide sample)"
+          summary="Uses the generated brand pattern when no cover is set."
+          status="prototype"
+          tags={['flutter']}
+        />
+        <Card
+          href="#sg-cards"
+          variant="award"
+          title="Award card (styleguide sample)"
+          summary="No cover for awards."
+          meta="2026"
+        />
+      </div>
+    </section>
+
+    <section aria-labelledby="sg-todo">
+      <SectionHeading id="sg-todo">Placeholder</SectionHeading>
+      <p>
+        Missing facts render like this in dev and are removed in production: <Todo>sample placeholder</Todo>
+      </p>
+    </section>
+  </div>
+</BaseLayout>

@@ -1,0 +1,22 @@
+---
+interface Props {
+  href?: string;
+  size?: 'sm' | 'md';
+}
+const { href, size = 'sm' } = Astro.props;
+const cls = [
+  'inline-flex items-center rounded-chip border border-blue-200 bg-blue-050 text-blue no-underline',
+  size === 'sm' ? 'px-2.5 py-0.5 text-xs' : 'px-3 py-1 text-sm',
+  href && 'hover:border-blue transition-colors duration-200',
+];
+---
+
+{href ? (
+  <a href={href} class:list={cls}>
+    <slot />
+  </a>
+) : (
+  <span class:list={cls}>
+    <slot />
+  </span>
+)}

@@ -1,0 +1,49 @@
+---
+import '~/styles/global.css';
+import SEO from '~/components/SEO.astro';
+import Header from '~/components/Header.astro';
+import Footer from '~/components/Footer.astro';
+import { withBase } from '~/lib/paths';
+
+interface Props {
+  title: string;
+  description?: string;
+  ogImage?: string;
+  type?: 'website' | 'article' | 'profile';
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  noindex?: boolean;
+  /** Set false on pages whose body should not be in the search index. */
+  searchable?: boolean;
+}
+
+const { searchable = true, ...seo } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#09318d" />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="icon" href={withBase('/favicon.svg')} type="image/svg+xml" />
+    <link rel="sitemap" href={withBase('/sitemap-index.xml')} />
+    <link rel="alternate" type="application/rss+xml" title="Notes" href={withBase('/rss.xml')} />
+    <SEO {...seo} />
+    <slot name="head" />
+  </head>
+  <body class="flex min-h-screen flex-col bg-white text-ink antialiased">
+    <a
+      href="#main"
+      class="sr-only z-50 rounded-lg border-2 border-blue bg-white px-4 py-2 font-semibold text-blue focus:not-sr-only focus:fixed focus:top-2 focus:left-2"
+    >
+      Skip to content
+    </a>
+    <Header />
+    <main id="main" tabindex="-1" class="flex-1 focus:outline-none" data-pagefind-body={searchable ? '' : undefined}>
+      <slot />
+    </main>
+    <Footer />
+    <slot name="end" />
+  </body>
+</html>

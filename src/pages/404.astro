@@ -1,0 +1,21 @@
+---
+import BaseLayout from '~/layouts/BaseLayout.astro';
+import Button from '~/components/Button.astro';
+import { withBase } from '~/lib/paths';
+---
+
+<BaseLayout title="Page not found" noindex searchable={false}>
+  <div class="container-site py-24">
+    <p class="font-mono text-sm text-pink-ink">404</p>
+    <h1 class="mt-2">This page does not exist</h1>
+    <p class="mt-4 max-w-prose text-muted">
+      The link may be old, or the page may have moved. Try searching, or start from the home page.
+    </p>
+    <div class="mt-8 flex flex-wrap gap-3">
+      <Button href={withBase('/search/')}>Search the site</Button>
+      <Button href={withBase('/')} variant="secondary">
+        Home
+      </Button>
+    </div>
+  </div>
+</BaseLayout>
