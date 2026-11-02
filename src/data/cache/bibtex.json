@@ -1,0 +1,6 @@
+{
+  "entries": {
+    "10.1016/j.knosys.2026.117182": "@article{Islam_2026,\n  title={Bootstrap Wasserstein alignment for stable feature attribution in low-data regimes},\n  volume={353},\n  ISSN={0950-7051},\n  url={http://dx.doi.org/10.1016/j.knosys.2026.117182},\n  DOI={10.1016/j.knosys.2026.117182},\n  journal={Knowledge-Based Systems},\n  publisher={Elsevier BV},\n  author={Islam, Mujahidul and Dubey, Priya},\n  year={2026},\n  month=Nov, pages={117182}\n}",
+    "10.1007/s11128-025-05044-6": "@article{Islam_2026,\n  title={Quantum generative adversarial networks: architectures, use cases, and real-world implementations},\n  volume={25},\n  ISSN={1573-1332},\n  url={http://dx.doi.org/10.1007/s11128-025-05044-6},\n  DOI={10.1007/s11128-025-05044-6},\n  number={1},\n  journal={Quantum Information Processing},\n  publisher={Springer Science and Business Media LLC},\n  author={Islam, Mujahidul and Turkeli, Serkan and Ozaydin, Fatih},\n  year={2026},\n  month=Jan\n}"
+  }
+}

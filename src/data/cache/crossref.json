@@ -1,0 +1,53 @@
+{
+  "works": {
+    "10.1016/j.knosys.2026.117182": {
+      "title": "Bootstrap Wasserstein alignment for stable feature attribution in low-data regimes",
+      "authors": [
+        {
+          "given": "Mujahidul",
+          "family": "Islam",
+          "orcid": "https://orcid.org/0009-0007-8507-3370"
+        },
+        {
+          "given": "Priya",
+          "family": "Dubey",
+          "orcid": "https://orcid.org/0000-0001-7373-0205"
+        }
+      ],
+      "venue": "Knowledge-Based Systems",
+      "year": 2026,
+      "volume": "353",
+      "page": "117182",
+      "articleNumber": "117182",
+      "publisher": "Elsevier BV",
+      "type": "journal-article",
+      "url": "https://doi.org/10.1016/j.knosys.2026.117182"
+    },
+    "10.1007/s11128-025-05044-6": {
+      "title": "Quantum generative adversarial networks: architectures, use cases, and real-world implementations",
+      "authors": [
+        {
+          "given": "Mujahidul",
+          "family": "Islam"
+        },
+        {
+          "given": "Serkan",
+          "family": "Turkeli"
+        },
+        {
+          "given": "Fatih",
+          "family": "Ozaydin"
+        }
+      ],
+      "venue": "Quantum Information Processing",
+      "year": 2026,
+      "volume": "25",
+      "issue": "1",
+      "articleNumber": "11",
+      "publisher": "Springer Science and Business Media LLC",
+      "type": "journal-article",
+      "url": "https://doi.org/10.1007/s11128-025-05044-6"
+    }
+  },
+  "fetchedAt": "2026-11-02T12:44:05.561Z"
+}

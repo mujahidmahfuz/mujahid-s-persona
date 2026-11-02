@@ -1,0 +1,23 @@
+{
+  "works": [
+    {
+      "title": "Bootstrap Wasserstein alignment for stable feature attribution in low-data regimes",
+      "doi": "10.1016/j.knosys.2026.117182",
+      "year": "2026",
+      "type": "journal-article"
+    },
+    {
+      "title": "Bootstrap Wasserstein Alignment for Stable Feature Attribution in Low-Data Regimes",
+      "doi": "10.2139/ssrn.7292748",
+      "year": "2026",
+      "type": "preprint"
+    },
+    {
+      "title": "Quantum generative adversarial networks: architectures, use cases, and real-world implementations",
+      "doi": "10.1007/s11128-025-05044-6",
+      "year": "2026",
+      "type": "journal-article"
+    }
+  ],
+  "fetchedAt": "2026-11-02T12:44:06.051Z"
+}
