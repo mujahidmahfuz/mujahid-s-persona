@@ -182,3 +182,19 @@
 [data-island-ready] [data-poster] {
   visibility: hidden;
 }
+
+@media print {
+  @page {
+    size: letter;
+    margin: 14mm 16mm;
+  }
+  html {
+    font-size: 11pt;
+  }
+  body {
+    background: #fff;
+  }
+  [data-todo] {
+    display: none !important;
+  }
+}

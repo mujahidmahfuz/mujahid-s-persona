@@ -1,9 +1,54 @@
 ---
+import { render } from 'astro:content';
 import BaseLayout from '~/layouts/BaseLayout.astro';
+import Todo from '~/components/Todo.astro';
+import { getPublic, formatRange, dateKey } from '~/lib/content';
+import { visible } from '~/lib/todo';
+
+const list = (await getPublic('education')).sort((a, b) => dateKey(b.data.start).localeCompare(dateKey(a.data.start)));
+const rendered = await Promise.all(list.map(async (e) => ({ e, Content: (await render(e)).Content })));
 ---
 
-<BaseLayout title="Education">
-  <div class="container-site py-16">
+<BaseLayout title="Education" description="Education of Md Mujahidul Islam — Tokyo International University.">
+  <div class="container-site py-12 md:py-16">
     <h1>Education</h1>
+    <div class="mt-10 space-y-10">
+      {rendered.map(({ e, Content }) => (
+        <article class="max-w-3xl rounded-card border border-blue-200 p-6" aria-labelledby={`edu-${e.id}`}>
+          <h2 id={`edu-${e.id}`} class="text-h3">
+            {e.data.degree}, {e.data.major}
+          </h2>
+          <p class="mt-1 text-lg">{e.data.institution}</p>
+          <p class="text-muted">
+            {e.data.location} · {formatRange(e.data.start, e.data.end ?? e.data.expectedEnd)}
+            {e.data.expectedEnd && !e.data.end && ' (expected graduation)'}
+          </p>
+          {visible(e.data.coursework).length > 0 && (
+            <>
+              <h3 class="mt-6 text-base">Relevant coursework</h3>
+              <ul class="mt-2 list-disc pl-5">
+                {visible(e.data.coursework).map((c) => (
+                  <li>{c}</li>
+                ))}
+              </ul>
+            </>
+          )}
+          {visible(e.data.honours).length > 0 && (
+            <>
+              <h3 class="mt-6 text-base">Academic honours</h3>
+              <ul class="mt-2 list-disc pl-5">
+                {visible(e.data.honours).map((c) => (
+                  <li>{c}</li>
+                ))}
+              </ul>
+            </>
+          )}
+          {e.data.gpa?.public && <p class="mt-4">GPA: {e.data.gpa.value}</p>}
+          <div class="prose-site mt-4">
+            <Content components={{ Todo }} />
+          </div>
+        </article>
+      ))}
+    </div>
   </div>
 </BaseLayout>

@@ -1,9 +1,225 @@
 ---
+/** HTML CV generated from the same collections; print stylesheet; PDF rendered at build (scripts/cv-pdf.mjs). */
+import { render } from 'astro:content';
 import BaseLayout from '~/layouts/BaseLayout.astro';
+import Citation from '~/components/Citation.astro';
+import Todo from '~/components/Todo.astro';
+import { getPublic, getResearch, formatRange, formatDate, dateKey } from '~/lib/content';
+import { entryPath, withBase } from '~/lib/paths';
+import { PROFILES, SITE } from '~/lib/site';
+import { SKILLS } from '~/lib/bio';
+import { show } from '~/lib/todo';
+
+// Summary wording from Muja's CV.
+const SUMMARY =
+  'Undergraduate researcher at Tokyo International University working on reliable machine learning, explainable AI and quantum machine learning. First author of papers in Quantum Information Processing and Knowledge-Based Systems (Q1). Builds research codebases end to end, from method design to multi-seed evaluation, and has taught programming to undergraduates.';
+
+// Current roles first, then by most recent end date.
+const endKey = (e: { data: { end?: string | undefined; start: string } }) =>
+  e.data.end === undefined ? '9999' : dateKey(e.data.end);
+const exp = (await getPublic('experience')).sort(
+  (a, b) => endKey(b).localeCompare(endKey(a)) || dateKey(b.data.start).localeCompare(dateKey(a.data.start)),
+);
+const expRendered = await Promise.all(exp.map(async (e) => ({ e, Content: (await render(e)).Content })));
+const education = await getPublic('education');
+const pubs = (await getResearch()).filter((r) => r.data.doi).sort((a, b) => (b.cite.year ?? 0) - (a.cite.year ?? 0));
+const ongoing = (await getResearch()).filter((r) => !r.data.doi && r.data.status !== 'concept');
+const projects = (await getPublic('projects')).filter((p) => p.data.status !== 'concept');
+const awards = (await getPublic('awards')).sort((a, b) => dateKey(b.data.date).localeCompare(dateKey(a.data.date)));
+const sports = await getPublic('sports');
+const siteUrl = new URL(withBase('/'), SITE.url).href;
 ---
 
-<BaseLayout title="CV">
-  <div class="container-site py-16">
-    <h1>CV</h1>
-  </div>
+<BaseLayout title="CV" description={`Curriculum vitae of ${SITE.name}.`}>
+  <article class="cv container-site max-w-4xl py-12 print:max-w-none print:p-0 md:py-16">
+    <header class="border-b-4 border-blue pb-6">
+      <h1 class="print:text-[26pt]">{SITE.name}</h1>
+      <p class="mt-2 font-semibold text-blue">Undergraduate researcher · Machine learning · Quantum computing</p>
+      <p class="mt-1 text-muted">
+        Tokyo, Japan · <a href={siteUrl}>{siteUrl.replace(/^https:\/\//, '')}</a>
+      </p>
+      <ul class="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm">
+        {PROFILES.map((p) => (
+          <li>
+            <a href={p.href}>{p.label}</a>
+          </li>
+        ))}
+        <li>
+          <a href={withBase('/contact/')}>Email: see contact page</a>
+        </li>
+      </ul>
+      <p class="mt-6 print:hidden">
+        <a
+          href={withBase('/cv.pdf')}
+          class="inline-flex rounded-chip bg-blue px-5 py-2.5 font-semibold text-white no-underline hover:bg-blue-900"
+          download
+        >
+          Download PDF
+        </a>
+      </p>
+    </header>
+
+    <section class="cv-section" aria-labelledby="cv-summary">
+      <h2 id="cv-summary">Summary</h2>
+      <p>{SUMMARY}</p>
+    </section>
+
+    <section class="cv-section" aria-labelledby="cv-experience">
+      <h2 id="cv-experience">Experience</h2>
+      {expRendered.map(({ e, Content }) => (
+        <div class="cv-item">
+          <div class="cv-row">
+            <h3>
+              <a href={entryPath(e)}>{e.data.course ? `${e.data.role} — ${e.data.course}` : e.data.role}</a>
+            </h3>
+            <span>{formatRange(e.data.start, e.data.end)}</span>
+          </div>
+          <p class="cv-org">
+            {e.data.org}
+            {e.data.supervisor && ` (${e.data.supervisor})`}
+          </p>
+          <div class="cv-body">
+            <Content components={{ Todo }} />
+          </div>
+        </div>
+      ))}
+    </section>
+
+    <section class="cv-section" aria-labelledby="cv-education">
+      <h2 id="cv-education">Education</h2>
+      {education.map((e) => (
+        <div class="cv-item">
+          <div class="cv-row">
+            <h3>
+              {e.data.degree}, {e.data.major}
+            </h3>
+            <span>
+              {formatRange(e.data.start, e.data.end ?? e.data.expectedEnd)}
+              {e.data.expectedEnd && !e.data.end && ' (expected)'}
+            </span>
+          </div>
+          <p class="cv-org">
+            {e.data.institution} — {e.data.location}
+          </p>
+        </div>
+      ))}
+    </section>
+
+    <section class="cv-section" aria-labelledby="cv-publications">
+      <h2 id="cv-publications">Publications</h2>
+      <ol class="space-y-3">
+        {pubs.map((p) => (
+          <li>
+            <Citation cite={p.cite} />
+          </li>
+        ))}
+      </ol>
+      {ongoing.length > 0 && (
+        <>
+          <h3 class="mt-4">Ongoing research</h3>
+          <ul class="mt-1 list-disc pl-5">
+            {ongoing.map((r) => (
+              <li>
+                <a href={entryPath(r)}>{r.data.title}</a> ({r.data.status.replace('-', ' ')})
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+    </section>
+
+    <section class="cv-section" aria-labelledby="cv-projects">
+      <h2 id="cv-projects">Selected projects</h2>
+      <ul class="space-y-2">
+        {projects.map((p) => (
+          <li>
+            <a href={entryPath(p)} class="font-semibold">
+              {p.data.title}
+            </a>{' '}
+            ({p.data.status.replace('-', ' ')}){show(p.data.summary) && <> — {p.data.summary}</>}
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section class="cv-section" aria-labelledby="cv-honours">
+      <h2 id="cv-honours">Honours &amp; activities</h2>
+      <ul class="list-disc space-y-1 pl-5">
+        {awards.map((a) => (
+          <li>
+            <a href={entryPath(a)}>{a.data.title}</a>
+            {formatDate(a.data.date) && `, ${formatDate(a.data.date)}`}
+          </li>
+        ))}
+        {sports.map((s) => (
+          <li>
+            <a href={entryPath(s)}>{s.data.team}</a> ({formatRange(s.data.start, s.data.end)}) — competed in the{' '}
+            {s.data.leagues.join(' and the ')}
+          </li>
+        ))}
+      </ul>
+    </section>
+
+    <section class="cv-section" aria-labelledby="cv-skills">
+      <h2 id="cv-skills">Technical skills</h2>
+      <dl class="space-y-1">
+        {SKILLS.map((s) => (
+          <div>
+            <dt class="inline font-semibold">{s.label}:</dt> <dd class="inline">{s.items.join(', ')}</dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+  </article>
 </BaseLayout>
+
+<style>
+  .cv-section {
+    margin-top: 2rem;
+  }
+  .cv-section > h2 {
+    font-size: 1.35rem;
+    border-bottom: 1px solid var(--color-blue-200);
+    padding-bottom: 0.25rem;
+    margin-bottom: 0.75rem;
+  }
+  .cv-item + .cv-item {
+    margin-top: 1rem;
+  }
+  .cv-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0 1rem;
+  }
+  .cv-row h3 {
+    font-size: 1.05rem;
+  }
+  .cv-row span,
+  .cv-org {
+    color: var(--color-muted);
+    font-size: 0.95rem;
+  }
+  .cv-body :global(ul) {
+    list-style: disc;
+    padding-left: 1.25rem;
+    margin-top: 0.25rem;
+  }
+  @media print {
+    .cv {
+      font-size: 10pt;
+      line-height: 1.4;
+    }
+    .cv a {
+      color: inherit;
+      text-decoration: none;
+    }
+    .cv-section {
+      margin-top: 1rem;
+      break-inside: auto;
+    }
+    .cv-item {
+      break-inside: avoid;
+    }
+  }
+</style>

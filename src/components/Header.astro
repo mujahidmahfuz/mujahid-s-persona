@@ -6,7 +6,7 @@ const current = stripBase(Astro.url.pathname);
 const isActive = (href: string) => current === href || current.startsWith(href);
 ---
 
-<header class="sticky top-0 z-40 bg-blue text-white" data-surface="blue" data-pagefind-ignore="all">
+<header class="sticky top-0 z-40 bg-blue text-white print:hidden" data-surface="blue" data-pagefind-ignore="all">
   <div class="container-site flex h-16 items-center justify-between gap-4">
     <a href={withBase('/')} class="font-display text-lg font-bold no-underline">
       <span class="accent-underline">{SITE.name}</span>

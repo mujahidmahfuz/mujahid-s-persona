@@ -1,14 +1,151 @@
 ---
 import BaseLayout from '~/layouts/BaseLayout.astro';
-import { SITE } from '~/lib/site';
+import Button from '~/components/Button.astro';
+import Card from '~/components/Card.astro';
+import SectionHeading from '~/components/SectionHeading.astro';
+import { getResearch, getPublic, dateKey, formatDate, formatRange, yearOf } from '~/lib/content';
+import { entryPath, withBase } from '~/lib/paths';
+import { SHORT_BIO } from '~/lib/bio';
+import { PROFILES, SITE } from '~/lib/site';
+import { show } from '~/lib/todo';
+
+const research = (await getResearch()).filter((r) => r.data.status !== 'concept');
+const featuredResearch = [...research]
+  .sort((a, b) => Number(b.data.featured) - Number(a.data.featured) || dateKey(b.data.date).localeCompare(dateKey(a.data.date)))
+  .slice(0, 3);
+const projects = await getPublic('projects');
+const featuredProjects = [...projects]
+  .filter((p) => p.data.status !== 'concept')
+  .sort((a, b) => Number(b.data.featured) - Number(a.data.featured) || a.id.localeCompare(b.id))
+  .slice(0, 3);
+const latestAward = (await getPublic('awards')).sort((a, b) => dateKey(b.data.date).localeCompare(dateKey(a.data.date)))[0];
+const sports = (await getPublic('sports'))[0];
+
+const person = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: SITE.name,
+  alternateName: SITE.shortName,
+  url: new URL(withBase('/'), SITE.url).href,
+  jobTitle: 'Undergraduate Researcher',
+  affiliation: { '@type': 'Organization', name: SITE.affiliation },
+  alumniOf: { '@type': 'CollegeOrUniversity', name: SITE.university },
+  knowsAbout: ['Explainable AI', 'Continual learning', 'Quantum computing', 'Quantum machine learning'],
+  sameAs: PROFILES.map((p) => p.href),
+  identifier: { '@type': 'PropertyValue', propertyID: 'ORCID', value: SITE.orcidId },
+};
 ---
 
-<BaseLayout title={SITE.name}>
-  <section class="bg-blue text-white" data-surface="blue">
-    <div class="container-site py-20">
-      <h1>
+<BaseLayout title={SITE.name} description={SHORT_BIO} jsonLd={person} type="profile">
+  <section class="bg-blue text-white" data-surface="blue" aria-labelledby="hero-title">
+    <div class="container-site py-16 md:py-24">
+      <p class="font-semibold text-pink">Undergraduate researcher · Machine learning · Quantum computing</p>
+      <h1 id="hero-title" class="mt-4 max-w-4xl">
         <span class="accent-underline">{SITE.name}</span>
       </h1>
+      <p class="mt-6 max-w-2xl text-lg text-white/90">{SHORT_BIO}</p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <Button href={withBase('/research/')} variant="on-blue">
+          See the research
+        </Button>
+        <a
+          href={withBase('/cv/')}
+          class="inline-flex items-center rounded-chip border-2 border-white px-5 py-2.5 font-semibold no-underline transition-colors duration-200 hover:border-pink"
+        >
+          CV
+        </a>
+        <a
+          href={withBase('/contact/')}
+          class="inline-flex items-center rounded-chip border-2 border-white px-5 py-2.5 font-semibold no-underline transition-colors duration-200 hover:border-pink"
+        >
+          Contact
+        </a>
+      </div>
     </div>
   </section>
+
+  <section class="container-site py-16" aria-labelledby="featured-research">
+    <div class="flex flex-wrap items-end justify-between gap-4">
+      <SectionHeading id="featured-research" eyebrow="Research">
+        Featured research
+      </SectionHeading>
+      <a href={withBase('/research/')} class="mb-6 font-semibold">
+        All research →
+      </a>
+    </div>
+    <ul class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {featuredResearch.map((r) => (
+        <li>
+          <Card
+            variant="research"
+            href={entryPath(r)}
+            title={r.data.title}
+            summary={r.data.summary}
+            status={r.data.status}
+            tags={r.data.tags}
+            meta={[r.cite.venue, r.cite.year ?? yearOf(r.data.date)].filter(Boolean).join(' · ') || undefined}
+          />
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="bg-blue-050 py-16" aria-labelledby="featured-projects">
+    <div class="container-site">
+      <div class="flex flex-wrap items-end justify-between gap-4">
+        <SectionHeading id="featured-projects" eyebrow="Projects">
+          Things I have built
+        </SectionHeading>
+        <a href={withBase('/projects/')} class="mb-6 font-semibold">
+          All projects →
+        </a>
+      </div>
+      <ul class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {featuredProjects.map((p) => (
+          <li>
+            <Card
+              variant="project"
+              href={entryPath(p)}
+              title={p.data.title}
+              summary={p.data.summary}
+              status={p.data.status}
+              tags={p.data.stack}
+              meta={formatRange(p.data.period.start, p.data.period.end, 'ongoing')}
+            />
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <div class="container-site grid gap-8 py-16 md:grid-cols-2">
+    {latestAward && (
+      <section aria-labelledby="latest-achievement" class="rounded-card border border-blue-200 p-6">
+        <p class="text-sm font-semibold tracking-wide text-pink-ink uppercase">Latest achievement</p>
+        <h2 id="latest-achievement" class="mt-2 text-h3">
+          <a href={entryPath(latestAward)}>{latestAward.data.title}</a>
+        </h2>
+        <p class="mt-2 text-muted">{[latestAward.data.issuer, formatDate(latestAward.data.date)].filter(Boolean).join(' · ')}</p>
+        {show(latestAward.data.description) && <p class="mt-3">{latestAward.data.description}</p>}
+        <a href={withBase('/achievements/')} class="mt-4 inline-block font-semibold">
+          All achievements →
+        </a>
+      </section>
+    )}
+    {sports && (
+      <section aria-labelledby="sports-strip" class="rounded-card bg-blue p-6 text-white" data-surface="blue">
+        <p class="text-sm font-semibold tracking-wide text-pink uppercase">Off the desk</p>
+        <h2 id="sports-strip" class="mt-2 text-h3">
+          <a href={entryPath(sports)}>{sports.data.team}</a>
+        </h2>
+        <p class="mt-2 text-white/90">
+          {sports.data.sport}, {formatRange(sports.data.start, sports.data.end)}. Competed in the{' '}
+          {sports.data.leagues.join(' and the ')}.
+        </p>
+        <a href={withBase('/sports/')} class="mt-4 inline-block font-semibold">
+          Sports →
+        </a>
+      </section>
+    )}
+  </div>
 </BaseLayout>

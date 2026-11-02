@@ -5,7 +5,7 @@ import { withBase } from '~/lib/paths';
 const built = new Date().toISOString().slice(0, 10);
 ---
 
-<footer class="mt-24 bg-blue-900 text-white" data-surface="blue" data-pagefind-ignore="all">
+<footer class="mt-24 bg-blue-900 text-white print:hidden" data-surface="blue" data-pagefind-ignore="all">
   <div class="container-site grid gap-8 py-12 md:grid-cols-3">
     <div>
       <p class="font-display text-lg font-bold">{SITE.name}</p>

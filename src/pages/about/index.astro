@@ -1,9 +1,54 @@
 ---
 import BaseLayout from '~/layouts/BaseLayout.astro';
+import Timeline from '~/components/Timeline.astro';
+import SectionHeading from '~/components/SectionHeading.astro';
+import Todo from '~/components/Todo.astro';
+import Button from '~/components/Button.astro';
+import { SHORT_BIO, LONG_BIO, INTERESTS } from '~/lib/bio';
+import { timelineItems } from '~/lib/timeline';
+import { show, isTodo } from '~/lib/todo';
+import { withBase } from '~/lib/paths';
+import { SITE } from '~/lib/site';
+
+const items = await timelineItems();
 ---
 
-<BaseLayout title="About">
-  <div class="container-site py-16">
-    <h1>About</h1>
+<BaseLayout title="About" description={SHORT_BIO} type="profile">
+  <div class="container-site py-12 md:py-16">
+    <div class="grid gap-12 lg:grid-cols-[minmax(0,1fr)_20rem]">
+      <div>
+        <h1>About</h1>
+        <p class="mt-6 max-w-prose text-lg">{SHORT_BIO}</p>
+        {show(LONG_BIO) && (
+          <div class="prose-site mt-6">{isTodo(LONG_BIO) ? <Todo text={LONG_BIO} inline={false} /> : <p>{LONG_BIO}</p>}</div>
+        )}
+        <div class="mt-8 flex flex-wrap gap-3">
+          <Button href={withBase('/cv/')}>Read the CV</Button>
+          <Button href={withBase('/contact/')} variant="secondary">
+            Contact
+          </Button>
+        </div>
+      </div>
+      <aside class="rounded-card bg-blue p-6 text-white" data-surface="blue" aria-labelledby="interests">
+        <h2 id="interests" class="text-h3">
+          Research interests
+        </h2>
+        <ul class="mt-4 space-y-2">
+          {INTERESTS.map((i) => (
+            <li class="flex gap-2">
+              <span aria-hidden="true" class="mt-2 h-2 w-2 shrink-0 rounded-full bg-pink" />
+              {i}
+            </li>
+          ))}
+        </ul>
+        <p class="mt-6 text-sm text-white/85">Advisor: {SITE.advisor}</p>
+        <p class="text-sm text-white/85">{SITE.affiliation}</p>
+      </aside>
+    </div>
+
+    <section class="mt-16 max-w-3xl" aria-labelledby="timeline">
+      <SectionHeading id="timeline">Timeline</SectionHeading>
+      <Timeline items={items} />
+    </section>
   </div>
 </BaseLayout>

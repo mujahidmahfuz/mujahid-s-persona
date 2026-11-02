@@ -10,6 +10,7 @@ import LinkRow from '~/components/LinkRow.astro';
 import Todo from '~/components/Todo.astro';
 import { PALETTE, contrast } from '~/lib/contrast';
 import Explainer from '~/components/Explainer.astro';
+import VideoFacade from '~/components/VideoFacade.astro';
 
 const statuses: Status[] = [
   'published',
@@ -215,6 +216,16 @@ const rows = pairs.map((p) => {
           id="demo-lattice-3d"
           demo={{ title: 'Cubic lattice (toy)', caption: 'A rotating 3D grid with the centre site highlighted.', verified: true }}
         />
+      </div>
+    </section>
+
+    <section aria-labelledby="sg-video">
+      <SectionHeading id="sg-video">Video facade</SectionHeading>
+      <p class="max-w-prose text-muted">
+        Nothing is requested from YouTube until the button is pressed. This sample uses a dummy ID, not a real video.
+      </p>
+      <div class="mt-4 max-w-xl">
+        <VideoFacade videoId="XXXXXXXXXXX" title="Sample facade (no real video)" />
       </div>
     </section>
 

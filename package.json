@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "node scripts/todos.ts --list && astro build && pagefind --site dist",
+    "build": "node scripts/todos.ts --list && astro build && node scripts/cv-pdf.mjs && pagefind --site dist",
     "preview": "astro preview",
     "astro": "astro",
     "lint": "eslint . && prettier --check .",

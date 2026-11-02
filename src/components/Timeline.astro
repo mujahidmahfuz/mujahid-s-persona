@@ -1,0 +1,24 @@
+---
+/** Vertical timeline generated from education + experience + awards (SPEC §2 /about). */
+import type { TimelineItem } from '~/lib/timeline';
+interface Props {
+  items: TimelineItem[];
+}
+const items = [...Astro.props.items].sort((a, b) => b.sortKey.localeCompare(a.sortKey));
+---
+
+<ol class="relative ml-2 border-l-2 border-blue-200">
+  {items.map((i) => (
+    <li class="relative mb-8 pl-6 last:mb-0">
+      <span
+        aria-hidden="true"
+        class="absolute top-1.5 -left-[9px] h-4 w-4 rounded-full border-2 border-white bg-blue ring-2 ring-pink"
+      />
+      <p class="text-sm text-muted">
+        <span class="font-semibold text-blue">{i.kind}</span> · {i.date}
+      </p>
+      <p class="font-semibold">{i.href ? <a href={i.href}>{i.title}</a> : i.title}</p>
+      {i.org && <p class="text-sm text-muted">{i.org}</p>}
+    </li>
+  ))}
+</ol>
