@@ -19,6 +19,8 @@ export default defineConfig({
   trailingSlash: 'always',
   // Advanced routing is not used: this is a static site.
   fetchFile: null,
+  // Keeps the dev toolbar out of explainer posters (scripts/posters.ts screenshots astro dev).
+  devToolbar: { enabled: false },
   integrations: [
     mdx(),
     react(),
@@ -28,5 +30,10 @@ export default defineConfig({
   ],
   vite: {
     plugins: [tailwindcss()],
+    build: {
+      // three.js lives in one lazy chunk loaded only when a 3D explainer scrolls into view
+      // (SPEC §8 budget is measured before scrolling). Raise the advisory limit accordingly.
+      chunkSizeWarningLimit: 1200,
+    },
   },
 });

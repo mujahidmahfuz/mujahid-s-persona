@@ -9,6 +9,7 @@ import SectionHeading from '~/components/SectionHeading.astro';
 import LinkRow from '~/components/LinkRow.astro';
 import Todo from '~/components/Todo.astro';
 import { PALETTE, contrast } from '~/lib/contrast';
+import Explainer from '~/components/Explainer.astro';
 
 const statuses: Status[] = [
   'published',
@@ -191,6 +192,28 @@ const rows = pairs.map((p) => {
           title="Award card (styleguide sample)"
           summary="No cover for awards."
           meta="2026"
+        />
+      </div>
+    </section>
+
+    <section aria-labelledby="sg-explainers">
+      <SectionHeading id="sg-explainers">Explainer demos</SectionHeading>
+      <p class="max-w-prose text-muted">
+        Toy demos proving the pipeline: the poster renders first, the island loads when scrolled into view, reduced motion keeps
+        the poster for animated scenes, and every control works from the keyboard.
+      </p>
+      <div class="max-w-3xl">
+        <Explainer
+          id="demo-toy-2d"
+          demo={{
+            title: 'Moving average (toy)',
+            caption: 'Smoothing noisy toy data with a trailing moving average.',
+            verified: true,
+          }}
+        />
+        <Explainer
+          id="demo-lattice-3d"
+          demo={{ title: 'Cubic lattice (toy)', caption: 'A rotating 3D grid with the centre site highlighted.', verified: true }}
         />
       </div>
     </section>

@@ -13,7 +13,12 @@ export default defineConfig({
     baseURL: `http://localhost:${PORT}${BASE}/`,
     trace: 'retain-on-failure',
   },
-  projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
+  projects: [
+    {
+      name: 'chromium',
+      use: { ...devices['Desktop Chrome'], launchOptions: { args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] } },
+    },
+  ],
   webServer: {
     command: `npx astro preview --port ${PORT}`,
     url: `http://localhost:${PORT}${BASE}/`,

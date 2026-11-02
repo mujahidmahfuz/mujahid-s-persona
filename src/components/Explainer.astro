@@ -1,23 +1,106 @@
 ---
 /**
- * Explainer slot used in MDX: <Explainer id="bwa-barycenter" />.
- * Phase 2: renders nothing in production; in dev shows that an explainer is planned here.
- * Phase 4 replaces this with the full poster + island implementation (EXPLAINERS §1).
+ * <Explainer id="…" /> — EXPLAINERS §1. Renders, in order:
+ *  1. frame: title, caption, labels, "How to read this", text description;
+ *  2. poster.png in a fixed aspect-ratio box (no layout shift);
+ *  3. the island (client:visible), which replaces the poster only when allowed.
+ * Production: explainers with verified:false — or with no metadata/poster — render nothing.
  */
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import { getPublic } from '~/lib/content';
 import { IS_PROD } from '~/lib/todo';
+import { metaFor } from '~/explainers/registry';
+import ExplainerIsland from '~/explainers/ExplainerIsland.tsx';
 
 interface Props {
   id: string;
+  /** Only for /styleguide demos, which have no content entry. */
+  demo?: { title: string; caption: string; verified: boolean };
 }
-const { id } = Astro.props;
+const { id, demo } = Astro.props;
+
+let entryMeta = demo;
+if (!entryMeta) {
+  const pool = [...(await getPublic('research')), ...(await getPublic('projects'))];
+  for (const e of pool) {
+    const found = e.data.explainers.find((x) => x.id === id);
+    if (found) entryMeta = found;
+  }
+}
+const meta = metaFor(id);
+const posters = import.meta.glob<{ default: ImageMetadata }>('/src/explainers/*/poster.png', { eager: true });
+const poster = posters[`/src/explainers/${id}/poster.png`]?.default;
+
+const built = !!(meta && entryMeta);
+const render = built && (entryMeta!.verified || !IS_PROD);
+const descId = `explainer-desc-${id}`;
 ---
 
-{!IS_PROD && (
-  <p
-    class="my-6 rounded-card border-2 border-dashed border-blue-200 p-4 text-sm text-muted"
-    data-explainer-slot={id}
-    data-pagefind-ignore
-  >
-    Explainer planned here: <code>{id}</code> (not built yet — see TODO-MUJA.md)
-  </p>
+{render && meta && entryMeta ? (
+  <figure class="not-prose my-10" data-explainer={id} data-dim={meta.dim} aria-labelledby={`explainer-title-${id}`}>
+    <div class="mb-3 flex flex-wrap items-center gap-2">
+      <span class="rounded-chip bg-blue px-2.5 py-0.5 text-xs font-semibold text-white">
+        {meta.dim === '3d' ? '3D' : '2D'} explainer
+      </span>
+      {meta.illustrative && (
+        <span class="rounded-chip border-2 border-blue bg-white px-2.5 py-0.5 text-xs font-semibold text-blue" data-illustrative>
+          Illustrative example — not experimental results
+        </span>
+      )}
+      {!entryMeta.verified && (
+        <span
+          class="rounded-chip border-2 border-dashed border-pink bg-pink-100 px-2.5 py-0.5 text-xs font-semibold text-blue"
+          data-draft
+        >
+          Draft — not verified by Muja (hidden in production)
+        </span>
+      )}
+    </div>
+    <h3 id={`explainer-title-${id}`} class="text-h3">
+      {entryMeta.title}
+    </h3>
+    <p class="mt-1 text-muted">{entryMeta.caption}</p>
+
+    <div
+      class="relative mt-4 aspect-[4/5] overflow-hidden rounded-card border border-blue-200 bg-blue-050 sm:aspect-video"
+      aria-describedby={descId}
+      data-explainer-box
+    >
+      {poster && (
+        <Image
+          src={poster}
+          alt={`Static view: ${entryMeta.title}`}
+          widths={[480, 800, 1200]}
+          sizes="(min-width: 1024px) 760px, 100vw"
+          class="h-full w-full object-contain"
+          data-poster
+          loading="lazy"
+        />
+      )}
+      <ExplainerIsland client:visible id={id} dim={meta.dim} animated={meta.animated} />
+    </div>
+
+    <details class="mt-3 rounded-card border border-blue-200 px-4 py-2">
+      <summary class="cursor-pointer text-sm font-semibold text-blue">How to read this</summary>
+      <p id={descId} class="mt-2 text-sm">
+        {meta.description}
+      </p>
+      <ul class="mt-2 list-disc space-y-1 pl-5 text-sm">
+        {meta.howToRead.map((h) => (
+          <li>{h}</li>
+        ))}
+      </ul>
+    </details>
+  </figure>
+) : (
+  !IS_PROD && (
+    <p
+      class="my-6 rounded-card border-2 border-dashed border-blue-200 p-4 text-sm text-muted"
+      data-explainer-slot={id}
+      data-pagefind-ignore
+    >
+      Explainer planned here: <code>{id}</code> ({built ? 'unverified' : 'not built yet'} — see TODO-MUJA.md)
+    </p>
+  )
 )}

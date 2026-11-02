@@ -1,0 +1,28 @@
+---
+/**
+ * Dev-only page used by scripts/posters.ts to screenshot each explainer at 1200×675.
+ * In production builds getStaticPaths returns nothing, so unverified explainers never ship.
+ */
+import '~/styles/global.css';
+import ExplainerIsland from '~/explainers/ExplainerIsland.tsx';
+import { explainerIds, metaFor } from '~/explainers/registry';
+
+export function getStaticPaths() {
+  if (import.meta.env.PROD) return [];
+  return explainerIds().map((id) => ({ params: { id }, props: { meta: metaFor(id)! } }));
+}
+const { meta } = Astro.props;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="robots" content="noindex" />
+    <title>Poster: {meta.id}</title>
+  </head>
+  <body class="m-0 bg-white">
+    <div data-explainer={meta.id} class="relative" style="width:1200px;height:675px">
+      <ExplainerIsland client:visible id={meta.id} dim={meta.dim} animated={false} />
+    </div>
+  </body>
+</html>

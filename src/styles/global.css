@@ -177,3 +177,8 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* Explainers: hide the poster once the interactive island has drawn (no layout shift). */
+[data-island-ready] [data-poster] {
+  visibility: hidden;
+}
