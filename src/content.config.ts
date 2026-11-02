@@ -97,7 +97,7 @@ const research = defineCollection({
         tags: z.array(kebab).default([]),
         date: dateOrTodo,
         links: z
-          .object({ paper: url, pdf: url, code: url, data: url, slides: url, poster: url, arxiv: url })
+          .object({ paper: url, preprint: url, pdf: url, code: url, data: url, slides: url, poster: url, arxiv: url })
           .partial()
           .strict()
           .default({}),

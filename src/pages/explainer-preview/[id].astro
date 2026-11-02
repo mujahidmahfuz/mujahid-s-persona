@@ -21,7 +21,7 @@ const { meta } = Astro.props;
     <title>Poster: {meta.id}</title>
   </head>
   <body class="m-0 bg-white">
-    <div data-explainer={meta.id} class="relative" style="width:1200px;height:675px">
+    <div data-explainer={meta.id} class="relative" style="width:1200px;height:900px">
       <ExplainerIsland client:visible id={meta.id} dim={meta.dim} animated={false} />
     </div>
   </body>

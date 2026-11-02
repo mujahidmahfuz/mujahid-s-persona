@@ -1,5 +1,6 @@
 ---
 # Title, authors, venue and year are replaced by Crossref data at build (SPEC §5).
+# Method and results text: BWA preprint abstract (SSRN, doi:10.2139/ssrn.7292748).
 title: Bootstrap Wasserstein Alignment for stable feature attribution in low-data regimes
 summary: Bootstrap Wasserstein Alignment (BWA) combines SHAP attributions from bootstrap replicates through an entropic Wasserstein barycenter, aiming for stable feature explanations when training data are scarce.
 status: published
@@ -14,39 +15,69 @@ tags: [shap, optimal-transport, feature-attribution, bootstrap]
 date: 2026
 links:
   paper: https://doi.org/10.1016/j.knosys.2026.117182
+  preprint: https://doi.org/10.2139/ssrn.7292748
   code: 'TODO(muja): repository URL for BWA'
-keyFindings: []
-limitations: []
+keyFindings:
+  - text: BWA-v2 closes BWA-v1's sign-accuracy deficit by 5–15 percentage points across eight experiments.
+    source: BWA preprint abstract (SSRN, doi:10.2139/ssrn.7292748)
+  - text: 'MNIST saliency (N = 100, d = 784): BWA-v2 attribution maps are sparser than every Euclidean baseline — Gini 0.645 vs. 0.613 (Vanilla Mean) and 0.584 (budget-matched SmoothGrad), p_bonf ≪ 0.001.'
+    source: BWA preprint abstract (SSRN, doi:10.2139/ssrn.7292748)
+  - text: 'Golub leukemia gene expression (N = 72): Gini 0.417 at d = 500 and 0.427 at d = 2000, vs. 0.397 and 0.405 for Vanilla Mean, p_bonf ≪ 0.001.'
+    source: BWA preprint abstract (SSRN, doi:10.2139/ssrn.7292748)
+  - text: The bootstrap-level uncertainty σ_UQ (model-retraining variance) is an order of magnitude larger than SmoothGrad's input-noise variance.
+    source: BWA preprint abstract (SSRN, doi:10.2139/ssrn.7292748)
+limitations:
+  - On dense tabular UCI data, BWA-v2 ties Vanilla Mean on every metric. The paper states this scope limitation explicitly; the gains are on sparse-signal domains.
+  - The numbers on this page come from the preprint abstract. Check the published Knowledge-Based Systems version for the final tables.
+explainers:
+  - id: bwa-collapse
+    dim: 2d
+    title: Why averaging explanations fails, and what BWA does instead
+    caption: Six bootstrap replicates disagree about some features’ signs. Watch the average collapse, then see how BWA separates magnitude from sign and abstains where the sign is not consistent.
+    verified: false
+  - id: bwa-sparsity
+    dim: 2d
+    title: BWA-v2 gives sparser attribution maps on sparse-signal data
+    caption: Gini sparsity of the attribution maps on MNIST saliency and gene-expression data, as reported in the paper.
+    verified: false
 featured: true
 ---
 
+Ask a model trained on a small dataset why it made a prediction, then retrain it on a slightly different resample of the same data and ask again. When there are far fewer examples than features, the two explanations can disagree — sometimes on whether a feature pushed the prediction up or down. An explanation that changes every time you look is hard to trust. Bootstrap Wasserstein Alignment (BWA) is a way to turn many unstable explanations into one stable consensus, and to say how sure that consensus is.
+
 ## The problem
 
-Feature-attribution methods such as SHAP explain a model's prediction by assigning each input feature a share of it. On small datasets, these attributions can be unstable: a model trained on a slightly different sample of the data may yield a noticeably different explanation. BWA targets stable feature attribution in this low-data regime.
+Feature-attribution methods assign each input feature a share of a model's prediction. In low-data regimes, where the number of samples _N_ is much smaller than the number of features _d_, these attributions become unreliable: they are inconsistent across bootstrap replicates of the training data.
 
-<Todo inline={false}>one-paragraph plain-language statement of the problem in your words (optional — the paragraph above uses only the title and CV wording)</Todo>
+The obvious fix is to average the replicates. The paper shows why that can fail. When a feature's attribution flips sign from one replicate to the next, positive and negative values cancel, and the averaged explanation shrinks towards zero. The paper's Lemma 1 formalises this worst case — the _norm collapse_ of Euclidean averaging under sign-flip symmetry — and it motivates a geometric approach instead.
 
-<Explainer id="bwa-barycenter" />
+<Explainer id="bwa-collapse" />
 
 ## Method
 
-BWA works in three steps:
+BWA treats each replicate's explanation as a geometric object rather than a list of numbers to average:
 
-1. Draw bootstrap replicates of the training data and fit the model on each.
-2. Compute a SHAP attribution vector for each replicate.
-3. Combine the replicate attributions through an **entropic Wasserstein barycenter**, giving one aligned attribution.
-
-The paper describes two variants:
-
-- **BWA-v1** — a hard binomial sign test with global normalisation.
-- **BWA-v2** — a magnitude-weighted Bayesian soft sign with per-feature median-absolute scaling.
+1. **Project to the simplex.** Each bootstrap replicate's attribution is projected to a probability measure on the feature simplex — a distribution of importance over the features.
+2. **Find the consensus.** The replicates are aggregated with a **Wasserstein-barycenter** consensus: the distribution that is closest, in optimal-transport distance, to all of them.
+3. **Vote on signs, and abstain.** A per-feature sign-abstention mechanism decides each feature's direction, and declines to assign one when the replicates disagree.
 
 For reference, the standard definition of an entropic Wasserstein barycenter of distributions <Math tex="\nu_1,\dots,\nu_K" /> with weights <Math tex="\lambda_k" /> is
 
 <Math display tex="\bar\mu = \arg\min_{\mu} \sum_{k=1}^{K} \lambda_k \, W_\varepsilon(\mu, \nu_k)" />
 
-where <Math tex="W_\varepsilon" /> is the entropy-regularised optimal-transport cost with regularisation strength <Math tex="\varepsilon" />.
+where <Math tex="W_\varepsilon" /> is the entropy-regularised optimal-transport cost.
 
-<Todo inline={false}>how the attribution vectors are turned into distributions, the weights used, and the value of ε (paper section numbers)</Todo>
+The paper presents two versions:
 
-<Explainer id="bwa-transport-plan" />
+- **BWA-v1** — a hard binomial sign test with global normalisation.
+- **BWA-v2** — a magnitude-weighted Bayesian soft sign, and a per-feature median absolute-value scale that preserves natural attribution magnitudes.
+
+BWA also reports how reliable each explanation is: a bootstrap-level uncertainty <Math tex="\sigma_{UQ}" /> (the variance from retraining the model) and a continuous per-feature confidence from the soft sign.
+
+## Experiments and results
+
+The evaluation spans eight experiments: synthetic data (_N_ = 20, _d_ = 100, _B_ = 50 bootstrap replicates, 100 trials), MNIST saliency (_N_ = 100, _d_ = 784, 5 seeds × 50 images), Golub leukemia gene expression (_N_ = 72, _d_ ∈ {500, 2000}) and four UCI tabular datasets (_N_ ∈ {20, 50}).
+
+Across them, BWA-v2 closes a documented sign-accuracy gap of BWA-v1 by 5–15 percentage points. Where the true signal is sparse — images and gene expression — BWA-v2's attribution maps are significantly sparser than every Euclidean baseline. On dense tabular data it ties the simple average, which the paper reports as a limit of its scope.
+
+<Explainer id="bwa-sparsity" />

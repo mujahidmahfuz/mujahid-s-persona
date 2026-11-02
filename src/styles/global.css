@@ -38,7 +38,9 @@
   --container-content: 72rem;
   --container-prose: 44rem;
 
-  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+  /* Strong curves (built-in CSS easings are too weak for UI). */
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 @layer base {
@@ -196,5 +198,51 @@
   }
   [data-todo] {
     display: none !important;
+  }
+}
+
+/* ---------- Explainer motion (EXPLAINERS §1, DESIGN §4) ----------
+   transform/opacity only; strong ease-out; explanatory durations (they are seen rarely).
+   Reduced motion: the global rule above collapses durations, and autoplay is disabled in JS. */
+.ex-move {
+  transition-property: transform, opacity;
+  transition-duration: 650ms;
+  transition-timing-function: var(--ease-out);
+}
+.ex-morph {
+  transition-property: transform, opacity;
+  transition-duration: 700ms;
+  transition-timing-function: var(--ease-in-out);
+}
+.ex-fade {
+  transition-property: opacity;
+  transition-duration: 400ms;
+  transition-timing-function: var(--ease-out);
+}
+/* SVG bars grow from their baseline. */
+.ex-bar {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+.ex-bar-h {
+  transform-box: fill-box;
+  transform-origin: 0% 50%;
+}
+@keyframes ex-flow {
+  to {
+    stroke-dashoffset: -24;
+  }
+}
+/* Continuous "data flowing" dashes; stopped under reduced motion and when paused. */
+.ex-flow {
+  stroke-dasharray: 6 6;
+  animation: ex-flow 900ms linear infinite;
+}
+[data-paused] .ex-flow {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ex-flow {
+    animation: none;
   }
 }

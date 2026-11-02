@@ -1,5 +1,5 @@
 /**
- * Generates src/explainers/<id>/poster.png (1200×675) for every explainer — EXPLAINERS §1.
+ * Generates src/explainers/<id>/poster.png (1200×900, 4:3) for every explainer — EXPLAINERS §1.
  * Starts `astro dev` in the foreground on a spare port, screenshots /explainer-preview/<id>/,
  * waits for the island to report ready, then stops the server.
  * Run: npm run posters [-- <id> ...]
@@ -37,9 +37,10 @@ async function waitForServer() {
 try {
   await waitForServer();
   const browser = await chromium.launch({ args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
-  const page = await browser.newPage({ viewport: { width: 1200, height: 675 }, deviceScaleFactor: 1 });
+  const page = await browser.newPage({ viewport: { width: 1200, height: 900 }, deviceScaleFactor: 1 });
   for (const id of ids) {
-    await page.goto(`${url}${id}/`);
+    // ?poster → explainers render their final step with no autoplay (see shared/useStepper.ts).
+    await page.goto(`${url}${id}/?poster`);
     await page.waitForSelector('[data-island-ready]', { timeout: 30_000 });
     await page.waitForTimeout(800);
     await page.locator(`[data-explainer="${id}"]`).screenshot({ path: join(dir, id, 'poster.png') });

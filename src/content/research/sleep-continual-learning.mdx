@@ -14,26 +14,43 @@ keyFindings:
     source: Muja's experiment summary (CONTENT-INVENTORY §3); CV, Nov 2026
 limitations:
   - The heuristic gate is the primary result. The learned policy (contextual bandit, REINFORCE) is documented as analysis, not as a result.
-  - Final numbers are being confirmed with a 5-seed run.
+  - Final numbers are being confirmed with a 5-seed run. On Split CIFAR-10, adaptive and fixed deep sleep differ by less than one percentage point.
+explainers:
+  - id: sleep-loop
+    dim: 2d
+    title: The wake–sleep loop, and the gate that decides when to sleep
+    caption: Follow one cycle of training, deciding, sleeping and replaying. Switch the gate to compare the fixed schedule, the heuristic gate and the learned policy.
+    verified: false
+  - id: sleep-results
+    dim: 2d
+    title: Fewer sleeps for the same accuracy
+    caption: Sleep events used on Binary-MNIST, and average accuracy on Split CIFAR-10, for each schedule.
+    verified: false
 featured: true
 ---
 
+Teach a neural network a second task and it tends to forget the first. People do not work this way, and one reason may be sleep: while we sleep, the brain replays recent experience and folds it into long-term memory. This project borrows that idea for machine learning, and asks a practical question — not just _whether_ a network should “sleep”, but _when_, so that it forgets less without spending effort on sleeps it does not need.
+
 ## The problem
 
-When a neural network learns tasks one after another, training on a new task tends to overwrite what it learned before. This is called catastrophic forgetting. This project borrows an idea from biology — sleep, during which the brain replays and consolidates memories — and asks when a network should “sleep” so that it forgets less without wasting effort.
-
-<Explainer id="sleep-timeline" />
+When a neural network learns tasks one after another, training on the new task overwrites what it learned before. This is called catastrophic forgetting. Replaying old experience during training reduces it, but replay costs time and computation. A schedule that replays at fixed intervals pays that cost whether or not the network needs it.
 
 ## Method
 
-The work proceeds in three phases:
+Training alternates between a **wake** phase, where the network learns the current task, and **sleep** phases, where earlier experience is replayed and consolidated. What changes from one version to the next is the **gate** — the part that decides when to sleep:
 
 1. **Fixed-interval sleep** — a baseline that sleeps on a fixed schedule.
-2. **Heuristic gate** — sleep is triggered by a rule based on the network's state.
-3. **Learned policy** — a contextual bandit trained with REINFORCE decides when to sleep.
+2. **Heuristic gate** — sleep is triggered by a rule based on the network's state. This is the primary result.
+3. **Learned policy** — a contextual bandit trained with REINFORCE decides when to sleep. It is documented as analysis rather than as a result.
 
 On Split CIFAR-10, sleep comes in graduated tiers — micro, light and deep — rather than a single kind.
 
+<Explainer id="sleep-loop" />
+
 <Todo inline={false}>the gate's trigger rule, what is replayed, and buffer size (from run_experiments.py / paper draft)</Todo>
 
-<Explainer id="sleep-scheduler-map" />
+## Results so far
+
+On Binary-MNIST, the heuristic gate kept accuracy while using far fewer sleeps than the fixed schedule. On Split CIFAR-10 with graduated sleep, any sleep helped a lot compared with no sleep, and the adaptive schedule finished slightly ahead of fixed deep sleep. These are single-run numbers; a 5-seed run is confirming them.
+
+<Explainer id="sleep-results" />
