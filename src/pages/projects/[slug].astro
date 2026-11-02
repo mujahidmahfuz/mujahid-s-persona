@@ -12,6 +12,8 @@ import PrevNext from '~/components/PrevNext.astro';
 import Todo from '~/components/Todo.astro';
 import Explainer from '~/components/Explainer.astro';
 import MathTex from '~/components/Math.astro';
+import Flow from '~/components/Flow.astro';
+import DotRank from '~/components/charts/DotRank.astro';
 import GithubStats from '~/components/GithubStats.astro';
 import VideoFacade from '~/components/VideoFacade.astro';
 import { getPublic, getResearch, related, formatRange, CATEGORY_LABEL, githubRepo } from '~/lib/content';
@@ -110,7 +112,7 @@ const jsonLd = d.repo
   </Section>
 
   <div class="prose-site mt-12">
-    <Content components={{ Explainer, Todo, Math: MathTex }} />
+    <Content components={{ Explainer, Todo, Math: MathTex, Flow, DotRank }} />
   </div>
 
   {videos.length > 0 && (

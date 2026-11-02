@@ -24,7 +24,7 @@ const { tag, items } = Astro.props;
     <p class="mt-3 text-muted">
       {items.length} {items.length === 1 ? 'item' : 'items'}
     </p>
-    <ul class="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3" data-reveal-group>
+    <ul class="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" data-reveal-group>
       {items.map((i) => (
         <li>
           <Card href={i.href} title={i.title} summary={i.summary} meta={i.kind} headingLevel={2} />

@@ -1,8 +1,9 @@
 ---
 import BaseLayout from '~/layouts/BaseLayout.astro';
 import Card from '~/components/Card.astro';
+import JournalBadge from '~/components/JournalBadge.astro';
 import FilterBar from '~/components/FilterBar.astro';
-import { getResearch, AREA_LABEL, KIND_LABEL, dateKey, yearOf, type Research } from '~/lib/content';
+import { getResearch, AREA_LABEL, KIND_LABEL, dateKey, yearOf, type Research, journalBadge } from '~/lib/content';
 import { entryPath, withBase } from '~/lib/paths';
 import BarList from '~/components/charts/BarList.astro';
 import { statusCounts } from '~/lib/charts';
@@ -63,7 +64,7 @@ const meta = (e: Research) => [e.cite.venue, e.cite.year ?? yearOf(e.data.date)]
           { value: 'featured', label: 'Featured first' },
         ]}
       />
-      <ul class="grid gap-6 md:grid-cols-2 lg:grid-cols-3" data-filter-scope="research" data-reveal-group>
+      <ul class="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" data-filter-scope="research" data-reveal-group>
         {work.map((e) => (
           <li data-filter-item>
             <Card
@@ -84,7 +85,9 @@ const meta = (e: Research) => [e.cite.venue, e.cite.year ?? yearOf(e.data.date)]
                 kind: e.data.kind,
               }}
               sorts={{ date: dateKey(e.data.date), featured: `${e.data.featured ? 1 : 0}${dateKey(e.data.date)}` }}
-            />
+            >
+              {journalBadge(e) && <JournalBadge slot="badge" badge={journalBadge(e)!} size={64} reveal={false} />}
+            </Card>
           </li>
         ))}
       </ul>
@@ -94,7 +97,7 @@ const meta = (e: Research) => [e.cite.venue, e.cite.year ?? yearOf(e.data.date)]
       <section class="mt-16" aria-labelledby="directions">
         <h2 id="directions">Research directions</h2>
         <p class="mt-2 max-w-prose text-muted">Ideas at the concept stage. These are plans, not results.</p>
-        <ul class="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3" data-reveal-group>
+        <ul class="mt-6 grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" data-reveal-group>
           {directions.map((e) => (
             <li>
               <Card href={entryPath(e)} title={e.data.title} summary={e.data.summary} status={e.data.status} tags={e.data.tags} />

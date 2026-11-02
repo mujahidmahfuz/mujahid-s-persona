@@ -1,0 +1,74 @@
+---
+# Source: github.com/mujahidmahfuz/PL_2025_ML_Prediction README and GitHub metadata.
+title: Premier League 2025/26 prediction
+summary: A random-forest model trained on six seasons of Premier League results to predict the final 2025/26 table — each club's expected finishing position, from Arsenal (1.43) down to the promoted sides.
+status: prototype
+category: research-tool
+stack: [Python, pandas, scikit-learn, Matplotlib, seaborn]
+role: Creator.
+period:
+  # end = month of the last commit on GitHub
+  start: 2025-10
+  end: 2025-11
+links:
+  repo: https://github.com/mujahidmahfuz/PL_2025_ML_Prediction
+repo: mujahidmahfuz/PL_2025_ML_Prediction
+highlights:
+  - text: Trained on season files from 2018-19 to 2023-24, each with 380 matches; season N features predict season N+1 standings.
+    source: PL_2025_ML_Prediction README, “How the Model Works”
+  - text: RandomForestClassifier with 100 trees, max depth 8, StandardScaler, balanced class weights and seed 42 for reproducible results.
+    source: PL_2025_ML_Prediction README, “Machine Learning”
+  - text: Predicted top three for 2025/26 — Arsenal (expected position 1.43), Manchester City (2.23), Liverpool (4.59).
+    source: PL_2025_ML_Prediction README, “2025/26 Predictions”
+learned:
+  - The 2025/26 prediction uses only 2023/24 season summary statistics (points, wins, draws, losses, goals), so transfers, managers and injuries are not in the model.
+  - Promoted clubs did not play in 2023/24, so they are given the average features of that season's bottom three — they all land near the bottom by construction.
+areas: [machine-learning]
+tags: [sports-analytics, random-forest, football, prediction]
+---
+
+## Why it exists
+
+Football tables look unpredictable, but much of a season's outcome is carried over from the season before. This project asks how far a simple, reproducible model gets from last season's summary statistics alone.
+
+<Flow
+  title="From match files to a predicted table"
+  source="PL_2025_ML_Prediction README"
+  steps={[
+    { label: 'Parse match files', detail: 'Season CSVs 2018-19 … 2023-24, 380 matches each; goals and results from the FT column.' },
+    { label: 'Engineer features', detail: 'Points, wins, draws, losses, goals for/against, goal difference, final position.' },
+    { label: 'Train', detail: 'Random forest (100 trees, depth 8) learns season N → season N+1 position.' },
+    { label: 'Predict 2025/26', detail: '2023/24 features in; promoted clubs get the bottom-three average.' },
+  ]}
+/>
+
+<DotRank
+  title="Predicted 2025/26 table — expected finishing position"
+  source="PL_2025_ML_Prediction README"
+  note="Mean expected position from the model; lower is better. These are predictions, not results."
+  min={1}
+  max={20}
+  lowerIsBetter
+  items={[
+    { label: 'Arsenal', value: 1.43 },
+    { label: 'Man City', value: 2.23 },
+    { label: 'Liverpool', value: 4.59 },
+    { label: 'Tottenham', value: 6.15 },
+    { label: 'Aston Villa', value: 6.37 },
+    { label: 'Chelsea', value: 6.79 },
+    { label: 'Newcastle', value: 7.91 },
+    { label: 'Man United', value: 8.94 },
+    { label: 'Everton', value: 11.32 },
+    { label: 'Brentford', value: 12.05 },
+    { label: 'Brighton', value: 12.34 },
+    { label: 'Crystal Palace', value: 12.58 },
+    { label: 'Wolves', value: 12.69 },
+    { label: "Nott'm Forest", value: 12.71 },
+    { label: 'Bournemouth', value: 12.92 },
+    { label: 'Fulham', value: 13.82 },
+    { label: 'West Ham', value: 14.83 },
+    { label: 'Sheffield United', value: 15.19 },
+    { label: 'Leeds United', value: 15.96 },
+    { label: 'Sunderland', value: 15.96 },
+  ]}
+/>

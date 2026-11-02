@@ -1,29 +1,55 @@
 ---
+# Sources: CONTENT-INVENTORY §3 and the project README
+# (github.com/mujahidmahfuz/Adaptive-Photonic-Quantum-Computer, Nov 2026).
 title: Lossmap — photonic loss-landscape inference
-summary: Simulation-first research on inferring the loss landscape of photonic systems. The first percolation experiment (E001) passed, and the work is written up in a 34-page technical report.
+summary: Can a photonic quantum computer that keeps inferring and forecasting its own photon-loss landscape tolerate more loss than one that assumes loss is uniform? Simulation-first research, now in stage 1 (understand).
 status: in-progress
 kind: technical-report
 myRole: 'TODO(muja): your role'
 areas: [quantum-computing]
-tags: [photonics, percolation, simulation]
-date: 'TODO(muja): last-update date (YYYY-MM)'
+tags: [photonics, percolation, simulation, fault-tolerance]
+date: 2026-07
+links:
+  code: https://github.com/mujahidmahfuz/Adaptive-Photonic-Quantum-Computer
 keyFindings:
-  - text: The E001 percolation experiment passed at 0.70σ.
-    source: Lossmap technical report (34 pages, 13 figures), via CONTENT-INVENTORY §3
+  - text: 'E001 validated the simulation engine on square-lattice bond percolation: estimated threshold p_c = 0.499520 ± 0.000682 against the exact value 0.5 — a 0.70σ difference.'
+    source: Adaptive-Photonic-Quantum-Computer README, “Current Status”; CONTENT-INVENTORY §3
 limitations:
-  - Simulation-first — results so far come from simulation.
+  - Simulation-first and laptop-scale by design; hardware validation is a future extension.
+  - Only stage 1 (understand) is under way. Forecasting and adaptive control are planned, not done.
+explainers:
+  - id: lossmap-percolation-2d
+    dim: 2d
+    title: Percolation on a square lattice — when does a path get through?
+    caption: Each bond of the lattice is open with probability p. Slide p and watch for the moment a connected path first spans the lattice — near p = 0.5, the threshold E001 used to check the engine.
+    verified: false
 ---
+
+Photonic quantum computers lose photons, and loss is their main way of failing. The usual fault-tolerance thresholds assume that loss is the same everywhere on the chip and does not change. Real hardware is not like that. Lossmap asks what a processor gains if it keeps track of where, and when, it is losing photons.
 
 ## The problem
 
-<Todo inline={false}>plain-language statement: what “loss landscape” means for a photonic system and why inferring it matters</Todo>
+Existing thresholds generally assume photon loss is **uniform** and **static**. In practice it is:
+
+- **spatially heterogeneous** — different components lose photons at different rates, and
+- **temporally dynamic** — loss drifts over time.
+
+The research question: can a photonic quantum computer that continuously infers and forecasts its own loss landscape tolerate higher photon loss than one that assumes a uniform loss model?
 
 <Explainer id="lossmap-percolation-2d" />
 
 ## Method
 
-The project is simulation-first. Experiment E001 tests a percolation question on a lattice.
+The project is simulation-first, laptop-scale and validated step by step, in three stages:
 
-<Todo inline={false}>lattice type and parameters used in E001, and what “passed at 0.70σ” is measured against</Todo>
+<Flow
+  title="Research roadmap"
+  source="Adaptive-Photonic-Quantum-Computer README"
+  steps={[
+    { label: 'Understand (current)', detail: 'Build an accurate picture of the loss landscape through simulation and statistical inference.' },
+    { label: 'Predict', detail: 'Forecast future loss distributions with probabilistic and machine-learning models.' },
+    { label: 'Act', detail: 'Adaptive control and routing that compensate for predicted loss.' },
+  ]}
+/>
 
-<Explainer id="lossmap-percolation-3d" />
+In photonic quantum computing, whether a large resource state stays connected as links are lost is a percolation question. Before using the simulation engine on realistic loss maps, experiment **E001** checked it on a case with a known answer — bond percolation on a square lattice, whose threshold is exactly 0.5.

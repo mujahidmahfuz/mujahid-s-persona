@@ -54,7 +54,8 @@ for (const f of srcText) {
   const lines = read(f).split('\n');
   lines.forEach((line, i) => {
     const stripped = line.split(QC_EXTERNAL).join('');
-    if (stripped.includes('/quantum-cookbook')) fail(`${rel(f)}:${i + 1} uses /quantum-cookbook as an internal route`);
+    // Internal route = "/quantum-cookbook" not preceded by a host or owner name (github.com/<owner>/quantum-cookbook is fine).
+    if (/(?<![\w.-])\/quantum-cookbook/.test(stripped)) fail(`${rel(f)}:${i + 1} uses /quantum-cookbook as an internal route`);
   });
 }
 if (walk(join(ROOT, 'src/pages')).some((f) => /quantum-cookbook/.test(rel(f))))

@@ -1,0 +1,43 @@
+---
+# Source: github.com/mujahidmahfuz/Post-Quantum-Cryptography-in-OpenVPN README and GitHub metadata.
+title: Post-quantum OpenVPN laboratory
+summary: A working VPN tunnel secured with NIST-standardised post-quantum algorithms — ML-DSA-65 certificates for identity and a hybrid ML-KEM-768 key exchange — built on OpenVPN, OpenSSL 3.5 and the Open Quantum Safe provider.
+status: prototype
+category: research-tool
+stack: [OpenVPN 2.6.17, OpenSSL 3.5.3, OQS-Provider, ML-DSA-65, ML-KEM-768]
+role: Creator.
+period:
+  # end = month of the last commit on GitHub
+  start: 2025-12
+  end: 2025-12
+links:
+  repo: https://github.com/mujahidmahfuz/Post-Quantum-Cryptography-in-OpenVPN
+repo: mujahidmahfuz/Post-Quantum-Cryptography-in-OpenVPN
+highlights:
+  - text: Identity with ML-DSA-65 (Dilithium, level 3) certificates; key exchange with the hybrid group p384_mlkem768 (classical P-384 combined with Kyber-768).
+    source: PQC-OpenVPN README, “The Stack”
+  - text: Custom OpenVPN 2.6.17 build on OpenSSL 3.5.3 with the OQS provider, targeting TLS 1.3 post-quantum groups.
+    source: PQC-OpenVPN README
+  - text: Scripts generate the ML-DSA-65 certificates and launch the server and client with the required environment.
+    source: PQC-OpenVPN README, repository contents
+learned:
+  - 'TODO(muja): what worked, what broke, and any handshake measurements'
+relatedResearch: []
+areas: [cryptography, systems]
+tags: [post-quantum-cryptography, vpn, ml-kem, ml-dsa]
+---
+
+## Why it exists
+
+A future quantum computer could break the public-key cryptography that protects today's VPN tunnels, and traffic recorded now could be decrypted later. This lab tests whether NIST's new post-quantum standards can be dropped into a real networking stack today.
+
+<Flow
+  title="Building a quantum-safe tunnel"
+  source="PQC-OpenVPN README"
+  steps={[
+    { label: 'Generate certificates', detail: 'ML-DSA-65 keys and certificates for server and client.' },
+    { label: 'Load the OQS provider', detail: 'OpenSSL 3.5.3 is configured to load oqsprovider.' },
+    { label: 'TLS 1.3 handshake', detail: 'Hybrid p384_mlkem768 key exchange; ML-DSA-65 authentication.' },
+    { label: 'Quantum-safe tunnel', detail: 'OpenVPN 2.6.17 carries traffic over the post-quantum session.' },
+  ]}
+/>

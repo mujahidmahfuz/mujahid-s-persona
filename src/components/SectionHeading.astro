@@ -8,10 +8,10 @@ const { id, level = 2, eyebrow } = Astro.props;
 const Tag = level === 2 ? 'h2' : 'h3';
 ---
 
-<div class="mb-6">
+<div class="mb-6" data-reveal>
   {eyebrow && <p class="mb-1 text-sm font-semibold tracking-wide text-pink-ink uppercase">{eyebrow}</p>}
   <Tag id={id} class="scroll-mt-24">
     <slot />
   </Tag>
-  <span aria-hidden="true" class="mt-2 block h-1 w-12 rounded-chip bg-pink"></span>
+  <span aria-hidden="true" class="heading-accent mt-2 block h-1 w-12 rounded-chip bg-pink"></span>
 </div>

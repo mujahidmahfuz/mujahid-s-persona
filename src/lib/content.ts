@@ -106,6 +106,33 @@ export function citationFor(entry: CollectionEntry<'research'>): Citation {
   };
 }
 
+export interface JournalBadgeData {
+  abbr: string;
+  name: string;
+  publisher?: string | undefined;
+  year?: number | undefined;
+  quartile?: string | undefined;
+}
+
+/** Badge data for a research entry published in a journal (DOI + Crossref venue). */
+export function journalBadge(entry: {
+  data: { doi?: string | undefined; quartile?: string | undefined; kind: string };
+}): JournalBadgeData | undefined {
+  const d = entry.data;
+  if (!d.doi || d.kind !== 'journal-article') return undefined;
+  const cr = crossref(d.doi);
+  if (!cr?.venue) return undefined;
+  const abbr = cr.venue
+    .split(/[\s-]+/)
+    .filter((w) => /^[A-Z]/.test(w))
+    .map((w) => w[0])
+    .join('');
+  const publisher = cr.publisher
+    ?.replace(/\s+(BV|LLC|Ltd\.?|Inc\.?)$/i, '')
+    .replace(/^Springer Science and Business Media$/i, 'Springer');
+  return { abbr, name: cr.venue, publisher, year: cr.year, quartile: d.quartile };
+}
+
 export async function getResearch(): Promise<Research[]> {
   const list = await getPublic('research');
   return list.map((e) => {

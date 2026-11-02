@@ -2,14 +2,16 @@
 import BaseLayout from '~/layouts/BaseLayout.astro';
 import Button from '~/components/Button.astro';
 import Card from '~/components/Card.astro';
+import JournalBadge from '~/components/JournalBadge.astro';
 import SectionHeading from '~/components/SectionHeading.astro';
-import { getResearch, getPublic, dateKey, formatDate, formatRange, yearOf } from '~/lib/content';
+import { getResearch, getPublic, dateKey, formatDate, formatRange, yearOf, journalBadge } from '~/lib/content';
 import { entryPath, withBase } from '~/lib/paths';
 import { SHORT_BIO } from '~/lib/bio';
 import { PROFILES, SITE } from '~/lib/site';
 import { show } from '~/lib/todo';
 import { Image } from 'astro:assets';
 import HeroNetwork from '~/components/HeroNetwork.astro';
+import TopicMarquee from '~/components/TopicMarquee.astro';
 import StatTiles from '~/components/charts/StatTiles.astro';
 import BarList from '~/components/charts/BarList.astro';
 import ActivityChart from '~/components/charts/ActivityChart.astro';
@@ -33,6 +35,13 @@ const featuredProjects = [...projects]
 const latestAward = (await getPublic('awards')).sort((a, b) => dateKey(b.data.date).localeCompare(dateKey(a.data.date)))[0];
 const sports = (await getPublic('sports'))[0];
 const headline = await stats();
+const tagCount = new Map<string, number>();
+for (const e of [...(await getResearch()), ...(await getPublic('projects'))])
+  for (const t of e.data.tags) tagCount.set(t, (tagCount.get(t) ?? 0) + 1);
+const allTags = [...tagCount]
+  .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+  .slice(0, 24)
+  .map(([t]) => t);
 const byArea = await areaCounts();
 const byStatus = await statusCounts();
 
@@ -85,6 +94,8 @@ const person = {
     </div>
   </section>
 
+  <TopicMarquee tags={allTags} />
+
   <section class="container-site py-16" aria-labelledby="featured-research">
     <div class="flex flex-wrap items-end justify-between gap-4">
       <SectionHeading id="featured-research" eyebrow="Research">
@@ -105,7 +116,9 @@ const person = {
             status={r.data.status}
             tags={r.data.tags}
             meta={[r.cite.venue, r.cite.year ?? yearOf(r.data.date)].filter(Boolean).join(' · ') || undefined}
-          />
+          >
+            {journalBadge(r) && <JournalBadge slot="badge" badge={journalBadge(r)!} size={64} reveal={false} />}
+          </Card>
         </li>
       ))}
     </ul>

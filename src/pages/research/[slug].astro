@@ -14,7 +14,10 @@ import PrevNext from '~/components/PrevNext.astro';
 import Chip from '~/components/Chip.astro';
 import Todo from '~/components/Todo.astro';
 import Explainer from '~/components/Explainer.astro';
+import JournalBadge from '~/components/JournalBadge.astro';
 import MathTex from '~/components/Math.astro';
+import Flow from '~/components/Flow.astro';
+import DotRank from '~/components/charts/DotRank.astro';
 import {
   getResearch,
   getPublic,
@@ -25,6 +28,7 @@ import {
   AREA_LABEL,
   KIND_LABEL,
   type Research,
+  journalBadge,
 } from '~/lib/content';
 import { entryPath, topicPath, withBase } from '~/lib/paths';
 import { show, visible, isTodo } from '~/lib/todo';
@@ -57,6 +61,7 @@ const findings = visible(d.keyFindings);
 const limitations = visible(d.limitations);
 const hasCite = !!d.doi || d.status === 'published' || d.status === 'accepted';
 const dateLabel = formatDate(d.date);
+const badge = journalBadge(entry);
 
 const toc = [
   { id: 'tldr', label: 'TL;DR' },
@@ -107,30 +112,37 @@ const description = isTodo(d.summary) ? SITE.description : d.summary;
   jsonLd={jsonLd}
   ogImage={withBase(`/og/research/${entry.id}.png`)}
 >
-  <header slot="header" class="max-w-4xl">
-    <p class="text-sm font-semibold text-pink-ink">
-      <a href={withBase('/research/')}>Research</a> · {KIND_LABEL[d.kind]}
-    </p>
-    <h1 class="mt-3">{cite.title}</h1>
-    <div class="mt-4 flex flex-wrap items-center gap-3">
-      <StatusBadge status={d.status} />
-      {(cite.venue || cite.year) && <span class="text-muted">{[cite.venue, cite.year].filter(Boolean).join(' · ')}</span>}
-      {!cite.year && dateLabel && <span class="text-muted">{dateLabel}</span>}
+  <header slot="header" class="flex flex-col-reverse gap-6 md:flex-row md:items-start md:justify-between">
+    <div class="max-w-4xl">
+      <p class="text-sm font-semibold text-pink-ink">
+        <a href={withBase('/research/')}>Research</a> · {KIND_LABEL[d.kind]}
+      </p>
+      <h1 class="mt-3">{cite.title}</h1>
+      <div class="mt-4 flex flex-wrap items-center gap-3">
+        <StatusBadge status={d.status} />
+        {(cite.venue || cite.year) && <span class="text-muted">{[cite.venue, cite.year].filter(Boolean).join(' · ')}</span>}
+        {!cite.year && dateLabel && <span class="text-muted">{dateLabel}</span>}
+      </div>
+      <div class="mt-3">
+        <AuthorList authors={cite.authors} />
+      </div>
+      {d.advisor && <p class="mt-1 text-sm text-muted">Advisor: {d.advisor}</p>}
+      <div class="mt-4">
+        <LinkRow links={links} label="Paper links" />
+      </div>
+      <ul class="mt-4 flex flex-wrap gap-2" aria-label="Areas">
+        {d.areas.map((a) => (
+          <li>
+            <Chip href={withBase(`/research/?area=${a}`)}>{AREA_LABEL[a]}</Chip>
+          </li>
+        ))}
+      </ul>
     </div>
-    <div class="mt-3">
-      <AuthorList authors={cite.authors} />
-    </div>
-    {d.advisor && <p class="mt-1 text-sm text-muted">Advisor: {d.advisor}</p>}
-    <div class="mt-4">
-      <LinkRow links={links} label="Paper links" />
-    </div>
-    <ul class="mt-4 flex flex-wrap gap-2" aria-label="Areas">
-      {d.areas.map((a) => (
-        <li>
-          <Chip href={withBase(`/research/?area=${a}`)}>{AREA_LABEL[a]}</Chip>
-        </li>
-      ))}
-    </ul>
+    {badge && (
+      <div class="shrink-0">
+        <JournalBadge badge={badge} size={132} />
+      </div>
+    )}
   </header>
 
   <Section id="tldr" title="TL;DR">
@@ -138,7 +150,7 @@ const description = isTodo(d.summary) ? SITE.description : d.summary;
   </Section>
 
   <div class="prose-site mt-12 [&>h2]:scroll-mt-24">
-    <Content components={{ Explainer, Todo, Math: MathTex }} />
+    <Content components={{ Explainer, Todo, Math: MathTex, Flow, DotRank }} />
   </div>
 
   {cite.abstract && (

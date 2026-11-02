@@ -1,3 +1,47 @@
 {
-  "repos": {}
+  "repos": {
+    "mujahidmahfuz/ai-orchestrator": {
+      "stars": 1,
+      "language": "JavaScript",
+      "pushedAt": "2026-02-02T15:11:02Z",
+      "htmlUrl": "https://github.com/mujahidmahfuz/ai-orchestrator",
+      "description": "AI orchestration while AI work parallely with one command while the judge gives you the best insight based on the models output."
+    },
+    "mujahidmahfuz/llm-council": {
+      "stars": 1,
+      "language": "Python",
+      "pushedAt": "2026-10-13T07:39:18Z",
+      "htmlUrl": "https://github.com/mujahidmahfuz/LLM-Council",
+      "description": "Imagine 4-5 or many more scientists sitting in a round table and among them one being the chairman or judge. That's what llm-council is.LLMs sitting on a council together to decide, by consensus, who among them is the best."
+    },
+    "mujahidmahfuz/pl_2025_ml_prediction": {
+      "stars": 0,
+      "language": "Jupyter Notebook",
+      "pushedAt": "2025-11-26T17:36:55Z",
+      "htmlUrl": "https://github.com/mujahidmahfuz/PL_2025_ML_Prediction",
+      "description": "This project uses a RandomForestClassifier to predict the final 2025/26 Premier League standings based on multiple historical Premier League seasons."
+    },
+    "mujahidmahfuz/pqc-on-resource-constrained-devices-e.g-arduino-r3-": {
+      "stars": 0,
+      "language": "C++",
+      "pushedAt": "2026-06-16T18:01:19Z",
+      "htmlUrl": "https://github.com/mujahidmahfuz/PQC-on-resource-constrained-devices-e.g-Arduino-R3-",
+      "description": "How can PQC-sized cryptographic algorithm can be stored and processed on extremely memory-constrained devices?"
+    },
+    "mujahidmahfuz/post-quantum-cryptography-in-openvpn": {
+      "stars": 0,
+      "language": null,
+      "pushedAt": "2025-12-22T14:16:37Z",
+      "htmlUrl": "https://github.com/mujahidmahfuz/Post-Quantum-Cryptography-in-OpenVPN",
+      "description": "This repo is about compiling OpenVPN with post-quantum cryptography"
+    },
+    "mujahidmahfuz/quantum-cookbook": {
+      "stars": 0,
+      "language": "HTML",
+      "pushedAt": "2026-07-07T12:42:14Z",
+      "htmlUrl": "https://github.com/mujahidmahfuz/quantum-cookbook",
+      "description": "Quantum Cookbook is what you wanted to have with you when you first jumped into this OCEAN!"
+    }
+  },
+  "fetchedAt": "2026-11-02T16:56:37.702Z"
 }

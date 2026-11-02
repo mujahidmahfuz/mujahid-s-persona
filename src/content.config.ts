@@ -89,6 +89,8 @@ const research = defineCollection({
           .regex(/^10\.\d{4,9}\/\S+$/)
           .optional(),
         venue: todoable(z.string()).optional(),
+        /** Journal quartile, e.g. Q1 — shown on the journal badge (source: Muja's CV). */
+        quartile: z.enum(['Q1', 'Q2', 'Q3', 'Q4']).optional(),
         year: z.number().int().min(2000).max(2100).optional(),
         authors: z.array(z.string()).optional(),
         myRole: todoable(z.string().min(1)),

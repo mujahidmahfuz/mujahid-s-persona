@@ -1,0 +1,80 @@
+---
+/**
+ * Journal badge for a published paper — a seal built from Crossref metadata (journal name,
+ * publisher, year) plus the quartile from Muja's CV. Not the publisher's trademarked logo.
+ * Motion: "stamps" in once when revealed (rare → delight is allowed); the ring turns a little
+ * under a real pointer. Reduced motion: static.
+ */
+import type { JournalBadgeData } from '~/lib/content';
+
+interface Props {
+  badge: JournalBadgeData;
+  size?: number;
+  reveal?: boolean;
+}
+const { badge, size = 104, reveal = true } = Astro.props;
+const ring = `${badge.name.toUpperCase()} · ${(badge.publisher ?? '').toUpperCase()} · `;
+const id = `jb-${badge.abbr}-${size}`;
+const label = `Published in ${badge.name}${badge.publisher ? ` (${badge.publisher})` : ''}${badge.quartile ? `, ${badge.quartile} journal` : ''}${badge.year ? `, ${badge.year}` : ''}`;
+---
+
+<span class="journal-badge inline-block" data-reveal={reveal ? '' : undefined} style={`width:${size}px;height:${size}px`}>
+  <svg viewBox="0 0 120 120" width={size} height={size} role="img" aria-label={label}>
+    <defs>
+      <path id={id} d="M60 60 m -45 0 a 45 45 0 1 1 90 0 a 45 45 0 1 1 -90 0"></path>
+    </defs>
+    <circle cx="60" cy="60" r="58" fill="#09318d"></circle>
+    <circle cx="60" cy="60" r="54" fill="none" stroke="#fd91cc" stroke-width="1.5"></circle>
+    <circle cx="60" cy="60" r="34" fill="#061f5c" stroke="#ffffff" stroke-opacity="0.35"></circle>
+    <g class="journal-ring">
+      <text font-size="8.4" font-weight="700" letter-spacing="1.1" fill="#ffffff">
+        <textPath href={`#${id}`} textLength="282" lengthAdjust="spacingAndGlyphs">
+          {ring}
+        </textPath>
+      </text>
+    </g>
+    <text
+      x="60"
+      y={badge.quartile ? 60 : 66}
+      text-anchor="middle"
+      font-size={badge.abbr.length > 3 ? 18 : 22}
+      font-weight="800"
+      fill="#ffffff"
+      font-family="Space Grotesk, system-ui, sans-serif"
+    >
+      {badge.abbr}
+    </text>
+    {badge.quartile && (
+      <text x="60" y="78" text-anchor="middle" font-size="12" font-weight="700" fill="#fd91cc">
+        {badge.quartile}
+        {badge.year ? ` · ${badge.year}` : ''}
+      </text>
+    )}
+    {!badge.quartile && badge.year && (
+      <text x="60" y="80" text-anchor="middle" font-size="11" font-weight="700" fill="#fd91cc">
+        {badge.year}
+      </text>
+    )}
+  </svg>
+</span>
+
+<style>
+  .journal-badge {
+    transition:
+      transform 550ms var(--ease-out),
+      opacity 400ms var(--ease-out);
+  }
+  :global(.js) .journal-badge[data-reveal]:not(:global(.is-in)) {
+    transform: scale(0.85) rotate(-10deg);
+    opacity: 0;
+  }
+  .journal-ring {
+    transform-origin: 60px 60px;
+    transition: transform 1200ms var(--ease-out);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .journal-badge:hover .journal-ring {
+      transform: rotate(40deg);
+    }
+  }
+</style>

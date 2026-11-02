@@ -1,0 +1,47 @@
+---
+# Source: github.com/mujahidmahfuz/ai-orchestrator — repository description and code
+# (server/routes/models.js, public/index.html, package.json). The repo has no README yet.
+title: Parallel AI Orchestrator
+summary: One prompt, five AI models working in parallel. Their answers stream in side by side, then a judge model names the best response and writes a combined answer — optionally with your codebase as context.
+status: prototype
+category: software
+stack: [Node.js, Express, JavaScript, Server-Sent Events]
+role: Creator.
+period:
+  # end = month of the last commit on GitHub
+  start: 2026-02
+  end: 2026-02
+links:
+  repo: https://github.com/mujahidmahfuz/ai-orchestrator
+repo: mujahidmahfuz/ai-orchestrator
+highlights:
+  - text: Five model slots answer the same prompt at once and stream their output live (Server-Sent Events), each with its own timing and token counter.
+    source: ai-orchestrator code — server/routes/models.js, public/index.html
+  - text: A judge endpoint evaluates all responses, names a winner and writes a synthesis in Markdown.
+    source: ai-orchestrator code — POST /api/judge in server/routes/models.js
+  - text: '“Sync context” caches a project''s codebase and can inject it into every prompt as context.'
+    source: ai-orchestrator code — server/services/codebaseCache.js, POST /api/cache
+  - text: Hardened Express server with Helmet headers and rate limiting.
+    source: ai-orchestrator package.json and server/middleware/security.js
+learned:
+  - 'TODO(muja): what you learned, and a README for the repo (it has none yet)'
+areas: [machine-learning, systems]
+tags: [llm, multi-agent, orchestration, javascript]
+---
+
+## Why it exists
+
+Different models are good at different things, and it is slow to ask them one at a time. The orchestrator sends a single prompt to several models at once, shows their answers as they arrive, and then asks a judge model to pick the best one and merge the strongest parts.
+
+<Flow
+  title="One prompt, five models, one judge"
+  source="ai-orchestrator code"
+  steps={[
+    { label: 'Prompt (+ optional codebase context)', detail: 'Sync Context caches the project so it can be added to the prompt.' },
+    { label: 'Five models in parallel', detail: 'Each slot streams its answer live, with timing and token counts.', fan: 5 },
+    { label: 'Judge', detail: 'A judge model evaluates every response.' },
+    { label: 'Winner + synthesis', detail: 'The judge names the best model and writes a combined answer.' },
+  ]}
+/>
+
+LLM Council takes the same idea further, with blind peer review between the models before a chairman decides.

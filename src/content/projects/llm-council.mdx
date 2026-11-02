@@ -1,0 +1,52 @@
+---
+# Source: github.com/mujahidmahfuz/LLM-Council README (Nov 2026) and GitHub metadata.
+title: LLM Council
+summary: Several language models sit at a round table, answer the same question independently, rank each other's answers blind, and a chairman model writes the final verdict — a council instead of a single model.
+status: prototype
+category: software
+stack: [Python, FastAPI, React, Vite, OpenRouter]
+role: Creator — designed and built the backend pipeline and the round-table interface.
+period:
+  start: 2025-11
+links:
+  repo: https://github.com/mujahidmahfuz/LLM-Council
+repo: mujahidmahfuz/LLM-Council
+highlights:
+  - text: Three rounds — independent answers, blind peer review, and a chairman's ruling.
+    source: LLM-Council README, “How a session works”
+  - text: Peer review is anonymised and shuffled; a member never ranks its own answer. Rankings combine into a consensus score from 0% (ranked last by everyone) to 100% (ranked first by everyone).
+    source: LLM-Council README, “How a session works”
+  - text: Degrades gracefully — failed members are retried with backoff, unparseable reviews are discarded, and if the chairman fails the top-ranked answer is returned as a marked fallback.
+    source: LLM-Council README, failure table
+  - text: Answers from other models are treated as untrusted data; reviewer and chairman prompts tell the model to judge them, never obey instructions inside them.
+    source: LLM-Council README
+  - text: The API key stays on the backend; a pytest suite runs with OpenRouter fully mocked, and CI runs lint, tests and build on every push.
+    source: LLM-Council README, “Configuration” and “Development”
+learned:
+  - Free OpenRouter models are rate limited and change often, so one question with peer review (about 11 model calls) can lose seats; the council is built to carry on with the members that answer.
+areas: [machine-learning, systems]
+tags: [llm, multi-agent, evaluation, fastapi, react]
+featured: true
+---
+
+## Why it exists
+
+Asking one model gives you one opinion. LLM Council asks several, then lets them judge each other — blind — so that the ranking, not any single model, decides which answer is best. Judging answers blind and aggregating many judges is the approach studied in the paper [_Language Model Council_](https://arxiv.org/abs/2406.08598) (arXiv:2406.08598), which the project builds on.
+
+<Flow
+  title="How a council session works"
+  source="LLM-Council README"
+  steps={[
+    { label: 'Your question', detail: 'One prompt goes to every member of the council.' },
+    { label: 'Round 1 — answer', detail: 'Each member answers on its own, in parallel (concurrency capped for free-tier limits).', fan: 5 },
+    { label: 'Round 2 — blind review', detail: 'Members rank the other answers, labelled A, B, C… with names hidden and order shuffled.', fan: 5 },
+    { label: 'Consensus', detail: 'Rankings combine into a 0–100% score; the top score is the best model.' },
+    { label: 'Round 3 — verdict', detail: 'A separate chairman model reads the answers, best first, and writes the ruling.' },
+  ]}
+/>
+
+## How it is built
+
+- **Backend** — a FastAPI app with a three-stage pipeline, an OpenRouter client with retries, and pure functions for prompts, ranking parsing and consensus.
+- **API** — `POST /ask-council` returns one JSON result; `POST /ask-council/stream` streams stage-by-stage events.
+- **Frontend** — a React + Vite round-table interface. Peer review can be switched off to use fewer model calls.

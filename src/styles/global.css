@@ -35,8 +35,8 @@
   --radius-card: 12px;
   --radius-chip: 999px;
 
-  --container-content: 72rem;
-  --container-prose: 44rem;
+  --container-content: 88rem;
+  --container-prose: 48rem;
 
   /* Strong curves (built-in CSS easings are too weak for UI). */
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
@@ -126,7 +126,8 @@
       padding-inline: 2rem;
     }
   }
-  .prose-site {
+  /* Text keeps a readable measure; figures, explainers and flows use the full column. */
+  .prose-site > :not(figure, [data-flow], [data-explainer]) {
     max-width: var(--container-prose);
   }
   .prose-site > * + * {
@@ -298,15 +299,11 @@
   opacity: 0;
 }
 
-/* Cards lift a little under a real pointer only (touch fires false hovers). */
-[data-card] {
-  transition:
-    box-shadow 200ms var(--ease-out),
-    transform 200ms var(--ease-out);
-}
+/* Cards lift a little under a real pointer only (touch fires false hovers). The lift is on an
+   inner layer (independent `translate`), so the hover target never moves and cannot flicker. */
 @media (hover: hover) and (pointer: fine) {
-  [data-card]:hover {
-    transform: translateY(-2px);
+  [data-card]:hover .flip-inner {
+    translate: 0 -3px;
   }
 }
 
@@ -344,4 +341,96 @@ header[data-site-header] {
   .js [data-reveal]:not(.is-in) .chart-bar {
     transform: scaleX(var(--f, 1));
   }
+}
+
+/* ---------- Flip cards ----------
+   Purpose: state change (front ↔ summary). On-screen movement → strong ease-in-out.
+   Triggered occasionally by a tap, so a full 600 ms turn is affordable. */
+.flip-card {
+  perspective: 1400px;
+}
+.flip-inner {
+  transform-style: preserve-3d;
+  transition:
+    transform 600ms var(--ease-in-out),
+    translate 200ms var(--ease-out);
+}
+.flip-face {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+.flip-back {
+  transform: rotateY(180deg);
+}
+.is-flipped .flip-inner {
+  transform: rotateY(180deg);
+}
+html:not(.js) .js-only {
+  display: none !important;
+}
+.js .no-js-only {
+  display: none;
+}
+.read-more-arrow,
+.flip-hint-icon {
+  display: inline-block;
+  transition: transform 200ms var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .read-more:hover .read-more-arrow {
+    transform: translateX(4px);
+  }
+  [data-card]:hover .flip-hint-icon {
+    transform: rotate(180deg);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .flip-inner,
+  .is-flipped .flip-inner,
+  .flip-back {
+    transform: none;
+  }
+  .flip-face {
+    transition: opacity 200ms ease;
+  }
+  .flip-back {
+    opacity: 0;
+  }
+  .is-flipped .flip-back {
+    opacity: 1;
+  }
+  .is-flipped .flip-front {
+    opacity: 0;
+  }
+}
+
+/* Buttons and chips give press feedback (≤160 ms). */
+a[class*='rounded-chip']:active,
+button[class*='rounded-chip']:active {
+  transform: scale(0.97);
+}
+a[class*='rounded-chip'],
+button[class*='rounded-chip'] {
+  transition-property: color, background-color, border-color, transform;
+  transition-duration: 150ms;
+  transition-timing-function: var(--ease-out);
+}
+
+/* Card cover art eases in a little under a real pointer. */
+.card-cover svg {
+  transition: transform 700ms var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  [data-card]:hover .card-cover svg {
+    transform: scale(1.06);
+  }
+}
+
+/* Section heading accent grows in with the reveal. */
+.heading-accent {
+  transform-origin: 0 50%;
+  transition: transform 600ms var(--ease-out) 150ms;
+}
+.js [data-reveal]:not(.is-in) .heading-accent {
+  transform: scaleX(0);
 }

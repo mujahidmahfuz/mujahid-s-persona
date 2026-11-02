@@ -25,6 +25,14 @@ These were inventory "Ask" rows. They are now public pages; their missing facts 
 - [ ] **Student ID guard** — create `.env.local` with `STUDENT_ID_SHA256=<sha256 of your ID>` so the guard can check the build never contains it.
 - [ ] **Analytics** — none added (SPEC §6 says ask first). GoatCounter is a free, cookie-free option if wanted.
 
+- [ ] **BWA repo README** (github.com/mujahidmahfuz/bootstrap-wasserstein-alignment) says "ICML 2025", shows a placeholder Zenodo DOI (XXXXXXX) and numbers that differ from the published paper (e.g. Gini 0.684 vs 0.645). The site links the repo as code — please update the README to match the Knowledge-Based Systems version before reviewers click through.
+- [ ] **Hybrid-Quantum-Classical-Image-Classifier** — not on the site: the notebook's loss stays ≈ 0.24, there is a target-shape broadcasting warning, and the test example is misclassified. Fix, re-run, then it can be added.
+- [ ] **ALBERT sentiment repo** — not on the site: the README's example table lists words that are not in the example sentence, and image/Colab links are placeholders.
+- [ ] **PL prediction README** lists Sheffield United among the promoted clubs; check the 2025/26 promoted sides before quoting the table elsewhere.
+- [ ] **ai-orchestrator** has no README — the project page is written from the code; add a README and your "what I learned".
+- [ ] **lossmap-percolation-2d** explainer is built but unverified (hidden in production) — review in `npm run dev`, then set `verified: true`.
+- [ ] **photonic-qec-ai** (concept) and **Lossmap** describe the same project (Adaptive-Photonic-Quantum-Computer). Merge them?
+
 ## Explainers
 
 Built — **unverified, so hidden in production** until you set `verified: true` in the paper's frontmatter.
@@ -45,11 +53,11 @@ manuscripts are usually reusable on a personal site — check each publisher's a
 
 <!-- AUTO-GENERATED BELOW — scripts/todos.ts rewrites everything under this line -->
 
-## Placeholders found in content (75)
+## Placeholders found in content (73)
 
 _Generated 2026-11-02 by `scripts/todos.ts`. In production builds each of these elements is hidden._
 
-### Public pages (75)
+### Public pages (73)
 
 - **src/content/awards/fujitsu-quantum-challenge.mdx**
   - [ ] date (YYYY-MM) (line 4)
@@ -59,6 +67,8 @@ _Generated 2026-11-02 by `scripts/todos.ts`. In production builds each of these 
   - [ ] regional site name, team name, team-mates (with their permission) (line 12)
 - **src/content/education/tiu-bachelor.mdx**
   - [ ] relevant coursework and academic honours (line 12)
+- **src/content/projects/ai-orchestrator.mdx**
+  - [ ] what you learned, and a README for the repo (it has none yet) (line 27)
 - **src/content/projects/aura-accessibility.mdx**
   - [ ] your role (line 7)
   - [ ] start month (line 9)
@@ -80,7 +90,9 @@ _Generated 2026-11-02 by `scripts/todos.ts`. In production builds each of these 
 - **src/content/projects/pqc-arduino.mdx**
   - [ ] your role (line 7)
   - [ ] start month (YYYY-MM) (line 9)
-  - [ ] measured Flash/SRAM sizes and signing/verification timings (line 30)
+  - [ ] measured Flash/SRAM sizes and signing/verification timings (line 35)
+- **src/content/projects/pqc-openvpn.mdx**
+  - [ ] what worked, what broke, and any handshake measurements (line 24)
 - **src/content/projects/qlnrs-fujitsu-challenge.mdx**
   - [ ] start month (YYYY-MM) (line 9)
   - [ ] end month (YYYY-MM) (line 10)
@@ -98,18 +110,13 @@ _Generated 2026-11-02 by `scripts/todos.ts`. In production builds each of these 
   - [ ] date (line 11)
   - [ ] problem statement (line 18)
   - [ ] the 11 workflow steps (line 24)
-- **src/content/research/bwa-bootstrap-wasserstein-alignment.mdx**
-  - [ ] repository URL for BWA (line 19)
 - **src/content/research/dicke-measurement-timing.mdx**
   - [ ] your role (line 7)
   - [ ] date (line 10)
   - [ ] problem statement (line 20)
   - [ ] method summary (line 26)
 - **src/content/research/lossmap-photonic-loss.mdx**
-  - [ ] your role (line 6)
-  - [ ] last-update date (YYYY-MM) (line 9)
-  - [ ] plain-language statement: what “loss landscape” means for a photonic system and why inferring it matters (line 19)
-  - [ ] lattice type and parameters used in E001, and what “passed at 0.70σ” is measured against (line 27)
+  - [ ] your role (line 8)
 - **src/content/research/music-inspired-ml.mdx**
   - [ ] your role (line 7)
   - [ ] date (line 10)
@@ -127,7 +134,7 @@ _Generated 2026-11-02 by `scripts/todos.ts`. In production builds each of these 
 - **src/content/research/photonic-qec-ai.mdx**
   - [ ] your role (line 7)
   - [ ] date (line 10)
-  - [ ] problem statement (line 17)
+  - [ ] problem statement (line 19)
 - **src/content/research/qip-2025.mdx**
   - [ ] what you did (e.g. literature review, writing, figures) (line 13)
   - [ ] confirm or replace this summary with your own words (it is based on Semantic Scholar's machine-generated summary of the abstract), and add the survey's main categories and conclusions (line 44)
@@ -147,11 +154,11 @@ _Generated 2026-11-02 by `scripts/todos.ts`. In production builds each of these 
 - **src/pages/experience/[slug].astro**
   - [ ] dates (line 40)
 - **src/pages/projects/[slug].astro**
-  - [ ] highlights, each with a source (line 128)
-  - [ ] what you learned, and the project's limitations (line 141)
+  - [ ] highlights, each with a source (line 130)
+  - [ ] what you learned, and the project's limitations (line 143)
 - **src/pages/research/[slug].astro**
-  - [ ] key findings, each with its source (paper section/table) (line 158)
-  - [ ] limitations and honest notes (required section) (line 172)
+  - [ ] key findings, each with its source (paper section/table) (line 170)
+  - [ ] limitations and honest notes (required section) (line 184)
 - **src/pages/styleguide/index.astro**
   - [ ] sample placeholder (line 235)
 

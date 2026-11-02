@@ -1,0 +1,70 @@
+---
+/**
+ * Dot chart on a shared axis (e.g. expected league position, 1 = best). Single series → one hue,
+ * no legend; value printed beside each dot. Dots slide into place when revealed.
+ */
+interface Props {
+  title: string;
+  items: { label: string; value: number }[];
+  min: number;
+  max: number;
+  note?: string;
+  source: string;
+  lowerIsBetter?: boolean;
+}
+const { title, items, min, max, note, source, lowerIsBetter = false } = Astro.props;
+const pct = (v: number) => ((v - min) / (max - min)) * 100;
+const ticks = Array.from({ length: 5 }, (_, i) => Math.round(min + ((max - min) * i) / 4));
+---
+
+<figure class="my-10 overflow-hidden rounded-card border border-blue-200 p-5 md:p-6" data-reveal data-flow>
+  <figcaption class="flex flex-wrap items-baseline justify-between gap-2">
+    <span class="font-display text-lg font-bold text-blue">{title}</span>
+    <span class="text-xs text-muted">Source: {source}</span>
+  </figcaption>
+  {note && <p class="mt-1 text-sm text-muted">{note}</p>}
+  <ol class="mt-4 space-y-[2px]">
+    {items.map((it, i) => (
+      <li class="grid min-h-6 grid-cols-[minmax(7rem,30%)_1fr_3rem] items-center gap-3 text-sm">
+        <span class="truncate text-ink">{it.label}</span>
+        <span class="relative block h-6" aria-hidden="true">
+          <span class="absolute inset-x-0 top-1/2 h-px bg-blue-200" />
+          <span class="dot-runner absolute inset-0" style={`--x:${pct(it.value)};--d:${i * 40}ms`}>
+            <span class="absolute top-1/2 left-0 h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-blue shadow" />
+          </span>
+        </span>
+        <span class="dot-value text-right font-semibold text-ink tabular-nums" style={`--d:${i * 40}ms`}>
+          {it.value.toFixed(2)}
+        </span>
+      </li>
+    ))}
+  </ol>
+  <div class="mt-1 grid grid-cols-[minmax(7rem,30%)_1fr_3rem] gap-3 text-xs text-muted" aria-hidden="true">
+    <span>{lowerIsBetter ? '← better' : ''}</span>
+    <span class="relative h-4">
+      {ticks.map((t) => (
+        <span class="absolute -translate-x-1/2" style={`left:${pct(t)}%`}>
+          {t}
+        </span>
+      ))}
+    </span>
+  </div>
+</figure>
+
+<style>
+  .dot-runner {
+    transform: translateX(calc(var(--x) * 1%));
+    transition: transform 900ms var(--ease-out);
+    transition-delay: var(--d);
+  }
+  :global(.js) [data-reveal]:not(:global(.is-in)) .dot-runner {
+    transform: translateX(100%);
+  }
+  .dot-value {
+    transition: opacity 400ms var(--ease-out);
+    transition-delay: calc(var(--d) + 500ms);
+  }
+  :global(.js) [data-reveal]:not(:global(.is-in)) .dot-value {
+    opacity: 0;
+  }
+</style>
