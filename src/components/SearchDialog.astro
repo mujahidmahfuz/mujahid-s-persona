@@ -1,0 +1,108 @@
+---
+/**
+ * Site search (Pagefind). Opened by Ctrl/Cmd+K or the header button. Pagefind's UI script is
+ * loaded only on first open, so pages stay within the JS budget. Without JS the header
+ * button is a plain link to /search/.
+ */
+import { withBase } from '~/lib/paths';
+const bundle = withBase('/pagefind/');
+---
+
+<dialog
+  class="search-dialog m-auto mt-[10vh] w-[min(42rem,calc(100vw-2rem))] rounded-card border border-blue-200 bg-white p-0 shadow-2xl backdrop:bg-blue-900/60"
+  aria-label="Search the site"
+  data-search-dialog
+  data-bundle={bundle}
+>
+  <div class="flex items-center justify-between border-b border-blue-200 px-4 py-3">
+    <p class="font-display font-bold text-blue">Search</p>
+    <button
+      type="button"
+      class="rounded-chip border border-blue-200 px-3 py-1 text-sm text-blue hover:border-blue"
+      data-search-close
+    >
+      Close <span class="sr-only">search</span>
+      <kbd aria-hidden="true" class="ml-1 text-xs">
+        Esc
+      </kbd>
+    </button>
+  </div>
+  <div class="max-h-[70vh] overflow-y-auto p-4" data-search-mount></div>
+</dialog>
+
+<script>
+  type PagefindUICtor = new (opts: Record<string, unknown>) => unknown;
+  const dialog = document.querySelector<HTMLDialogElement>('[data-search-dialog]');
+  let loaded: Promise<void> | null = null;
+
+  function load(bundle: string): Promise<void> {
+    if (loaded) return loaded;
+    loaded = new Promise((resolve, reject) => {
+      const css = document.createElement('link');
+      css.rel = 'stylesheet';
+      css.href = `${bundle}pagefind-ui.css`;
+      document.head.append(css);
+      const s = document.createElement('script');
+      s.src = `${bundle}pagefind-ui.js`;
+      s.onload = () => resolve();
+      s.onerror = () => reject(new Error('search unavailable'));
+      document.head.append(s);
+    });
+    return loaded;
+  }
+
+  async function open() {
+    if (!dialog) return;
+    dialog.showModal();
+    const mount = dialog.querySelector<HTMLElement>('[data-search-mount]')!;
+    if (!mount.dataset.ready) {
+      mount.dataset.ready = '1';
+      try {
+        await load(dialog.dataset.bundle!);
+        const UI = (window as unknown as { PagefindUI: PagefindUICtor }).PagefindUI;
+        new UI({ element: mount, bundlePath: dialog.dataset.bundle, showSubResults: true, autofocus: true, resetStyles: false });
+      } catch {
+        mount.textContent = 'Search is not available in this preview. It works on the built site.';
+      }
+    }
+    mount.querySelector<HTMLInputElement>('input')?.focus();
+  }
+
+  document.querySelectorAll<HTMLAnchorElement>('[data-search-open]').forEach((a) =>
+    a.addEventListener('click', (e) => {
+      if (e.metaKey || e.ctrlKey || e.shiftKey) return;
+      e.preventDefault();
+      void open();
+    }),
+  );
+  document.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      if (dialog?.open) dialog.close();
+      else void open();
+    }
+  });
+  dialog?.querySelector('[data-search-close]')?.addEventListener('click', () => dialog.close());
+  dialog?.addEventListener('click', (e) => {
+    if (e.target === dialog) dialog.close();
+  });
+</script>
+
+<style is:global>
+  :root {
+    --pagefind-ui-primary: #09318d;
+    --pagefind-ui-text: #0b1530;
+    --pagefind-ui-background: #ffffff;
+    --pagefind-ui-border: #c7d3f0;
+    --pagefind-ui-tag: #eef2fb;
+    --pagefind-ui-border-radius: 12px;
+    --pagefind-ui-font: 'Inter', system-ui, sans-serif;
+  }
+  .pagefind-ui__result-link {
+    color: #09318d !important;
+  }
+  .pagefind-ui mark {
+    background: #ffe6f3;
+    color: #09318d;
+  }
+</style>

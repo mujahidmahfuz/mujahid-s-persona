@@ -3,6 +3,7 @@ import '~/styles/global.css';
 import SEO from '~/components/SEO.astro';
 import Header from '~/components/Header.astro';
 import Footer from '~/components/Footer.astro';
+import SearchDialog from '~/components/SearchDialog.astro';
 import { withBase } from '~/lib/paths';
 
 interface Props {
@@ -44,6 +45,7 @@ const { searchable = true, ...seo } = Astro.props;
       <slot />
     </main>
     <Footer />
+    <SearchDialog />
     <slot name="end" />
   </body>
 </html>

@@ -1,9 +1,78 @@
 ---
 import BaseLayout from '~/layouts/BaseLayout.astro';
+import { withBase } from '~/lib/paths';
+const bundle = withBase('/pagefind/');
 ---
 
-<BaseLayout title="Search">
-  <div class="container-site py-16">
+<BaseLayout title="Search" description="Search research, projects, notes and more." searchable={false}>
+  <div class="container-site py-12 md:py-16">
     <h1>Search</h1>
+    <p class="mt-4 max-w-prose text-muted">
+      Full-text search across every page. Tip: press <kbd>Ctrl</kbd> + <kbd>K</kbd> anywhere to search.
+    </p>
+    <div class="mt-8 max-w-3xl" id="search" data-bundle={bundle}>
+      <form action={withBase('/search/')} method="get" role="search" data-search-form>
+        <label for="q" class="block text-sm font-semibold text-blue">
+          Search terms
+        </label>
+        <input
+          id="q"
+          name="q"
+          type="search"
+          autocomplete="off"
+          class="mt-1 w-full rounded-card border-2 border-blue-200 px-4 py-3 text-lg focus:border-blue"
+          placeholder="e.g. Wasserstein, continual learning, Flutter"
+        />
+      </form>
+      <noscript>
+        <p class="mt-4">
+          Search needs JavaScript. Browse <a href={withBase('/research/')}>research</a> or{' '}
+          <a href={withBase('/projects/')}>projects</a> instead.
+        </p>
+      </noscript>
+    </div>
   </div>
 </BaseLayout>
+
+<script>
+  // Pagefind (~30 KB) loads on first focus or keystroke, keeping this page within the JS budget.
+  const root = document.getElementById('search');
+  const form = root?.querySelector<HTMLFormElement>('[data-search-form]');
+  const field = form?.querySelector<HTMLInputElement>('input');
+  let started = false;
+  function start() {
+    if (started || !root || !form) return;
+    started = true;
+    const bundle = root.dataset.bundle!;
+    const css = document.createElement('link');
+    css.rel = 'stylesheet';
+    css.href = `${bundle}pagefind-ui.css`;
+    document.head.append(css);
+    const s = document.createElement('script');
+    s.src = `${bundle}pagefind-ui.js`;
+    s.onload = () => {
+      const typed = field?.value ?? '';
+      const mount = document.createElement('div');
+      form.replaceWith(mount);
+      const UI = (window as unknown as { PagefindUI: new (o: Record<string, unknown>) => unknown }).PagefindUI;
+      new UI({ element: mount, bundlePath: bundle, showSubResults: true, autofocus: true, resetStyles: false });
+      const input = mount.querySelector<HTMLInputElement>('input');
+      if (input && typed) {
+        input.value = typed;
+        input.dispatchEvent(new Event('input'));
+      }
+    };
+    document.head.append(s);
+  }
+  field?.addEventListener('focus', start, { once: true });
+  field?.addEventListener('input', start, { once: true });
+  form?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    start();
+  });
+  const q = new URLSearchParams(location.search).get('q');
+  if (q && field) {
+    field.value = q;
+    start();
+  }
+</script>

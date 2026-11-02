@@ -12,7 +12,9 @@ import { withBase } from '~/lib/paths';
       The link may be old, or the page may have moved. Try searching, or start from the home page.
     </p>
     <div class="mt-8 flex flex-wrap gap-3">
-      <Button href={withBase('/search/')}>Search the site</Button>
+      <Button href={withBase('/search/')} data-search-open>
+        Search the site
+      </Button>
       <Button href={withBase('/')} variant="secondary">
         Home
       </Button>

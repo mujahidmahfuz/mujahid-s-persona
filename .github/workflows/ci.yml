@@ -21,6 +21,8 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: npm run check
       - run: npm run test:e2e
+      - name: Lighthouse CI (SPEC §8 budgets)
+        run: npm run lighthouse
       - uses: actions/upload-artifact@v7
         if: failure()
         with:
