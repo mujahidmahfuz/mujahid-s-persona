@@ -13,3 +13,4 @@ abstract is the source). `bwa-sparsity.test.ts` pins every value.
 ## Verification record
 - [ ] Muja: numbers match the published KBS version (not only the preprint)
 - [ ] Muja: method names match the paper's wording
+- [x] Muja set `verified: true` on 2026-11-03 after reviewing in dev (open items above stay open).

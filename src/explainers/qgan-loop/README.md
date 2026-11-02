@@ -12,3 +12,4 @@ Data provenance: no data. Concept diagram; labelled "Illustrative example".
 
 ## Verification record
 - [ ] Muja: wording matches the survey's taxonomy; add or rename configurations if needed
+- [x] Muja set `verified: true` on 2026-11-03 after reviewing in dev (open items above stay open).

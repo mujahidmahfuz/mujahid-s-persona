@@ -11,3 +11,4 @@ Data provenance: no numeric data. Structure only (`model.ts`).
 
 ## Verification record
 - [ ] Muja: loop order and wording match the code / paper draft
+- [x] Muja set `verified: true` on 2026-11-03 after reviewing in dev (open items above stay open).

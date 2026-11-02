@@ -20,3 +20,4 @@ Euclidean mean, L2 norm, simplex projection, exact binomial p (6/6 → 2/64, 5/6
 ## Verification record
 - [ ] Muja: projection, sign test and normalisation match the paper
 - [ ] Muja: OK to show the median stand-in, or provide the barycenter code to compute it properly
+- [x] Muja set `verified: true` on 2026-11-03 after reviewing in dev (open items above stay open).

@@ -12,3 +12,4 @@ No run logs or results JSON were available — replace with an export from `run_
 ## Verification record
 - [ ] Muja: numbers are final (5-seed) or the "pending" note stays
 - [ ] Muja: Binary-MNIST vs "sequential MNIST" naming (CV says sequential)
+- [x] Muja set `verified: true` on 2026-11-03 after reviewing in dev (open items above stay open).
