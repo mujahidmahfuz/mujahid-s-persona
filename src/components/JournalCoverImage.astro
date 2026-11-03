@@ -1,0 +1,50 @@
+---
+/**
+ * An official journal cover shown as a physical object, with the publisher credited and an honest
+ * note that it is a representative issue. Images are small (≈150 px), so they are never upscaled
+ * beyond their natural width.
+ */
+import { Image } from 'astro:assets';
+import type { JournalCover } from '~/lib/journals';
+
+interface Props {
+  cover: JournalCover;
+  size?: 'sm' | 'md';
+  showNote?: boolean;
+}
+const { cover, size = 'md', showNote = true } = Astro.props;
+const w = Math.min(cover.src.width, size === 'sm' ? 110 : cover.src.width);
+---
+
+<figure class="journal-cover m-0" style={`max-width:${w + 24}px`}>
+  <div class="journal-cover-img">
+    <Image src={cover.src} alt={cover.alt} width={w} class="block h-auto w-full" />
+  </div>
+  <figcaption class="mt-2 text-[0.7rem] leading-snug text-ink-soft">
+    <span class="label-mono block text-[0.62rem]">Journal cover · © {cover.publisher}</span>
+    {showNote && <span class="mt-0.5 block">{cover.note}</span>}
+  </figcaption>
+</figure>
+
+<style>
+  .journal-cover-img {
+    border: 1px solid var(--color-rule);
+    background: var(--color-ivory);
+    padding: 4px;
+    box-shadow:
+      0 1px 0 rgba(40, 52, 47, 0.06),
+      6px 10px 22px -12px rgba(40, 52, 47, 0.55);
+    transform: rotate(-1.2deg);
+    transition: transform 400ms var(--ease-out);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .journal-cover:hover .journal-cover-img {
+      transform: rotate(0deg) translateY(-2px);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .journal-cover-img {
+      transform: none;
+    }
+  }
+</style>

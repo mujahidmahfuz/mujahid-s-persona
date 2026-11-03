@@ -90,10 +90,12 @@ Registry: `src/data/epigraphs.ts`. Component: `src/components/Epigraph.astro`. T
 
 ## 6. Publications and papers
 
-- No official cover with confirmed reuse rights is available, so covers are **original artwork**
-  (`PaperCover`) and always labelled "original cover art". Do not use journal logos as covers; do not
-  fabricate an official cover. If Muja supplies an accepted-manuscript first page or a cover with
-  permission, add it and credit it.
+- Where Muja has supplied the journal's official cover (`src/assets/journals/`, mapped by venue in
+  `src/lib/journals.ts`), `JournalCoverImage` shows it at native size or smaller, credited
+  "© publisher" and labelled as a representative issue, not necessarily the issue carrying the paper.
+  Reuse permission is tracked in TODO-MUJA.
+- Every other entry uses **original artwork** (`PaperCover`), always labelled "original cover art".
+  Never fabricate an official cover or use a journal logo as one.
 - `PaperObject`: layered sheets, stamp, journal/volume/issue/year/DOI from Crossref, actions (paper
   page · PDF if available · preprint · publisher · citation + BibTeX). Never hide information behind hover.
 

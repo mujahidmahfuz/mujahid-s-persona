@@ -59,7 +59,7 @@ Before writing any config file, run `npm ls <package>` and read the installed ve
 ### Design
 10. The visual identity is **"An Atlas of a Curious Mind"** (`docs/DESIGN.md`, from `Website_Redesign.md`): parchment and ink surfaces, verdigris/petrol dark sections, indigo links, chapter accents per discipline; Cormorant Garamond + Inter + IBM Plex Mono (+ Amiri for Quranic Arabic). Fill-only accents (saffron, terracotta, copper, olive) are **never text on light surfaces** — use the `*-ink` variants; the guard enforces this. Every text/background pair must pass WCAG 2.2 AA. Do not drift into a generic template, a space theme, or black-white-grey.
 10a. **Every route has exactly one epigraph** from `src/data/epigraphs.ts`. Quranic text is never typed by hand — add the reference and run `npm run epigraphs` (Arabic: Tanzil; English: Saheeh International). Literature quotes must be verified against a public-domain text; original thoughts are labelled "Original reflection". Never fabricate or trim a verse or attribution.
-10b. Publication covers are original artwork and must be labelled as such unless an official image with confirmed reuse rights is supplied.
+10b. Publication covers are original artwork and labelled as such, except official journal covers Muja has supplied (`src/lib/journals.ts`), which are credited to the publisher and labelled as representative issues.
 11. Respect `prefers-reduced-motion`: all animation and auto-rotation stop; 3D scenes show a static poster.
 12. Every 3D scene has a **2D/static fallback** (no WebGL, low-power device, reduced motion, JS disabled).
 

@@ -5,6 +5,8 @@
  * behind hover; the pointer tilt (≤ 4°, fine pointers only, off under reduced motion) is an extra.
  */
 import PaperCover from './PaperCover.astro';
+import JournalCoverImage from './JournalCoverImage.astro';
+import { journalCover } from '~/lib/journals';
 import BibtexButton from './BibtexButton.astro';
 import Citation from './Citation.astro';
 import { bibtex, type Research } from '~/lib/content';
@@ -22,6 +24,7 @@ const { entry, folio, compact = false } = Astro.props;
 const d = entry.data;
 const c = entry.cite;
 const chapter = chapterFor(d.areas);
+const jc = journalCover(c.venue);
 const bib = d.doi ? bibtex(d.doi) : undefined;
 const volume = [c.volume && `Vol. ${c.volume}`, c.issue && `Issue ${c.issue}`, c.pages && `Article ${c.pages}`]
   .filter(Boolean)
@@ -35,9 +38,15 @@ const preprint = d.links.preprint && show(d.links.preprint) ? d.links.preprint :
   <div class="paper-body">
     <div class="paper-sheets" aria-hidden="true"></div>
     <div class="paper-face relative grid gap-6 p-5 sm:grid-cols-[minmax(9rem,13rem)_1fr] sm:p-7">
-      <a href={entryPath(entry)} class="block self-start no-underline" tabindex="-1" aria-hidden="true">
-        <PaperCover id={entry.id} title={c.title} chapter={chapter} folio={folio} venue={c.venue} year={c.year} />
-      </a>
+      <div class="self-start">
+        {jc ? (
+          <JournalCoverImage cover={jc} showNote={!compact} />
+        ) : (
+          <a href={entryPath(entry)} class="block no-underline" tabindex="-1" aria-hidden="true">
+            <PaperCover id={entry.id} title={c.title} chapter={chapter} folio={folio} venue={c.venue} year={c.year} />
+          </a>
+        )}
+      </div>
       <div class="min-w-0">
         <div class="flex flex-wrap items-center justify-between gap-3">
           <p class="label-mono text-ink-soft">

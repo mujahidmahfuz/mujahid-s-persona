@@ -29,10 +29,11 @@ const pubs = (await getResearch())
     </div>
     <aside class="mt-16 max-w-5xl border-t border-rule pt-6 text-sm text-ink-soft">
       <p>
-        <strong class="text-ink">About the covers.</strong> The cover images are original artwork made for this site from each
-        paper's idea — they are not the publishers' journal covers. Titles, authors, venues, volumes and years come from Crossref
-        by DOI at build time. The full list is also on <a href={`https://orcid.org/${SITE.orcidId}`}>ORCID</a>; work in progress
-        is under <a href={withBase('/research/')}>Research</a>.
+        <strong class="text-ink">About the covers.</strong> The images are the journals' own covers (© Elsevier, © Springer
+        Nature), shown only to identify each journal. They are representative issues, not necessarily the issue carrying the
+        paper. Titles, authors, venues, volumes and years come from Crossref by DOI at build time. The full list is also on{' '}
+        <a href={`https://orcid.org/${SITE.orcidId}`}>ORCID</a>; work in progress is under{' '}
+        <a href={withBase('/research/')}>Research</a>.
       </p>
     </aside>
   </div>

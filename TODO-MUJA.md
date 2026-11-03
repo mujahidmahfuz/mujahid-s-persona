@@ -37,7 +37,7 @@ These were inventory "Ask" rows. They are now public pages; their missing facts 
 
 - [ ] **Original reflections** in `src/data/epigraphs.ts` were drafted for the site (CV, contact, 404, styleguide, QLNRS, Aura, ICPC, Fujitsu). Replace any with your own words.
 - [ ] **Quranic epigraphs** — review that each verse feels right for its page (registry `why:` notes explain each choice). Text is fetched, never typed.
-- [ ] **Journal covers** — covers are original artwork. To show official imagery, send a cover or your accepted-manuscript first page with reuse permission.
+- [ ] **Journal covers** — the official covers of Knowledge-Based Systems (Elsevier) and Quantum Information Processing (Springer) are now shown, credited and labelled as representative issues (the QIP image is Vol. 16 No. 8, 2017). Reuse permission has not been confirmed — check the publishers' terms, or send the actual issue covers.
 - [ ] **PDFs** — add `links.pdf` (e.g. your accepted manuscript, if the publisher allows) to enable "Open / Download PDF".
 - [ ] **Sports photos / videos** — the pitch page is ready for them.
 
@@ -165,8 +165,8 @@ _Generated 2026-11-03 by `scripts/todos.ts`. In production builds each of these 
   - [ ] highlights, each with a source (line 167)
   - [ ] what you learned, and the project's limitations (line 180)
 - **src/pages/research/[slug].astro**
-  - [ ] key findings, each with its source (paper section/table) (line 193)
-  - [ ] limitations and honest notes (required section) (line 207)
+  - [ ] key findings, each with its source (paper section/table) (line 200)
+  - [ ] limitations and honest notes (required section) (line 214)
 - **src/pages/styleguide/index.astro**
   - [ ] sample placeholder (line 242)
 

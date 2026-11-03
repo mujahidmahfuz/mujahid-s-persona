@@ -10,6 +10,8 @@ import Epigraph from '~/components/Epigraph.astro';
 import CelestialInstrument from '~/components/CelestialInstrument.astro';
 import PaperObject from '~/components/PaperObject.astro';
 import PaperCover from '~/components/PaperCover.astro';
+import JournalCoverImage from '~/components/JournalCoverImage.astro';
+import { journalCover } from '~/lib/journals';
 import Card from '~/components/Card.astro';
 import StatusBadge from '~/components/StatusBadge.astro';
 import { getResearch, getPublic, dateKey, formatDate, formatRange, yearOf } from '~/lib/content';
@@ -170,15 +172,24 @@ const person = {
               </a>
             </div>
           </div>
-          <a href={entryPath(r)} class="hidden md:block" tabindex="-1" aria-hidden="true">
-            <PaperCover
-              id={r.id}
-              title={r.data.title}
-              chapter={chapterFor(r.data.areas)}
-              folio={`R-${String(i + 1).padStart(2, '0')}`}
-              size="thumb"
-            />
-          </a>
+          {(() => {
+            const jc = journalCover(r.cite?.venue);
+            return jc ? (
+              <div class="hidden md:block">
+                <JournalCoverImage cover={jc} size="sm" showNote={false} />
+              </div>
+            ) : (
+              <a href={entryPath(r)} class="hidden md:block" tabindex="-1" aria-hidden="true">
+                <PaperCover
+                  id={r.id}
+                  title={r.data.title}
+                  chapter={chapterFor(r.data.areas)}
+                  folio={`R-${String(i + 1).padStart(2, '0')}`}
+                  size="thumb"
+                />
+              </a>
+            );
+          })()}
         </li>
       ))}
     </ol>
