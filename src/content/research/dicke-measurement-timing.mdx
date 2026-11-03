@@ -1,12 +1,13 @@
 ---
 # Source: accepted manuscript MCM/Paper/submission/MCM_ACDSA_2027.tex and the ACDSA 2027 acceptance letter (23 Oct 2026).
+# Muja (2026-11-04): sole author; cannot present for financial reasons, so it will not be published.
 title: Mid-Circuit Probe Measurement Reduces Cost in Dicke State Expansion under Restricted Qubit Access
 summary: Measuring the flag ancilla early — from gate 21 of 24, under the last-gate-targeting rule — leaves the successful output unchanged; the gate-cost saving is about 3% in the abstract cost model and about 1% with real two-qubit gate counts.
 status: accepted
 kind: conference-paper
-venue: ACDSA 2027 (accepted full paper; IEEE Xplore inclusion requires registration and presentation)
-authors: [M. Islam, F. Ozaydin] # accepted manuscript
-myRole: First author (author order in the accepted manuscript).
+venue: ACDSA 2027 (accepted full paper; not presented, so not published in IEEE Xplore)
+authors: [M. Islam] # sole author (final submitted manuscript, MCM/Paper/submission)
+myRole: Sole author.
 areas: [quantum-computing]
 tags: [dicke-states, quantum-circuits]
 date: 2026-10
@@ -16,6 +17,10 @@ keyFindings:
   - text: Counting the recycled failure-branch state honestly, the earlier “free fidelity bonus” does not hold; the standard protocol is itself Pareto-optimal.
     source: Accepted manuscript abstract (ACDSA 2027)
 ---
+
+import { Image } from 'astro:assets';
+import { withBase } from '~/lib/paths';
+import letter from '~/assets/papers/acdsa-2027-acceptance-letter.png';
 
 ## The problem
 
@@ -41,4 +46,15 @@ All results come from exact statevector simulation, cross-checked against a real
 
 ## Status
 
-Accepted as a full paper at **ACDSA 2027** (Rio de Janeiro, 2–4 February 2027). Under the conference's "no podium, no paper" policy, it goes to IEEE Xplore only after registration and presentation.
+Accepted as a full paper at **ACDSA 2027** (International Conference on Artificial Intelligence, Computer, Data Sciences and Applications; Rio de Janeiro, 2–4 February 2027).
+
+The conference follows a "no podium, no paper" rule: only papers that are registered and presented go to IEEE Xplore. Because of financial difficulty I cannot register and present it, so the paper will not be published in the proceedings. I am happy either way — the work was reviewed and accepted, and the research stands on its own.
+
+<figure class="my-6 max-w-sm">
+  <a href={withBase('/papers/acdsa-2027-acceptance-letter.pdf')}>
+    <Image src={letter} alt="The ACDSA 2027 acceptance letter, dated 23 October 2026, accepting paper 836, “Mid-Circuit Probe Measurement Reduces Cost in Dicke State Expansion under Restricted Qubit Access”, as a full paper." class="h-auto w-full border border-rule shadow-md" />
+  </a>
+  <figcaption class="mt-2 text-sm text-ink-soft">
+    Acceptance letter, 23 October 2026 — <a href={withBase('/papers/acdsa-2027-acceptance-letter.pdf')}>open the PDF</a>.
+  </figcaption>
+</figure>
