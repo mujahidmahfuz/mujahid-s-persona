@@ -44,6 +44,12 @@ explainers:
 featured: true
 ---
 
+import { Image } from 'astro:assets';
+import figMnist from '~/assets/research/bwa/mnist_attribution.png';
+import figGene from '~/assets/research/bwa/gene_expression.png';
+import figEps from '~/assets/research/bwa/epsilon_sensitivity.png';
+import figBoot from '~/assets/research/bwa/bootstrap_size.png';
+
 Ask a model trained on a small dataset why it made a prediction, then retrain it on a slightly different resample of the same data and ask again. When there are far fewer examples than features, the two explanations can disagree — sometimes on whether a feature pushed the prediction up or down. An explanation that changes every time you look is hard to trust. Bootstrap Wasserstein Alignment (BWA) is a way to turn many unstable explanations into one stable consensus, and to say how sure that consensus is.
 
 ## The problem
@@ -82,3 +88,24 @@ The evaluation spans eight experiments: synthetic data (_N_ = 20, _d_ = 100, _B_
 Across them, BWA-v2 closes a documented sign-accuracy gap of BWA-v1 by 5–15 percentage points. Where the true signal is sparse — images and gene expression — BWA-v2's attribution maps are significantly sparser than every Euclidean baseline. On dense tabular data it ties the simple average, which the paper reports as a limit of its scope.
 
 <Explainer id="bwa-sparsity" />
+
+## From the paper
+
+The figures below are the paper’s own, from the real experiments — not illustrations.
+
+<figure class="my-8">
+  <Image src={figMnist} alt="Four panels: a handwritten digit 5, then three attribution heat maps in red and blue — Vanilla Mean, BWA-v1 and BWA-v2. The BWA maps put their weight on fewer pixels than the plain average." widths={[800, 1400, 2200]} sizes="(min-width: 1024px) 68rem, 100vw" class="h-auto w-full rounded-md border border-rule bg-white p-2" />
+  <figcaption class="mt-2 text-sm text-ink-soft"><strong>MNIST saliency</strong> (100 training images, 784 pixels, 20 bootstrap replicates, digit 5). The plain average spreads attribution thinly; BWA-v1 concentrates it on fewer pixels (Gini 0.69 vs 0.61), and BWA-v2 keeps similar focus (Gini 0.645) without shrinking the attribution scale. Figure from the paper (Islam & Dubey, <em>Knowledge-Based Systems</em>, 2026).</figcaption>
+</figure>
+<figure class="my-8">
+  <Image src={figGene} alt="Grouped bar chart of Gini sparsity for five methods on leukemia gene-expression data, at 500 and 2,000 genes and 20 or 50 samples. BWA-v2 has the tallest bar in every group." widths={[800, 1400, 2200]} sizes="(min-width: 1024px) 68rem, 100vw" class="h-auto w-full rounded-md border border-rule bg-white p-2" />
+  <figcaption class="mt-2 text-sm text-ink-soft"><strong>Golub leukemia gene expression</strong> (50 class-stratified subsets per cell). BWA-v2 is the sparsest method at both 500 and 2,000 genes while matching the plain average’s sign accuracy; BWA-v1 is sparser than the Euclidean baselines only by giving up 6.7–8.2 points of sign accuracy. Figure from the paper (Islam & Dubey, <em>Knowledge-Based Systems</em>, 2026).</figcaption>
+</figure>
+<figure class="my-8">
+  <Image src={figBoot} alt="Three line charts against the number of bootstrap replicates B from 5 to 100: sign accuracy rising, top-10 Jaccard overlap flat near 0.13, and attribution norm rising slightly." widths={[800, 1400, 2200]} sizes="(min-width: 1024px) 68rem, 100vw" class="h-auto w-full rounded-md border border-rule bg-white p-2" />
+  <figcaption class="mt-2 text-sm text-ink-soft"><strong>How many bootstrap replicates?</strong> Sign accuracy rises steadily from 0.541 to 0.786 as B grows from 5 to 100 (50 trials each), while top-10 overlap stays flat at about 0.13. Figure from the paper (Islam & Dubey, <em>Knowledge-Based Systems</em>, 2026).</figcaption>
+</figure>
+<figure class="my-8">
+  <Image src={figEps} alt="Three line charts against the Sinkhorn regularisation epsilon: sign accuracy flat, attribution norm nearly flat, and convergence rate jumping from 0 to 100 percent at epsilon 0.05." widths={[800, 1400, 2200]} sizes="(min-width: 1024px) 68rem, 100vw" class="h-auto w-full rounded-md border border-rule bg-white p-2" />
+  <figcaption class="mt-2 text-sm text-ink-soft"><strong>The regularisation ε.</strong> Sign accuracy stays near 0.76 and the attribution norm varies by about 5% — but the Sinkhorn solver never converges below ε = 0.05 and always converges above it: a hard cliff worth knowing before using BWA. Figure from the paper (Islam & Dubey, <em>Knowledge-Based Systems</em>, 2026).</figcaption>
+</figure>
