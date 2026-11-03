@@ -182,3 +182,20 @@ Rules: results written to `src/data/cache/*.json` and committed; on any network 
 | JS on a page with a 3D explainer, before scrolling to it | ≤ 15 KB gzipped (3D loads on visibility) |
 | Largest image delivered | ≤ 250 KB (Astro `<Image>` → AVIF/WebP, responsive `srcset`) |
 | WCAG | 2.2 AA; keyboard reachable; visible focus; alt text on every image; captions/transcripts linked for videos where available |
+
+## 9. Redesign additions (Nov 2026 — `Website_Redesign.md`, design in `docs/DESIGN.md`)
+
+- **Epigraph on every route.** Every page renders exactly one `<Epigraph page="…">`. Keys: `home`, `about`,
+  `research`, `publications`, `projects`, `achievements`, `sports`, `education`, `experience`, `notes`,
+  `videos`, `search`, `topics`, `cv`, `contact`, `404`, `styleguide`, and `<collection>/<id>` for entries
+  (`research/…`, `projects/…`, `experience/…`, `achievements/…`, `sports/…`). Topic pages use `topics/<tag>`
+  (shared pool). A new entry without its own registry item falls back to its section's epigraph — add one.
+- **Chapters.** Pages and cards carry `data-chapter` from `chapterFor(areas)` for their colour identity.
+- **Home** (§2 `/`): opening + instrument + contents, epigraph band, featured research (editorial list),
+  workshop (flip cards), library (paper objects), on the desk, ledger, beyond research, questions + contact.
+- **Research pages** add: breadcrumb, original cover, DOI line, epigraph, § numbering, and at least one
+  visual — an explainer and/or a `<Flow>` (`kind="documented"` from sources, or `kind="conceptual"`).
+- **Project pages** add: stage note per status (an idea is never shown as a product), spec sheet
+  (stack, my part, repository), epigraph (margin), and a `<Flow>` where the project has a describable process.
+- **Publications**: `PaperObject` per paper — cover (original art), Crossref record, stamp, actions
+  (paper page, PDF only if one exists, preprint, publisher, citation + BibTeX).

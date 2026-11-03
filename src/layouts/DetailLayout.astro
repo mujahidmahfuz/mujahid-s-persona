@@ -1,7 +1,13 @@
 ---
-/** Detail page shell: header slot, sticky TOC (≥1024px), long-form column. */
+/**
+ * Detail page shell (research, projects): a chapter-coloured header plate, the page's epigraph,
+ * a numbered long-form column and a sticky table of contents (≥1024px).
+ */
 import BaseLayout from './BaseLayout.astro';
 import TOC from '~/components/TOC.astro';
+import Epigraph from '~/components/Epigraph.astro';
+import type { Chapter } from '~/lib/chapters';
+import type { Treatment } from '~/data/epigraphs';
 
 interface Props {
   title: string;
@@ -10,22 +16,50 @@ interface Props {
   type?: 'website' | 'article' | 'profile';
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
   ogImage?: string;
+  chapter?: Chapter;
+  /** epigraph registry key, e.g. "research/<id>" */
+  epigraph: string;
+  epigraphTreatment?: Treatment;
 }
-const { toc, ...rest } = Astro.props;
+const { toc, chapter, epigraph, epigraphTreatment = 'verse', ...rest } = Astro.props;
 ---
 
 <BaseLayout {...rest}>
-  <div class="border-b border-blue-200 bg-blue-050">
-    <div class="container-site py-10 md:py-14">
-      <slot name="header" />
+  <div data-chapter={chapter}>
+    <div class="graticule relative border-b border-rule">
+      <span class="absolute inset-x-0 top-0 h-1 bg-[var(--accent)]" aria-hidden="true"></span>
+      <div class="container-site py-12 md:py-16">
+        <slot name="header" />
+      </div>
     </div>
-  </div>
-  <div class="container-site grid gap-10 py-10 lg:grid-cols-[minmax(0,1fr)_14rem] lg:gap-16">
-    <div class="order-2 min-w-0 lg:order-1">
-      <slot />
+    <div class="container-site pt-12">
+      <Epigraph page={epigraph} treatment={epigraphTreatment} />
     </div>
-    <aside class="order-1 lg:order-2">
-      <TOC items={toc} />
-    </aside>
+    <div class="container-site grid gap-10 py-12 lg:grid-cols-[minmax(0,1fr)_15rem] lg:gap-16">
+      <div class="atlas-article order-2 min-w-0 lg:order-1">
+        <slot />
+      </div>
+      <aside class="order-1 lg:order-2">
+        <TOC items={toc} />
+      </aside>
+    </div>
   </div>
 </BaseLayout>
+
+<style is:global>
+  .atlas-article {
+    counter-reset: atlas-sec;
+  }
+  .atlas-article h2[id] {
+    counter-increment: atlas-sec;
+  }
+  .atlas-article h2[id]::before {
+    content: '§' counter(atlas-sec);
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    color: var(--accent-ink, var(--color-terracotta-ink));
+    margin-bottom: 0.35rem;
+  }
+</style>

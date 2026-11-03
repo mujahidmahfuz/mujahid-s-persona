@@ -32,6 +32,17 @@ QLNRS was built for the Fujitsu Quantum Simulator Challenge 2025–26. The task 
 
 Large neighbourhood search (LNS) improves a solution by repeatedly destroying part of it and repairing it:
 
+<Flow
+  title="One turn of the search"
+  source="QLNRS final report (CONTENT-INVENTORY §4)"
+  steps={[
+    { label: 'Current routes', detail: 'A full solution to the vehicle-routing instance.' },
+    { label: 'Destroy', detail: 'Remove part of the routes, chosen by a risk-weighted rule.' },
+    { label: 'Repair with CP-QAOA', detail: 'Rebuild the removed part on a subspace simulator (Slurm jobs on FX700).' },
+    { label: 'Accept or reject', detail: 'Keep the new routes or the old ones, then repeat.' },
+  ]}
+/>
+
 1. **Destroy** — remove part of the current routes, chosen by a risk-weighted rule.
 2. **Repair** — rebuild the removed part with CP-QAOA run on a subspace simulator.
 3. **Accept or reject** the new solution, then repeat.

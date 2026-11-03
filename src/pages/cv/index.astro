@@ -4,6 +4,7 @@ import { render } from 'astro:content';
 import BaseLayout from '~/layouts/BaseLayout.astro';
 import Citation from '~/components/Citation.astro';
 import Todo from '~/components/Todo.astro';
+import Epigraph from '~/components/Epigraph.astro';
 import { getPublic, getResearch, formatRange, formatDate, dateKey } from '~/lib/content';
 import { entryPath, withBase } from '~/lib/paths';
 import { PROFILES, SITE } from '~/lib/site';
@@ -58,6 +59,10 @@ const siteUrl = new URL(withBase('/'), SITE.url).href;
         </a>
       </p>
     </header>
+
+    <div class="mt-10 print:hidden">
+      <Epigraph page="cv" treatment="note" />
+    </div>
 
     <section class="cv-section" aria-labelledby="cv-summary">
       <h2 id="cv-summary">Summary</h2>

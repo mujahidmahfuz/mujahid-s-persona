@@ -14,6 +14,18 @@ date: 'TODO(muja): date'
 
 Studies how reliable retinal foundation models are for systemic-disease screening and risk estimation — transportability, calibration, uncertainty and explanation stability — with a Retinal Reliability Score and reason codes.
 
+<Flow
+  kind="conceptual"
+  title="From a photograph of the retina to a reliability score"
+  source="project notes (CONTENT-INVENTORY §3, EXPLAINERS §3)"
+  steps={[
+    { label: 'Fundus photograph', detail: 'An image of the back of the eye.' },
+    { label: 'Retinal foundation model', detail: 'Screens for, and estimates the risk of, systemic disease — it does not diagnose.' },
+    { label: 'Reliability checks', detail: 'Transportability, calibration, uncertainty, explanation stability.', fan: 4 },
+    { label: 'Retinal Reliability Score', detail: 'A score with reason codes saying why a prediction can or cannot be trusted.' },
+  ]}
+/>
+
 <Todo inline={false}>problem statement</Todo>
 
 ## Method

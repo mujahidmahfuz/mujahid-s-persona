@@ -14,15 +14,22 @@ interface Props {
   title: string;
   steps: Step[];
   source: string;
+  /** documented = taken from the project's own docs/code; conceptual = an outline of an idea or plan */
+  kind?: 'documented' | 'conceptual';
 }
-const { title, steps, source } = Astro.props;
+const { title, steps, source, kind = 'documented' } = Astro.props;
 const n = steps.length;
 ---
 
 <figure class="flow my-10 rounded-card border border-blue-200 bg-blue-050 p-5 md:p-6" data-flow data-reveal style={`--n:${n}`}>
   <figcaption class="flex flex-wrap items-baseline justify-between gap-2">
-    <span class="font-display text-lg font-bold text-blue">{title}</span>
-    <span class="text-xs text-muted">Source: {source}</span>
+    <span class="font-serif text-xl font-semibold text-verdigris">{title}</span>
+    <span class="flex flex-wrap items-center gap-2 text-xs text-ink-soft">
+      <span class="label-mono rounded-[2px] border border-ink-soft px-1.5 py-0.5">
+        {kind === 'conceptual' ? 'Conceptual diagram' : 'Documented process'}
+      </span>
+      Source: {source}
+    </span>
   </figcaption>
   <ol class="mt-5 flex flex-col gap-3 lg:flex-row lg:items-stretch lg:gap-0">
     {steps.map((s, i) => (

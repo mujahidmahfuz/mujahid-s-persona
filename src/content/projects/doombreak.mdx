@@ -46,5 +46,16 @@ explainers:
 - **AI coaching** — the app calls a FastAPI service, which uses Groq to run Llama 3.3 70B.
 - **Native usage tracking** (Kotlin), a **Net Momentum** score, **streaks** and **CSV export**.
 
+<Flow
+  title="A session, as the app sees it"
+  source="EXPLAINERS §3 and CONTENT-INVENTORY §4"
+  steps={[
+    { label: 'Session timer', detail: 'A state machine tracks the scrolling session.' },
+    { label: 'Escalating reminders', detail: 'Reminders grow firmer as the session runs on.' },
+    { label: 'Lock overlay', detail: 'A full-screen overlay interrupts the scroll.' },
+    { label: '“Save Me”', detail: 'Ask the app for help breaking the loop; AI coaching via FastAPI + Groq.' },
+  ]}
+/>
+
 The app is in closed testing on Google Play.
 

@@ -1,12 +1,10 @@
 ---
-/** Publications: research entries with a DOI or an accepted/published status (SPEC §2). Metadata from Crossref. */
+/** The library: published papers as paper objects (Website_Redesign.md §9–10). Metadata from Crossref. */
 import BaseLayout from '~/layouts/BaseLayout.astro';
-import Citation from '~/components/Citation.astro';
-import BibtexButton from '~/components/BibtexButton.astro';
-import StatusBadge from '~/components/StatusBadge.astro';
-import { getResearch, bibtex, journalBadge } from '~/lib/content';
-import JournalBadge from '~/components/JournalBadge.astro';
-import { entryPath, withBase } from '~/lib/paths';
+import PageIntro from '~/components/PageIntro.astro';
+import PaperObject from '~/components/PaperObject.astro';
+import { getResearch } from '~/lib/content';
+import { withBase } from '~/lib/paths';
 import { SITE } from '~/lib/site';
 
 const pubs = (await getResearch())
@@ -14,38 +12,28 @@ const pubs = (await getResearch())
   .sort((a, b) => (b.cite.year ?? 0) - (a.cite.year ?? 0) || a.cite.title.localeCompare(b.cite.title));
 ---
 
-<BaseLayout title="Publications" description="Peer-reviewed publications by Md Mujahidul Islam, with citations and BibTeX.">
-  <div class="container-site py-12 md:py-16">
-    <h1>Publications</h1>
-    <p class="mt-4 max-w-prose text-muted">
-      Titles, authors and venues are pulled from Crossref by DOI at build time. Work in progress is listed on the{' '}
-      <a href={withBase('/research/')}>research page</a>. Full list also on{' '}
-      <a href={`https://orcid.org/${SITE.orcidId}`}>ORCID</a>.
-    </p>
-    <ol class="mt-10 max-w-4xl space-y-10">
-      {pubs.map((p) => (
-        <li class="flex flex-col gap-5 border-l-4 border-blue pl-5 sm:flex-row sm:items-start" data-reveal>
-          {journalBadge(p) && <JournalBadge badge={journalBadge(p)!} size={96} reveal={false} />}
-          <div class="min-w-0 flex-1">
-            <div class="mb-2 flex flex-wrap items-center gap-3">
-              <StatusBadge status={p.data.status} />
-              {p.data.featured && <span class="text-sm font-semibold text-pink-ink">Featured</span>}
-            </div>
-            <Citation cite={p.cite} />
-            <p class="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm font-semibold">
-              <a href={entryPath(p)}>
-                Plain-language summary<span class="sr-only"> of {p.cite.title}</span>
-              </a>
-              {p.data.doi && (
-                <a href={`https://doi.org/${p.data.doi}`}>
-                  DOI<span class="sr-only"> for {p.cite.title}</span>
-                </a>
-              )}
-            </p>
-            {p.data.doi && bibtex(p.data.doi) && <BibtexButton bibtex={bibtex(p.data.doi)!} id={p.id} />}
-          </div>
-        </li>
+<BaseLayout title="Publications" description="Peer-reviewed publications by Md Mujahidul Islam, with citations, DOIs and BibTeX.">
+  <PageIntro
+    eyebrow="Chapter III · The library"
+    title="Publications"
+    lede="Work that has passed peer review. Each paper keeps its full bibliographic record, a citation you can copy, and a way in."
+    epigraph="publications"
+    treatment="plate"
+    layout="stacked"
+  />
+  <div class="container-site py-14">
+    <div class="space-y-16">
+      {pubs.map((p, i) => (
+        <PaperObject entry={p} folio={`P-${String(i + 1).padStart(2, '0')}`} />
       ))}
-    </ol>
+    </div>
+    <aside class="mt-16 max-w-3xl border-t border-rule pt-6 text-sm text-ink-soft">
+      <p>
+        <strong class="text-ink">About the covers.</strong> The cover images are original artwork made for this site from each
+        paper's idea — they are not the publishers' journal covers. Titles, authors, venues, volumes and years come from Crossref
+        by DOI at build time. The full list is also on <a href={`https://orcid.org/${SITE.orcidId}`}>ORCID</a>; work in progress
+        is under <a href={withBase('/research/')}>Research</a>.
+      </p>
+    </aside>
   </div>
 </BaseLayout>

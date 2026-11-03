@@ -32,7 +32,7 @@ src/components/Explainer.astro  # used in MDX: <Explainer id="bwa-barycenter" />
 - `@react-three/fiber` + `@react-three/drei`. Import only from inside the island file.
 - `<Canvas frameloop="demand" dpr={[1, 2]}>`; invalidate only on interaction or animation; stop when off-screen / tab hidden.
 - `OrbitControls` with damping, zoom limits, no pan by default; reset-view button; keyboard alternatives (arrow keys rotate, +/- zoom, R reset).
-- Background `#09318d` or `#061f5c`; primary geometry white; highlighted element pink (`#fd91cc`), optionally emissive.
+- Background petrol `#17363d` or verdigris `#1d4b45`; primary geometry ivory; highlighted element terracotta (`#b65d42`) or saffron (`#d3a13c`), optionally emissive.
 - Labels via drei `<Html>` (real DOM text, readable by screen readers) — not baked into textures.
 - Assets: glTF/GLB, compressed (meshopt or Draco), ≤ 1.5 MB per scene. Molecules: load PDB files with a lightweight parser, or use a free viewer (3Dmol.js / Mol*) inside the island.
 - No post-processing (bloom etc.) unless measured cost is < 2 ms/frame on a mid-range laptop.
@@ -81,3 +81,14 @@ Inputs needed from Muja are marked **NEED**.
 | **CampusOS / T2R / Music-inspired ML** | System/pipeline diagram | System Map | Muja decides visibility and status |
 
 Every row above is a plan, not a fact. Claude Code must not build an explainer whose NEED column is unmet; build the next one instead and list the blocker in `TODO-MUJA.md`.
+
+## 4. Redesign notes (Nov 2026)
+
+- Colours inside explainers follow `docs/DESIGN.md`: indigo `#354a87` for the main series, terracotta
+  `#b65d42` for the highlighted/compared series (≥ 3:1 on ivory), rule `#c9b186` for grid lines, ink
+  `#26332e` for text. Dark scene backgrounds use petrol `#17363d`.
+- `<Flow>` (SSR, CSS-animated) is the lightweight visual for papers/projects without an interactive
+  explainer. It must say what it is: `kind="documented"` (steps taken from a README, report or code) or
+  `kind="conceptual"` (an outline of an idea). Every step must come from the cited `source`.
+- Explainer boxes are 4:3 on desktop and 3:5 on phones; figures have a minimum width so text stays ≥ 12 px
+  and scroll sideways on small screens (the scroll region is focusable).

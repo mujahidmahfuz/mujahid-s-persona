@@ -76,16 +76,36 @@ export const EPIGRAPHS: Epigraph[] = [
   },
 
   // ---------- research ----------
-  { id: 'research/bwa-bootstrap-wasserstein-alignment', type: 'quran', ref: '17:36', why: 'Do not follow what you have no knowledge of — evidence for explanations.' },
+  {
+    id: 'research/bwa-bootstrap-wasserstein-alignment',
+    type: 'quran',
+    ref: '17:36',
+    why: 'Do not follow what you have no knowledge of — evidence for explanations.',
+  },
   { id: 'research/qip-2025', type: 'quran', ref: '67:3-4', why: 'Look again, and again, for flaws — the adversarial gaze.' },
   { id: 'research/sleep-continual-learning', type: 'quran', ref: '30:23', why: 'Sleep by night and day among the signs.' },
-  { id: 'research/lossmap-photonic-loss', type: 'quran', ref: '6:59', why: 'What is unseen and what is lost — humility in inference.' },
+  {
+    id: 'research/lossmap-photonic-loss',
+    type: 'quran',
+    ref: '6:59',
+    why: 'What is unseen and what is lost — humility in inference.',
+  },
   { id: 'research/nv-center-odmr', type: 'quran', ref: '54:49', why: 'All things created in measure — measurement.' },
   { id: 'research/bee-venom-target-prioritisation', type: 'quran', ref: '16:68-69', why: 'The bee, and healing for people.' },
   { id: 'research/retinal-reliability', type: 'quran', ref: '16:78', why: 'Hearing, sight and understanding as gifts.' },
   { id: 'research/dicke-measurement-timing', type: 'quran', ref: '55:5', why: 'Precise calculation — circuits and timing.' },
-  { id: 'research/pauli-frame-repeater-overhead', type: 'quran', ref: '18:66', why: 'Asking to learn what others were taught — re-deriving known results.' },
-  { id: 'research/photonic-qec-ai', type: 'quran', ref: '59:18', why: 'Look to what is sent forward for tomorrow — forecasting.' },
+  {
+    id: 'research/pauli-frame-repeater-overhead',
+    type: 'quran',
+    ref: '18:66',
+    why: 'Asking to learn what others were taught — re-deriving known results.',
+  },
+  {
+    id: 'research/photonic-qec-ai',
+    type: 'quran',
+    ref: '59:18',
+    why: 'Look to what is sent forward for tomorrow — forecasting.',
+  },
   { id: 'research/music-inspired-ml', type: 'quran', ref: '55:7-8', why: 'The balance — regulation and rhythm.' },
 
   // ---------- projects ----------
@@ -100,9 +120,19 @@ export const EPIGRAPHS: Epigraph[] = [
   { id: 'projects/pqc-arduino', type: 'quran', ref: '15:19', why: 'Every well-balanced thing — fitting within a budget.' },
   { id: 'projects/llm-council', type: 'quran', ref: '42:38', why: 'Affairs decided by consultation — a council.' },
   { id: 'projects/ai-orchestrator', type: 'quran', ref: '4:135', why: 'Standing firm in justice — a fair judge.' },
-  { id: 'projects/pl-2025-prediction', type: 'quran', ref: '31:34', why: 'No soul knows what it will earn tomorrow — prediction.' },
+  {
+    id: 'projects/pl-2025-prediction',
+    type: 'quran',
+    ref: '31:34',
+    why: 'No soul knows what it will earn tomorrow — prediction.',
+  },
   { id: 'projects/pqc-openvpn', type: 'quran', ref: '4:58', why: 'Render trusts to whom they are due — secure channels.' },
-  { id: 'projects/campusos', type: 'quran', ref: '49:13', why: 'Peoples and tribes, so that you may know one another — a campus.' },
+  {
+    id: 'projects/campusos',
+    type: 'quran',
+    ref: '49:13',
+    why: 'Peoples and tribes, so that you may know one another — a campus.',
+  },
   { id: 'projects/thought-to-reality', type: 'quran', ref: '17:70', why: 'The dignity of every person — assistive technology.' },
   {
     id: 'projects/aura-accessibility',
@@ -161,7 +191,12 @@ export const EPIGRAPHS: Epigraph[] = [
   { id: 'pool/18', type: 'quran', ref: '47:24', why: 'Do they not reflect?' },
   { id: 'pool/19', type: 'quran', ref: '6:96', why: 'Cleaver of the daybreak, a measured reckoning.' },
   { id: 'pool/20', type: 'quran', ref: '36:38', why: 'The sun runs to its resting place.' },
-  { id: 'pool/21', type: 'quran', ref: '94:7-8', why: 'When you have finished, then stand up — and to your Lord direct your longing.' },
+  {
+    id: 'pool/21',
+    type: 'quran',
+    ref: '94:7-8',
+    why: 'When you have finished, then stand up — and to your Lord direct your longing.',
+  },
   { id: 'pool/22', type: 'quran', ref: '23:115', why: 'Did you think We created you without purpose?' },
   { id: 'pool/23', type: 'quran', ref: '57:20', why: 'The life of this world, like rain and its plants.' },
   { id: 'pool/24', type: 'quran', ref: '38:29', why: 'A blessed book so they may reflect.' },

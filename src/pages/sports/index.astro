@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '~/layouts/BaseLayout.astro';
+import PageIntro from '~/components/PageIntro.astro';
 import Card from '~/components/Card.astro';
 import VideoCard from '~/components/VideoCard.astro';
 import { getPublic, formatRange, dateKey } from '~/lib/content';
@@ -13,10 +14,17 @@ const videos = (await getPublic('videos'))
 ---
 
 <BaseLayout title="Sports" description="Soccer with the Tokyo International University team — leagues, highlights and videos.">
-  <div class="container-site py-12 md:py-16">
-    <h1>Sports</h1>
-    <p class="mt-4 max-w-prose text-muted">Teams I have played for, the leagues we competed in, and match videos.</p>
-
+  <PageIntro
+    eyebrow="Chapter V · The pitch"
+    title="Sports"
+    lede="Another kind of discipline — the one with teammates, weather, and a final whistle."
+    epigraph="sports"
+    treatment="verse"
+    layout="stacked"
+  >
+    <p class="mt-5 max-w-xl text-ink-soft">Teams I have played for, the leagues we competed in, and match videos.</p>
+  </PageIntro>
+  <div class="container-site py-12 md:py-14">
     {teams[0] && teams[0].data.org === 'Tokyo International University' && (
       <div class="mt-8">
         <TiuBadges team={`${teams[0].data.team} — ${teams[0].data.org}`} leagues={teams[0].data.leagues} />

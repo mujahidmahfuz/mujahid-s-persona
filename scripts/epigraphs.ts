@@ -8,6 +8,7 @@
  * Network failures keep the existing cache (never fails the build). Run: npm run epigraphs
  */
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
 import { join } from 'node:path';
 import { EPIGRAPHS, type LiteratureEpigraph, type QuranEpigraph } from '../src/data/epigraphs.ts';
 
@@ -27,7 +28,9 @@ function stripBasmala(text: string): string {
 type Verse = { n: number; arabic: string; english: string };
 type Entry = { surah: { number: number; name: string; englishName: string; englishNameTranslation: string }; verses: Verse[] };
 const quran: Record<string, Entry> = existsSync(QFILE) ? JSON.parse(readFileSync(QFILE, 'utf8')) : {};
-const verified: Record<string, { ok: boolean; url: string; checkedAt: string }> = existsSync(VFILE) ? JSON.parse(readFileSync(VFILE, 'utf8')) : {};
+const verified: Record<string, { ok: boolean; url: string; checkedAt: string }> = existsSync(VFILE)
+  ? JSON.parse(readFileSync(VFILE, 'utf8'))
+  : {};
 
 async function getJson(url: string): Promise<unknown> {
   const res = await fetch(url, { signal: AbortSignal.timeout(20000), headers: { 'User-Agent': 'muja-research-site/1.0' } });
@@ -57,7 +60,12 @@ for (const e of EPIGRAPHS.filter((x): x is QuranEpigraph => x.type === 'quran'))
       let arabic = ar.text.trim();
       if (v === 1 && s !== 1 && s !== 9) arabic = stripBasmala(arabic);
       verses.push({ n: ar.numberInSurah, arabic, english: en.text.trim() });
-      surah = { number: ar.surah.number, name: ar.surah.name, englishName: ar.surah.englishName, englishNameTranslation: ar.surah.englishNameTranslation };
+      surah = {
+        number: ar.surah.number,
+        name: ar.surah.name,
+        englishName: ar.surah.englishName,
+        englishNameTranslation: ar.surah.englishNameTranslation,
+      };
     }
     quran[e.ref] = { surah: surah!, verses };
     fetched++;
@@ -82,4 +90,13 @@ for (const e of EPIGRAPHS.filter((x): x is LiteratureEpigraph => ['literature', 
 writeFileSync(VFILE, `${JSON.stringify(verified, null, 2)}\n`);
 
 const missing = EPIGRAPHS.filter((e) => e.type === 'quran' && !quran[(e as QuranEpigraph).ref]).map((e) => e.id);
-console.info(`epigraphs: ${fetched} Quran references fetched, ${Object.keys(quran).length} cached; ${Object.values(verified).filter((v) => v.ok).length}/${Object.keys(verified).length} quotations verified${missing.length ? `; MISSING: ${missing.join(', ')}` : ''}`);
+console.info(
+  `epigraphs: ${fetched} Quran references fetched, ${Object.keys(quran).length} cached; ${Object.values(verified).filter((v) => v.ok).length}/${Object.keys(verified).length} quotations verified${missing.length ? `; MISSING: ${missing.join(', ')}` : ''}`,
+);
+
+// Re-subset the Arabic font to the characters now in use (needs python3 + fontTools; skipped otherwise).
+if (fetched > 0) {
+  const r = spawnSync('python3', ['scripts/subset-arabic.py'], { stdio: 'inherit' });
+  if (r.status !== 0)
+    console.warn('epigraphs: warning: could not re-subset the Arabic font (python3 + fontTools needed); the old subset is kept');
+}

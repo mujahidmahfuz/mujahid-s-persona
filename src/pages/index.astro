@@ -28,7 +28,12 @@ const featuredResearch = research
   .slice(0, 3);
 const featuredProjects = projects
   .filter((p) => p.data.status !== 'concept')
-  .sort((a, b) => Number(b.data.featured) - Number(a.data.featured) || b.data.highlights.length - a.data.highlights.length || a.id.localeCompare(b.id))
+  .sort(
+    (a, b) =>
+      Number(b.data.featured) - Number(a.data.featured) ||
+      b.data.highlights.length - a.data.highlights.length ||
+      a.id.localeCompare(b.id),
+  )
   .slice(0, 3);
 const publications = research.filter((r) => r.data.doi).sort((a, b) => (b.cite.year ?? 0) - (a.cite.year ?? 0));
 const onDesk = [...research, ...projects]
@@ -42,7 +47,10 @@ const teaching = (await getPublic('experience')).filter((e) => e.data.type === '
 // Questions the work keeps returning to — each paraphrases the linked page's own problem statement.
 const find = (id: string) => [...research, ...projects].find((e) => e.id === id);
 const QUESTIONS = [
-  { q: 'How can an explanation stay steady when there are far fewer examples than features?', id: 'bwa-bootstrap-wasserstein-alignment' },
+  {
+    q: 'How can an explanation stay steady when there are far fewer examples than features?',
+    id: 'bwa-bootstrap-wasserstein-alignment',
+  },
   { q: 'When should a learning machine sleep — and how often is enough?', id: 'sleep-continual-learning' },
   { q: 'Could a photonic quantum computer that tracks its own losses tolerate more of them?', id: 'lossmap-photonic-loss' },
   { q: 'Is a council of models, judging each other blind, better than any one of them?', id: 'llm-council' },
@@ -83,33 +91,36 @@ const person = {
       <div class="relative">
         <p class="label-mono text-terracotta-ink">Folio I · Tokyo International University</p>
         <h1 id="hero-title" class="mt-5 text-[clamp(3rem,2.2rem+3.4vw,5.6rem)] leading-[0.95]">
-          Md Mujahidul<br /><span class="italic">Islam</span>
+          Md Mujahidul
+          <br />
+          <span class="italic">Islam</span>
         </h1>
         <p class="mt-7 max-w-xl font-serif text-[clamp(1.35rem,1.15rem+0.8vw,1.85rem)] leading-snug text-ink italic">
-          An unfinished atlas of the questions I keep returning to — how machines explain themselves, how they remember, and how the quantum world computes.
+          An unfinished atlas of the questions I keep returning to — how machines explain themselves, how they remember, and how
+          the quantum world computes.
         </p>
         <p class="mt-6 max-w-xl text-ink-soft">{SHORT_BIO}</p>
         <nav aria-label="Contents" class="mt-10 max-w-xl">
           <p class="label-mono text-ink-soft">Contents</p>
           <ol class="mt-3 divide-y divide-rule border-y border-rule">
-            {
-              CONTENTS.map((c) => (
-                <li>
-                  <a href={withBase(c.href)} class="contents-row group flex items-baseline gap-4 py-2.5 text-ink no-underline">
-                    <span class="label-mono w-8 text-terracotta-ink">{c.n}</span>
-                    <span class="font-serif text-xl font-semibold text-verdigris group-hover:underline">{c.label}</span>
-                    <span class="contents-leader flex-1 border-b border-dotted border-rule" aria-hidden="true" />
-                    <span class="label-mono text-ink-soft normal-case">{c.note}</span>
-                  </a>
-                </li>
-              ))
-            }
+            {CONTENTS.map((c) => (
+              <li>
+                <a href={withBase(c.href)} class="contents-row group flex items-baseline gap-4 py-2.5 text-ink no-underline">
+                  <span class="label-mono w-8 text-terracotta-ink">{c.n}</span>
+                  <span class="font-serif text-xl font-semibold text-verdigris group-hover:underline">{c.label}</span>
+                  <span class="contents-leader flex-1 border-b border-dotted border-rule" aria-hidden="true" />
+                  <span class="label-mono text-ink-soft normal-case">{c.note}</span>
+                </a>
+              </li>
+            ))}
           </ol>
         </nav>
       </div>
-      <div class="mx-auto w-full max-w-[34rem]">
+      <div class="mx-auto w-full max-w-[40rem]">
         <CelestialInstrument />
-        <p class="label-mono mt-3 text-center text-ink-soft normal-case">Six chapters of work — the markers grow with what each holds. Choose one to begin.</p>
+        <p class="label-mono mt-3 text-center text-ink-soft normal-case">
+          Six chapters of work — the markers grow with what each holds. Choose one to begin.
+        </p>
       </div>
     </div>
   </section>
@@ -126,38 +137,50 @@ const person = {
     <div class="flex flex-wrap items-end justify-between gap-4 border-b border-rule pb-4">
       <div>
         <p class="label-mono text-terracotta-ink">Chapter I</p>
-        <h2 id="featured-research" class="mt-2">What I am trying to understand</h2>
+        <h2 id="featured-research" class="mt-2">
+          What I am trying to understand
+        </h2>
       </div>
-      <a href={withBase('/research/')} class="font-semibold">All research <span aria-hidden="true">→</span></a>
+      <a href={withBase('/research/')} class="font-semibold">
+        All research <span aria-hidden="true">→</span>
+      </a>
     </div>
     <ol class="mt-2" data-reveal-group>
-      {
-        featuredResearch.map((r, i) => (
-          <li class="research-row grid gap-6 border-b border-rule py-8 md:grid-cols-[4rem_minmax(0,1fr)_12rem] md:items-start" data-chapter={chapterFor(r.data.areas)}>
-            <span class="font-serif text-4xl text-[var(--accent)] italic">{roman[i]}</span>
-            <div>
-              <p class="label-mono text-ink-soft">
-                {CHAPTER_LABEL[chapterFor(r.data.areas)]} · {[r.cite.venue, r.cite.year ?? yearOf(r.data.date)].filter(Boolean).join(' · ')}
-              </p>
-              <h3 class="mt-2 text-[clamp(1.5rem,1.25rem+0.9vw,2.1rem)]">
-                <a href={entryPath(r)} class="text-verdigris no-underline hover:underline">
-                  {r.data.title}
-                </a>
-              </h3>
-              <p class="mt-3 max-w-2xl text-ink">{r.data.summary}</p>
-              <div class="mt-4 flex flex-wrap items-center gap-3">
-                <StatusBadge status={r.data.status} />
-                <a href={entryPath(r)} class="text-sm font-semibold">
-                  Enter the paper <span aria-hidden="true">→</span>
-                </a>
-              </div>
+      {featuredResearch.map((r, i) => (
+        <li
+          class="research-row grid gap-6 border-b border-rule py-8 md:grid-cols-[4rem_minmax(0,1fr)_12rem] md:items-start"
+          data-chapter={chapterFor(r.data.areas)}
+        >
+          <span class="font-serif text-4xl text-[var(--accent)] italic">{roman[i]}</span>
+          <div>
+            <p class="label-mono text-ink-soft">
+              {CHAPTER_LABEL[chapterFor(r.data.areas)]} ·{' '}
+              {[r.cite.venue, r.cite.year ?? yearOf(r.data.date)].filter(Boolean).join(' · ')}
+            </p>
+            <h3 class="mt-2 text-[clamp(1.5rem,1.25rem+0.9vw,2.1rem)]">
+              <a href={entryPath(r)} class="text-verdigris no-underline hover:underline">
+                {r.data.title}
+              </a>
+            </h3>
+            <p class="mt-3 max-w-2xl text-ink">{r.data.summary}</p>
+            <div class="mt-4 flex flex-wrap items-center gap-3">
+              <StatusBadge status={r.data.status} />
+              <a href={entryPath(r)} class="text-sm font-semibold">
+                Enter the paper <span aria-hidden="true">→</span>
+              </a>
             </div>
-            <a href={entryPath(r)} class="hidden md:block" tabindex="-1" aria-hidden="true">
-              <PaperCover id={r.id} title={r.data.title} chapter={chapterFor(r.data.areas)} folio={`R-${String(i + 1).padStart(2, '0')}`} size="thumb" />
-            </a>
-          </li>
-        ))
-      }
+          </div>
+          <a href={entryPath(r)} class="hidden md:block" tabindex="-1" aria-hidden="true">
+            <PaperCover
+              id={r.id}
+              title={r.data.title}
+              chapter={chapterFor(r.data.areas)}
+              folio={`R-${String(i + 1).padStart(2, '0')}`}
+              size="thumb"
+            />
+          </a>
+        </li>
+      ))}
     </ol>
   </section>
 
@@ -167,40 +190,49 @@ const person = {
       <div class="grid gap-6 md:grid-cols-[1fr_1.2fr] md:items-end">
         <div>
           <p class="label-mono text-terracotta-ink">Chapter II</p>
-          <h2 id="workshop" class="mt-2">The workshop</h2>
+          <h2 id="workshop" class="mt-2">
+            The workshop
+          </h2>
         </div>
         <p class="max-w-xl text-ink-soft md:justify-self-end">
-          Things I have built to see whether an idea survives contact with reality. Each card turns over for a short account; the status says how far it got.
+          Things I have built to see whether an idea survives contact with reality. Each card turns over for a short account; the
+          status says how far it got.
         </p>
       </div>
       <ul class="mt-10 grid gap-6 md:grid-cols-3" data-reveal-group>
-        {
-          featuredProjects.map((p) => (
-            <li data-chapter={chapterFor(p.data.areas)}>
-              <Card
-                variant="project"
-                href={entryPath(p)}
-                title={p.data.title}
-                summary={p.data.summary}
-                status={p.data.status}
-                tags={p.data.stack}
-                meta={formatRange(p.data.period.start, p.data.period.end, 'ongoing')}
-              />
-            </li>
-          ))
-        }
+        {featuredProjects.map((p) => (
+          <li data-chapter={chapterFor(p.data.areas)}>
+            <Card
+              variant="project"
+              href={entryPath(p)}
+              title={p.data.title}
+              summary={p.data.summary}
+              status={p.data.status}
+              tags={p.data.stack}
+              meta={formatRange(p.data.period.start, p.data.period.end, 'ongoing')}
+            />
+          </li>
+        ))}
       </ul>
-      <p class="mt-8 text-right"><a href={withBase('/projects/')} class="font-semibold">Everything in the workshop <span aria-hidden="true">→</span></a></p>
+      <p class="mt-8 text-right">
+        <a href={withBase('/projects/')} class="font-semibold">
+          Everything in the workshop <span aria-hidden="true">→</span>
+        </a>
+      </p>
     </div>
   </section>
 
   <!-- 5 · Publications -->
   <section class="container-site py-20" aria-labelledby="library">
     <p class="label-mono text-terracotta-ink">Chapter III</p>
-    <h2 id="library" class="mt-2">From the library</h2>
+    <h2 id="library" class="mt-2">
+      From the library
+    </h2>
     <p class="mt-3 max-w-2xl text-ink-soft">Work that has passed peer review and found a home in a journal.</p>
     <div class="mt-10 grid gap-12 xl:grid-cols-2">
-      {publications.map((p, i) => <PaperObject entry={p} folio={`P-${String(i + 1).padStart(2, '0')}`} compact />)}
+      {publications.map((p, i) => (
+        <PaperObject entry={p} folio={`P-${String(i + 1).padStart(2, '0')}`} compact />
+      ))}
     </div>
   </section>
 
@@ -209,25 +241,27 @@ const person = {
     <div class="container-site grid gap-10 md:grid-cols-[18rem_1fr]">
       <div>
         <p class="label-mono text-terracotta-ink">Current explorations</p>
-        <h2 id="desk" class="mt-2 text-[clamp(1.7rem,1.4rem+1vw,2.3rem)]">On the desk now</h2>
-        <p class="mt-3 text-sm text-ink-soft">Unfinished, and labelled as such. Some will become papers; some will become lessons.</p>
+        <h2 id="desk" class="mt-2 text-[clamp(1.7rem,1.4rem+1vw,2.3rem)]">
+          On the desk now
+        </h2>
+        <p class="mt-3 text-sm text-ink-soft">
+          Unfinished, and labelled as such. Some will become papers; some will become lessons.
+        </p>
       </div>
       <ul class="grid gap-x-10 sm:grid-cols-2" data-reveal-group>
-        {
-          onDesk.map((e) => (
-            <li class="flex items-baseline gap-3 border-b border-dotted border-rule py-3" data-chapter={chapterFor(e.data.areas)}>
-              <span class="mt-1 inline-block h-2.5 w-2.5 shrink-0 rounded-full bg-[var(--accent)]" aria-hidden="true" />
-              <span class="min-w-0">
-                <a href={entryPath(e)} class="font-serif text-lg font-semibold text-verdigris no-underline hover:underline">
-                  {e.data.title}
-                </a>
-                <span class="label-mono block text-ink-soft normal-case">
-                  {e.data.status.replace('-', ' ')} · {CHAPTER_LABEL[chapterFor(e.data.areas)]}
-                </span>
+        {onDesk.map((e) => (
+          <li class="flex items-baseline gap-3 border-b border-dotted border-rule py-3" data-chapter={chapterFor(e.data.areas)}>
+            <span class="mt-1 inline-block h-2.5 w-2.5 shrink-0 rounded-full bg-[var(--accent)]" aria-hidden="true" />
+            <span class="min-w-0">
+              <a href={entryPath(e)} class="font-serif text-lg font-semibold text-verdigris no-underline hover:underline">
+                {e.data.title}
+              </a>
+              <span class="label-mono block text-ink-soft normal-case">
+                {e.data.status.replace('-', ' ')} · {CHAPTER_LABEL[chapterFor(e.data.areas)]}
               </span>
-            </li>
-          ))
-        }
+            </span>
+          </li>
+        ))}
       </ul>
     </div>
   </section>
@@ -237,24 +271,28 @@ const person = {
     <div class="grid gap-10 md:grid-cols-[1fr_1.4fr]">
       <div>
         <p class="label-mono text-terracotta-ink">Chapter IV</p>
-        <h2 id="ledger" class="mt-2">A short ledger</h2>
-        <p class="mt-3 max-w-sm text-ink-soft">Not a scoreboard — a few moments that marked the way, with their context on each page.</p>
-        <a href={withBase('/achievements/')} class="mt-5 inline-block font-semibold">The full ledger <span aria-hidden="true">→</span></a>
+        <h2 id="ledger" class="mt-2">
+          A short ledger
+        </h2>
+        <p class="mt-3 max-w-sm text-ink-soft">
+          Not a scoreboard — a few moments that marked the way, with their context on each page.
+        </p>
+        <a href={withBase('/achievements/')} class="mt-5 inline-block font-semibold">
+          The full ledger <span aria-hidden="true">→</span>
+        </a>
       </div>
       <ol class="border-t-2 border-ink" data-reveal-group>
-        {
-          awards.map((a) => (
-            <li class="grid grid-cols-[5.5rem_1fr] gap-4 border-b border-rule py-4">
-              <span class="label-mono pt-1 text-ink-soft">{formatDate(a.data.date) ?? '—'}</span>
-              <span>
-                <a href={entryPath(a)} class="font-serif text-xl font-semibold text-verdigris no-underline hover:underline">
-                  {a.data.title}
-                </a>
-                {show(a.data.description) && <span class="mt-1 block text-sm text-ink-soft">{a.data.description}</span>}
-              </span>
-            </li>
-          ))
-        }
+        {awards.map((a) => (
+          <li class="grid grid-cols-[5.5rem_1fr] gap-4 border-b border-rule py-4">
+            <span class="label-mono pt-1 text-ink-soft">{formatDate(a.data.date) ?? '—'}</span>
+            <span>
+              <a href={entryPath(a)} class="font-serif text-xl font-semibold text-verdigris no-underline hover:underline">
+                {a.data.title}
+              </a>
+              {show(a.data.description) && <span class="mt-1 block text-sm text-ink-soft">{a.data.description}</span>}
+            </span>
+          </li>
+        ))}
       </ol>
     </div>
   </section>
@@ -263,26 +301,27 @@ const person = {
   <section class="bg-petrol py-20 text-ivory" data-surface="dark" aria-labelledby="beyond">
     <div class="container-site">
       <p class="label-mono text-saffron-light">Chapter V</p>
-      <h2 id="beyond" class="mt-2">Beyond the desk</h2>
+      <h2 id="beyond" class="mt-2">
+        Beyond the desk
+      </h2>
       <div class="mt-10 grid gap-10 md:grid-cols-2">
-        {
-          sports && (
-            <article class="flex gap-6" data-reveal>
-              <span class="shrink-0 self-start rounded-md bg-ivory p-2">
-                <Image src={tiuSeal} alt="Tokyo International University seal" width={88} height={88} class="h-[88px] w-[88px]" />
-              </span>
-              <div>
-                <p class="label-mono text-saffron-light">On the pitch · {formatRange(sports.data.start, sports.data.end)}</p>
-                <h3 class="mt-2 text-2xl">
-                  <a href={entryPath(sports)}>{sports.data.team}</a>
-                </h3>
-                <p class="mt-2 text-ivory/90">
-                  {sports.data.sport} for {sports.data.org}, in the {sports.data.leagues.join(' and the ')}. A different kind of discipline: ninety minutes, eleven people, no undo.
-                </p>
-              </div>
-            </article>
-          )
-        }
+        {sports && (
+          <article class="flex gap-6" data-reveal>
+            <span class="shrink-0 self-start rounded-md bg-ivory p-2">
+              <Image src={tiuSeal} alt="Tokyo International University seal" width={88} height={88} class="h-[88px] w-[88px]" />
+            </span>
+            <div>
+              <p class="label-mono text-saffron-light">On the pitch · {formatRange(sports.data.start, sports.data.end)}</p>
+              <h3 class="mt-2 text-2xl">
+                <a href={entryPath(sports)}>{sports.data.team}</a>
+              </h3>
+              <p class="mt-2 text-ivory/90">
+                {sports.data.sport} for {sports.data.org}, in the {sports.data.leagues.join(' and the ')}. A different kind of
+                discipline: ninety minutes, eleven people, no undo.
+              </p>
+            </div>
+          </article>
+        )}
         <article data-reveal>
           <p class="label-mono text-saffron-light">In the classroom</p>
           <h3 class="mt-2 text-2xl">Teaching, and being taught by it</h3>
@@ -302,27 +341,36 @@ const person = {
   <!-- 9 · Questions, then the door -->
   <section class="container-site py-20" aria-labelledby="questions">
     <p class="label-mono text-terracotta-ink">Personal reflections</p>
-    <h2 id="questions" class="mt-2">Questions I keep coming back to</h2>
+    <h2 id="questions" class="mt-2">
+      Questions I keep coming back to
+    </h2>
     <ol class="mt-8 max-w-4xl" data-reveal-group>
-      {
-        QUESTIONS.map((x, i) => (
-          <li class="flex gap-5 border-b border-rule py-5" data-chapter={chapterFor(x.entry!.data.areas)}>
-            <span class="label-mono pt-2 text-[var(--accent-ink)]">Q{i + 1}</span>
-            <a href={entryPath(x.entry!)} class="font-serif text-[clamp(1.35rem,1.15rem+0.7vw,1.85rem)] leading-snug text-ink italic no-underline hover:underline">
-              {x.q}
-            </a>
-          </li>
-        ))
-      }
+      {QUESTIONS.map((x, i) => (
+        <li class="flex gap-5 border-b border-rule py-5" data-chapter={chapterFor(x.entry!.data.areas)}>
+          <span class="label-mono pt-2 text-[var(--accent-ink)]">Q{i + 1}</span>
+          <a
+            href={entryPath(x.entry!)}
+            class="font-serif text-[clamp(1.35rem,1.15rem+0.7vw,1.85rem)] leading-snug text-ink italic no-underline hover:underline"
+          >
+            {x.q}
+          </a>
+        </li>
+      ))}
     </ol>
     <div class="paper-card mt-16 grid gap-6 rounded-card p-8 md:grid-cols-[1fr_auto] md:items-center md:p-10" data-reveal>
       <div>
-        <p class="font-serif text-[clamp(1.6rem,1.3rem+1vw,2.3rem)] leading-tight text-verdigris">If any of these questions are yours too, write to me.</p>
+        <p class="font-serif text-[clamp(1.6rem,1.3rem+1vw,2.3rem)] leading-tight text-verdigris">
+          If any of these questions are yours too, write to me.
+        </p>
         <p class="mt-2 text-ink-soft">Collaborations, corrections and good arguments are all welcome.</p>
       </div>
       <div class="flex flex-wrap gap-3">
-        <a href={withBase('/contact/')} class="paper-cta is-primary">Begin a conversation</a>
-        <a href={withBase('/cv/')} class="paper-cta">Read the CV</a>
+        <a href={withBase('/contact/')} class="paper-cta is-primary">
+          Begin a conversation
+        </a>
+        <a href={withBase('/cv/')} class="paper-cta">
+          Read the CV
+        </a>
       </div>
     </div>
   </section>

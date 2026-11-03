@@ -200,3 +200,12 @@ Stop. List every file you changed that is not required by the current phase in d
 ```
 Run npm run check and npm run test:e2e now and paste the last 30 lines of each. Then give the QUALITY-GATES §5 report. Do not summarise from memory.
 ```
+
+### Add a page, paper or project (after the redesign)
+
+```
+Add <thing>. Follow docs/DESIGN.md. Give it an epigraph in src/data/epigraphs.ts (Quran: reference only,
+then npm run epigraphs; literature: verified public-domain text; or an "Original reflection"), a chapter,
+and a visual (explainer or <Flow kind="documented|conceptual">) built only from its sources. Check it at
+360 px and 1440 px, then run npm run check and npm run test:e2e.
+```

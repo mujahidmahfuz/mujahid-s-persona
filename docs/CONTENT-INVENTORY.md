@@ -107,3 +107,13 @@ content-source/
 ```
 
 Claude Code reads from here, never from guesses.
+
+## 11. Sources added in Nov 2026
+
+- **GitHub READMEs/code** (github.com/mujahidmahfuz): LLM-Council, ai-orchestrator, PL_2025_ML_Prediction,
+  Post-Quantum-Cryptography-in-OpenVPN, Adaptive-Photonic-Quantum-Computer (= Lossmap; E001 p_c =
+  0.499520 ± 0.000682 vs 0.5), bootstrap-wasserstein-alignment (linked as code only — its README's numbers
+  and "ICML 2025" badge conflict with the published paper), PQC-Arduino.
+- **BWA preprint abstract** (SSRN, doi:10.2139/ssrn.7292748) — method and results on the BWA page.
+- **Epigraphs** are not facts about Muja; they live in `src/data/epigraphs.ts` with their own verification
+  rules (DESIGN §5). Original reflections there were drafted for the site — Muja may replace any of them.

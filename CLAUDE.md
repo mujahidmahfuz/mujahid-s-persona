@@ -6,7 +6,7 @@ Read the doc named for a task **before** starting that task.
 | Task | Read first |
 |---|---|
 | Any page, route, data model | `docs/SPEC.md` |
-| Any colour, font, layout, motion | `docs/DESIGN.md` |
+| Any colour, font, layout, motion, epigraph, page design | `docs/DESIGN.md` (authoritative design reference) |
 | Any 2D/3D explainer | `docs/EXPLAINERS.md` |
 | Writing or showing any fact about Muja | `docs/CONTENT-INVENTORY.md` |
 | Before saying "done" | `docs/QUALITY-GATES.md` |
@@ -43,7 +43,7 @@ Before writing any config file, run `npm ls <package>` and read the installed ve
 
 ### Truthfulness (most important)
 1. **Never invent facts about Muja.** No made-up awards, metrics, dates, co-authors, venues, GPAs, citations, results, quotes or testimonials.
-2. If a fact is missing, insert a visible placeholder: `TODO(muja): <what is needed>` and add it to `TODO-MUJA.md` at repo root. Pages with placeholders still build; the placeholder is rendered as a small dashed pink badge in dev and **hidden in production builds** (see SPEC §7).
+2. If a fact is missing, insert a visible placeholder: `TODO(muja): <what is needed>` and add it to `TODO-MUJA.md` at repo root. Pages with placeholders still build; the placeholder is rendered as a small dashed badge in dev and **hidden in production builds** (see SPEC §7).
 3. Every project has a `status` field: `published | accepted | under-review | in-preparation | in-progress | prototype | concept | archived`. Display it honestly on the card and the page. A concept is never shown as a result.
 4. Publication metadata (title, authors, venue, year) comes from **Crossref by DOI** at build time, with a committed JSON fallback. Never type author lists from memory.
 5. Explainers must be **faithful to the actual method**. If unsure how the method works, stop and ask; do not draw a generic neural network and call it the method. Follow `docs/EXPLAINERS.md` §3 (fidelity protocol).
@@ -57,7 +57,9 @@ Before writing any config file, run `npm ls <package>` and read the installed ve
 9. Build-time fetches must **never fail the build**. On network error, use the cached JSON in `src/data/cache/` and log a warning.
 
 ### Design
-10. Brand colours are fixed: Deep Blue `#09318d`, White `#ffffff`, Bubblegum Pink `#fd91cc`. **Pink is never used as text on white** (contrast 2.08:1, fails WCAG). Pink is for decorative accents, highlights, underlines, and text/focus rings on deep blue (5.5:1, passes AA). On white, focus rings and any meaningful UI boundary use deep blue (pink may be added as a decorative outer halo only). Use `--pink-ink: #b0306f` (6.0:1 on white) when pink-coloured text must sit on white. Details in `docs/DESIGN.md`.
+10. The visual identity is **"An Atlas of a Curious Mind"** (`docs/DESIGN.md`, from `Website_Redesign.md`): parchment and ink surfaces, verdigris/petrol dark sections, indigo links, chapter accents per discipline; Cormorant Garamond + Inter + IBM Plex Mono (+ Amiri for Quranic Arabic). Fill-only accents (saffron, terracotta, copper, olive) are **never text on light surfaces** — use the `*-ink` variants; the guard enforces this. Every text/background pair must pass WCAG 2.2 AA. Do not drift into a generic template, a space theme, or black-white-grey.
+10a. **Every route has exactly one epigraph** from `src/data/epigraphs.ts`. Quranic text is never typed by hand — add the reference and run `npm run epigraphs` (Arabic: Tanzil; English: Saheeh International). Literature quotes must be verified against a public-domain text; original thoughts are labelled "Original reflection". Never fabricate or trim a verse or attribution.
+10b. Publication covers are original artwork and must be labelled as such unless an official image with confirmed reuse rights is supplied.
 11. Respect `prefers-reduced-motion`: all animation and auto-rotation stop; 3D scenes show a static poster.
 12. Every 3D scene has a **2D/static fallback** (no WebGL, low-power device, reduced motion, JS disabled).
 
@@ -94,7 +96,7 @@ npm run sync:pubs  # refresh Crossref/ORCID cache in src/data/cache/
 - Hard-coding `/research/...` links without the base helper.
 - Committing `.mp4` files > 10 MB.
 - Invented numbers in explainers ("accuracy 98%").
-- Pink text on white.
+- Fill-only accents (saffron/terracotta/copper/olive) as text on parchment; a new page without its epigraph; an unlabelled conceptual diagram.
 - Skipping `getStaticPaths()` on dynamic routes (`[slug].astro`) — required for static output.
 - Forgetting `.nojekyll` / using the old branch-based Pages deploy instead of the Actions deploy.
 - Leaving `console.log`, unused deps, or placeholder Lorem Ipsum in production.

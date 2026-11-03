@@ -33,6 +33,14 @@ These were inventory "Ask" rows. They are now public pages; their missing facts 
 - [ ] **lossmap-percolation-2d** explainer is built but unverified (hidden in production) — review in `npm run dev`, then set `verified: true`.
 - [ ] **photonic-qec-ai** (concept) and **Lossmap** describe the same project (Adaptive-Photonic-Quantum-Computer). Merge them?
 
+## Redesign follow-ups ("An Atlas of a Curious Mind", Nov 2026)
+
+- [ ] **Original reflections** in `src/data/epigraphs.ts` were drafted for the site (CV, contact, 404, styleguide, QLNRS, Aura, ICPC, Fujitsu). Replace any with your own words.
+- [ ] **Quranic epigraphs** — review that each verse feels right for its page (registry `why:` notes explain each choice). Text is fetched, never typed.
+- [ ] **Journal covers** — covers are original artwork. To show official imagery, send a cover or your accepted-manuscript first page with reuse permission.
+- [ ] **PDFs** — add `links.pdf` (e.g. your accepted manuscript, if the publisher allows) to enable "Open / Download PDF".
+- [ ] **Sports photos / videos** — the pitch page is ready for them.
+
 ## Explainers
 
 Built — **unverified, so hidden in production** until you set `verified: true` in the paper's frontmatter.
@@ -55,7 +63,7 @@ manuscripts are usually reusable on a personal site — check each publisher's a
 
 ## Placeholders found in content (73)
 
-_Generated 2026-11-02 by `scripts/todos.ts`. In production builds each of these elements is hidden._
+_Generated 2026-11-03 by `scripts/todos.ts`. In production builds each of these elements is hidden._
 
 ### Public pages (73)
 
@@ -72,11 +80,11 @@ _Generated 2026-11-02 by `scripts/todos.ts`. In production builds each of these 
 - **src/content/projects/aura-accessibility.mdx**
   - [ ] your role (line 7)
   - [ ] start month (line 9)
-  - [ ] description (line 18)
+  - [ ] description (line 29)
 - **src/content/projects/campusos.mdx**
   - [ ] your role (line 7)
   - [ ] start month (line 9)
-  - [ ] project description (line 18)
+  - [ ] project description (line 30)
 - **src/content/projects/doombreak.mdx**
   - [ ] your role (e.g. sole developer) (line 7)
   - [ ] start month (YYYY-MM) (line 9)
@@ -90,7 +98,7 @@ _Generated 2026-11-02 by `scripts/todos.ts`. In production builds each of these 
 - **src/content/projects/pqc-arduino.mdx**
   - [ ] your role (line 7)
   - [ ] start month (YYYY-MM) (line 9)
-  - [ ] measured Flash/SRAM sizes and signing/verification timings (line 35)
+  - [ ] measured Flash/SRAM sizes and signing/verification timings (line 46)
 - **src/content/projects/pqc-openvpn.mdx**
   - [ ] what worked, what broke, and any handshake measurements (line 24)
 - **src/content/projects/qlnrs-fujitsu-challenge.mdx**
@@ -103,30 +111,30 @@ _Generated 2026-11-02 by `scripts/todos.ts`. In production builds each of these 
 - **src/content/projects/thought-to-reality.mdx**
   - [ ] your role (line 7)
   - [ ] start month (line 9)
-  - [ ] project description (line 18)
+  - [ ] project description (line 30)
 - **src/content/research/bee-venom-target-prioritisation.mdx**
   - [ ] target venue (inventory: Briefings in Bioinformatics) — confirm it may be named publicly (line 7)
   - [ ] your role (line 8)
   - [ ] date (line 11)
-  - [ ] problem statement (line 18)
-  - [ ] the 11 workflow steps (line 24)
+  - [ ] problem statement (line 30)
+  - [ ] the 11 workflow steps (line 36)
 - **src/content/research/dicke-measurement-timing.mdx**
   - [ ] your role (line 7)
   - [ ] date (line 10)
   - [ ] problem statement (line 20)
-  - [ ] method summary (line 26)
+  - [ ] method summary (line 37)
 - **src/content/research/lossmap-photonic-loss.mdx**
   - [ ] your role (line 8)
 - **src/content/research/music-inspired-ml.mdx**
   - [ ] your role (line 7)
   - [ ] date (line 10)
   - [ ] problem statement (line 17)
-  - [ ] method summary (line 23)
+  - [ ] method summary (line 34)
 - **src/content/research/nv-center-odmr.mdx**
   - [ ] your role (line 7)
   - [ ] date (line 10)
-  - [ ] problem statement (line 17)
-  - [ ] model equations and constants (line 23)
+  - [ ] problem statement (line 29)
+  - [ ] model equations and constants (line 35)
 - **src/content/research/pauli-frame-repeater-overhead.mdx**
   - [ ] your role (line 7)
   - [ ] date (line 10)
@@ -141,8 +149,8 @@ _Generated 2026-11-02 by `scripts/todos.ts`. In production builds each of these 
 - **src/content/research/retinal-reliability.mdx**
   - [ ] your role (line 7)
   - [ ] date (line 10)
-  - [ ] problem statement (line 17)
-  - [ ] method summary (line 23)
+  - [ ] problem statement (line 29)
+  - [ ] method summary (line 35)
 - **src/content/research/sleep-continual-learning.mdx**
   - [ ] last-update date (YYYY-MM) (line 9)
   - [ ] the gate's trigger rule, what is replayed, and buffer size (from run_experiments.py / paper draft) (line 50)
@@ -152,15 +160,15 @@ _Generated 2026-11-02 by `scripts/todos.ts`. In production builds each of these 
 - **src/lib/bio.ts**
   - [ ] 150–250 words in your own voice — why these fields, what question drives you. (line 8)
 - **src/pages/experience/[slug].astro**
-  - [ ] dates (line 40)
+  - [ ] dates (line 44)
 - **src/pages/projects/[slug].astro**
-  - [ ] highlights, each with a source (line 130)
-  - [ ] what you learned, and the project's limitations (line 143)
+  - [ ] highlights, each with a source (line 167)
+  - [ ] what you learned, and the project's limitations (line 180)
 - **src/pages/research/[slug].astro**
-  - [ ] key findings, each with its source (paper section/table) (line 170)
-  - [ ] limitations and honest notes (required section) (line 184)
+  - [ ] key findings, each with its source (paper section/table) (line 193)
+  - [ ] limitations and honest notes (required section) (line 207)
 - **src/pages/styleguide/index.astro**
-  - [ ] sample placeholder (line 235)
+  - [ ] sample placeholder (line 242)
 
 ### Private entries — not built (0)
 

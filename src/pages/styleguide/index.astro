@@ -1,6 +1,7 @@
 ---
 /** Design-system reference. Not in nav or sitemap; noindex. */
 import BaseLayout from '~/layouts/BaseLayout.astro';
+import Epigraph from '~/components/Epigraph.astro';
 import Button from '~/components/Button.astro';
 import Chip from '~/components/Chip.astro';
 import StatusBadge, { type Status } from '~/components/StatusBadge.astro';
@@ -25,18 +26,21 @@ const statuses: Status[] = [
 
 type Key = keyof typeof PALETTE;
 const pairs: { fg: Key; bg: Key; use: string; textAllowed: boolean }[] = [
-  { fg: 'white', bg: 'blue', use: 'Text on deep blue', textAllowed: true },
-  { fg: 'pink', bg: 'blue', use: 'Pink text / focus ring on blue', textAllowed: true },
-  { fg: 'white', bg: 'blue-900', use: 'Footer text', textAllowed: true },
-  { fg: 'pink', bg: 'blue-900', use: 'Pink on footer', textAllowed: true },
-  { fg: 'ink', bg: 'white', use: 'Body text', textAllowed: true },
-  { fg: 'blue', bg: 'white', use: 'Headings, links, focus ring', textAllowed: true },
-  { fg: 'muted', bg: 'white', use: 'Secondary text', textAllowed: true },
-  { fg: 'muted', bg: 'blue-050', use: 'Secondary text on tint', textAllowed: true },
-  { fg: 'pink-ink', bg: 'white', use: 'Pink-family text on white', textAllowed: true },
-  { fg: 'blue', bg: 'pink-100', use: 'Badge text on pink tint', textAllowed: true },
-  { fg: 'blue', bg: 'blue-050', use: 'Chip text', textAllowed: true },
-  { fg: 'pink', bg: 'white', use: 'NEVER as text — decoration only', textAllowed: false },
+  { fg: 'ink', bg: 'parchment', use: 'Body text', textAllowed: true },
+  { fg: 'ink-soft', bg: 'parchment', use: 'Secondary text', textAllowed: true },
+  { fg: 'ink-soft', bg: 'paper', use: 'Secondary text on plates', textAllowed: true },
+  { fg: 'verdigris', bg: 'parchment', use: 'Headings', textAllowed: true },
+  { fg: 'indigo', bg: 'parchment', use: 'Links, focus ring', textAllowed: true },
+  { fg: 'terracotta-ink', bg: 'parchment', use: 'Eyebrows, accent text', textAllowed: true },
+  { fg: 'saffron-ink', bg: 'parchment', use: 'Accent text', textAllowed: true },
+  { fg: 'olive-ink', bg: 'parchment', use: 'Accent text', textAllowed: true },
+  { fg: 'mulberry', bg: 'parchment', use: 'Accent text', textAllowed: true },
+  { fg: 'ivory', bg: 'verdigris', use: 'Text on dark sections', textAllowed: true },
+  { fg: 'ivory', bg: 'petrol', use: 'Text on dark sections', textAllowed: true },
+  { fg: 'saffron-light', bg: 'verdigris', use: 'Accent text / focus on dark', textAllowed: true },
+  { fg: 'verdigris', bg: 'blush', use: 'Text on highlight tint', textAllowed: true },
+  { fg: 'terracotta', bg: 'parchment', use: 'Fill / mark only — never text', textAllowed: false },
+  { fg: 'saffron', bg: 'parchment', use: 'Fill / mark only — never text', textAllowed: false },
 ];
 const rows = pairs.map((p) => {
   const ratio = contrast(PALETTE[p.fg], PALETTE[p.bg]);
@@ -48,6 +52,9 @@ const rows = pairs.map((p) => {
   <div class="container-site space-y-16 py-16">
     <header>
       <h1>Styleguide</h1>
+      <div class="mt-8">
+        <Epigraph page="styleguide" treatment="note" />
+      </div>
       <p class="mt-3 max-w-prose text-muted">
         Every component, colour pair and focus state. Not linked in navigation; excluded from the sitemap.
       </p>

@@ -32,4 +32,15 @@ Post-quantum cryptography (PQC) is designed to stay secure against quantum compu
 1. **Fit on the UNO** — SPHINCS+-SHA2-128s is the only viable scheme under these limits.
 2. **Migration defects** — a taxonomy of defects in PQC migrations, mined from 8 GitHub repositories.
 
+<Flow
+  title="Will a post-quantum signature fit?"
+  source="project notes (CONTENT-INVENTORY §4) and README"
+  steps={[
+    { label: 'Candidate schemes', detail: 'Post-quantum signature schemes.' },
+    { label: 'The budget', detail: 'Arduino UNO: 32 KB of Flash, 2 KB of SRAM.' },
+    { label: 'Only one fits', detail: 'SPHINCS+-SHA2-128s is the only viable scheme.' },
+    { label: 'Migration defects', detail: 'A taxonomy of PQC-migration defects mined from 8 GitHub repositories.' },
+  ]}
+/>
+
 <Todo inline={false}>measured Flash/SRAM sizes and signing/verification timings</Todo>

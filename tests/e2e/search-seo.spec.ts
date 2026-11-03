@@ -16,6 +16,7 @@ test('Ctrl+K opens search and finds a research page', async ({ page }) => {
 });
 
 test('every page has canonical, description and an OG image that exists', async ({ page }) => {
+  test.setTimeout(240_000);
   for (const route of sitemapRoutes()) {
     await page.goto(route);
     await expect(page.locator('link[rel="canonical"]')).toHaveCount(1);

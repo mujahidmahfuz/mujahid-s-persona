@@ -1,0 +1,43 @@
+---
+/**
+ * Opening of an index or simple page: eyebrow, title, a serif lede, and the page's epigraph.
+ * Layout varies per page (split | stacked) and the epigraph treatment varies too, so pages share
+ * one language without looking identical.
+ */
+import Epigraph from './Epigraph.astro';
+import type { Treatment } from '~/data/epigraphs';
+import type { Chapter } from '~/lib/chapters';
+
+interface Props {
+  eyebrow: string;
+  title: string;
+  lede?: string;
+  epigraph: string;
+  treatment?: Treatment;
+  layout?: 'split' | 'stacked';
+  chapter?: Chapter;
+}
+const { eyebrow, title, lede, epigraph, treatment, layout = 'split', chapter } = Astro.props;
+---
+
+<header class="graticule relative border-b border-rule" data-chapter={chapter}>
+  {chapter && <span class="absolute inset-x-0 top-0 h-1 bg-[var(--accent)]" aria-hidden="true" />}
+  <div
+    class:list={[
+      'container-site grid gap-10 py-14 md:py-20',
+      layout === 'split' && 'lg:grid-cols-[1.1fr_0.9fr] lg:items-end lg:gap-16',
+    ]}
+  >
+    <div>
+      <p class="label-mono text-terracotta-ink">{eyebrow}</p>
+      <h1 class="mt-4">{title}</h1>
+      {lede && (
+        <p class="mt-6 max-w-2xl font-serif text-[clamp(1.25rem,1.1rem+0.6vw,1.6rem)] leading-snug text-ink italic">{lede}</p>
+      )}
+      <slot />
+    </div>
+    <div class:list={[layout === 'stacked' && 'max-w-4xl']}>
+      <Epigraph page={epigraph} treatment={treatment} />
+    </div>
+  </div>
+</header>

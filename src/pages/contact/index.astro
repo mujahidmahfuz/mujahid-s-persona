@@ -1,6 +1,7 @@
 ---
 /** Contact — email assembled client-side (CLAUDE.md rule 7); no plain mailto in the HTML. */
 import BaseLayout from '~/layouts/BaseLayout.astro';
+import PageIntro from '~/components/PageIntro.astro';
 import { EMAIL_PARTS, PROFILES, SITE } from '~/lib/site';
 
 // Reversed parts so the address never appears in order in the source.
@@ -9,12 +10,19 @@ const d = [...EMAIL_PARTS.domain].reverse().join('');
 ---
 
 <BaseLayout title="Contact" description="How to contact Md Mujahidul Islam: email, Google Scholar, ORCID, GitHub, LinkedIn.">
-  <div class="container-site py-12 md:py-16">
-    <h1>Contact</h1>
-    <p class="mt-4 max-w-prose text-muted">
+  <PageIntro
+    eyebrow="Closing · An invitation"
+    title="Contact"
+    lede="If something here made you curious, I would like to hear about it."
+    epigraph="contact"
+    treatment="note"
+    layout="split"
+  >
+    <p class="mt-5 max-w-xl text-ink-soft">
       I am an undergraduate researcher at {SITE.university}. For research questions or collaboration, email is best.
     </p>
-
+  </PageIntro>
+  <div class="container-site py-12 md:py-14">
     <section class="mt-10 max-w-xl rounded-card bg-blue p-6 text-white" data-surface="dark" aria-labelledby="email">
       <h2 id="email" class="text-h3">
         Email

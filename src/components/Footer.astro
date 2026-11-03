@@ -15,23 +15,29 @@ const built = new Date().toISOString().slice(0, 10);
     <nav aria-label="Profiles">
       <p class="label-mono text-saffron-light">Elsewhere</p>
       <ul class="mt-3 space-y-1.5 text-sm">
-        {
-          PROFILES.map((p) => (
-            <li>
-              <a href={p.href} rel="me noopener">
-                {p.label}
-              </a>
-            </li>
-          ))
-        }
+        {PROFILES.map((p) => (
+          <li>
+            <a href={p.href} rel="me noopener">
+              {p.label}
+            </a>
+          </li>
+        ))}
       </ul>
     </nav>
     <div class="text-sm">
       <p class="label-mono text-saffron-light">This atlas</p>
       <ul class="mt-3 space-y-1.5">
-        <li><a href={withBase('/contact/')}>Write to me</a></li>
-        <li><a href={withBase('/rss.xml')}>RSS (notes)</a></li>
-        <li><a href={SITE.sourceRepo} rel="noopener">Source code</a></li>
+        <li>
+          <a href={withBase('/contact/')}>Write to me</a>
+        </li>
+        <li>
+          <a href={withBase('/rss.xml')}>RSS (notes)</a>
+        </li>
+        <li>
+          <a href={SITE.sourceRepo} rel="noopener">
+            Source code
+          </a>
+        </li>
       </ul>
       <p class="label-mono mt-6 text-ivory/80">
         Last revised <time datetime={built}>{built}</time>

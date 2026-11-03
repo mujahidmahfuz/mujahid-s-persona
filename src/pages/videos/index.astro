@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '~/layouts/BaseLayout.astro';
+import PageIntro from '~/components/PageIntro.astro';
 import FilterBar from '~/components/FilterBar.astro';
 import VideoCard from '~/components/VideoCard.astro';
 import { getPublic } from '~/lib/content';
@@ -9,11 +10,19 @@ const categories = [...new Set(all.map((v) => v.data.category))].sort();
 ---
 
 <BaseLayout title="Videos" description="Sports clips, talks and demos by Md Mujahidul Islam.">
-  <div class="container-site py-12 md:py-16">
-    <h1>Videos</h1>
-    <p class="mt-4 max-w-prose text-muted">
+  <PageIntro
+    eyebrow="Archive · Moving pictures"
+    title="Videos"
+    lede="Clips, talks and demonstrations. Each one loads only when you ask it to."
+    epigraph="videos"
+    treatment="margin"
+    layout="split"
+  >
+    <p class="mt-5 max-w-xl text-ink-soft">
       Sports, talks and demos. Videos are hosted on YouTube and load only when you press play.
     </p>
+  </PageIntro>
+  <div class="container-site py-12 md:py-14">
     {all.length > 0 ? (
       <div class="mt-10">
         <FilterBar

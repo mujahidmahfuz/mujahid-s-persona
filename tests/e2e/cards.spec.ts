@@ -22,7 +22,7 @@ test.describe('without JS', () => {
     await page.goto('research/');
     const card = page.locator('[data-filter-scope="research"] [data-card]').first();
     await expect(card.locator('[data-flip-toggle]')).toBeHidden();
-    await expect(card.locator('[data-flip-front] p.line-clamp-3')).toBeVisible();
+    await expect(card.locator('[data-flip-front] p.text-muted').first()).toBeVisible();
     await expect(card.getByRole('heading').getByRole('link')).toBeVisible();
   });
 });

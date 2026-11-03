@@ -14,7 +14,8 @@ import PrevNext from '~/components/PrevNext.astro';
 import Chip from '~/components/Chip.astro';
 import Todo from '~/components/Todo.astro';
 import Explainer from '~/components/Explainer.astro';
-import JournalBadge from '~/components/JournalBadge.astro';
+import PaperCover from '~/components/PaperCover.astro';
+import { chapterFor, CHAPTER_LABEL } from '~/lib/chapters';
 import MathTex from '~/components/Math.astro';
 import Flow from '~/components/Flow.astro';
 import DotRank from '~/components/charts/DotRank.astro';
@@ -28,7 +29,7 @@ import {
   AREA_LABEL,
   KIND_LABEL,
   type Research,
-  journalBadge,
+  yearOf,
 } from '~/lib/content';
 import { entryPath, topicPath, withBase } from '~/lib/paths';
 import { show, visible, isTodo } from '~/lib/todo';
@@ -61,7 +62,7 @@ const findings = visible(d.keyFindings);
 const limitations = visible(d.limitations);
 const hasCite = !!d.doi || d.status === 'published' || d.status === 'accepted';
 const dateLabel = formatDate(d.date);
-const badge = journalBadge(entry);
+const chapter = chapterFor(d.areas);
 
 const toc = [
   { id: 'tldr', label: 'TL;DR' },
@@ -111,26 +112,43 @@ const description = isTodo(d.summary) ? SITE.description : d.summary;
   type="article"
   jsonLd={jsonLd}
   ogImage={withBase(`/og/research/${entry.id}.png`)}
+  chapter={chapter}
+  epigraph={`research/${entry.id}`}
 >
-  <header slot="header" class="flex flex-col-reverse gap-6 md:flex-row md:items-start md:justify-between">
+  <header slot="header" class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_17rem] lg:items-start">
     <div class="max-w-4xl">
-      <p class="text-sm font-semibold text-pink-ink">
-        <a href={withBase('/research/')}>Research</a> · {KIND_LABEL[d.kind]}
-      </p>
-      <h1 class="mt-3">{cite.title}</h1>
-      <div class="mt-4 flex flex-wrap items-center gap-3">
+      <nav aria-label="Breadcrumb" class="label-mono text-ink-soft">
+        <a href={withBase('/')} class="text-ink-soft">
+          Atlas
+        </a>{' '}
+        <span aria-hidden="true">›</span>{' '}
+        <a href={withBase('/research/')} class="text-ink-soft">
+          Research
+        </a>{' '}
+        <span aria-hidden="true">›</span> <span class="text-[var(--accent-ink)]">{CHAPTER_LABEL[chapter]}</span>
+      </nav>
+      <h1 class="mt-5 text-[clamp(2.3rem,1.8rem+2.2vw,3.9rem)]">{cite.title}</h1>
+      <div class="mt-5 flex flex-wrap items-center gap-3">
         <StatusBadge status={d.status} />
-        {(cite.venue || cite.year) && <span class="text-muted">{[cite.venue, cite.year].filter(Boolean).join(' · ')}</span>}
-        {!cite.year && dateLabel && <span class="text-muted">{dateLabel}</span>}
+        <span class="label-mono text-ink-soft">{KIND_LABEL[d.kind]}</span>
+        {(cite.venue || cite.year) && (
+          <span class="label-mono text-ink-soft">{[cite.venue, cite.year].filter(Boolean).join(' · ')}</span>
+        )}
+        {!cite.year && dateLabel && <span class="label-mono text-ink-soft">{dateLabel}</span>}
       </div>
-      <div class="mt-3">
+      <div class="mt-4">
         <AuthorList authors={cite.authors} />
       </div>
-      {d.advisor && <p class="mt-1 text-sm text-muted">Advisor: {d.advisor}</p>}
-      <div class="mt-4">
+      {d.advisor && <p class="mt-1 text-sm text-ink-soft">Advisor: {d.advisor}</p>}
+      {d.doi && (
+        <p class="label-mono mt-3 text-ink-soft normal-case">
+          DOI <a href={`https://doi.org/${d.doi}`}>{d.doi}</a>
+        </p>
+      )}
+      <div class="mt-6">
         <LinkRow links={links} label="Paper links" />
       </div>
-      <ul class="mt-4 flex flex-wrap gap-2" aria-label="Areas">
+      <ul class="mt-5 flex flex-wrap gap-2" aria-label="Areas">
         {d.areas.map((a) => (
           <li>
             <Chip href={withBase(`/research/?area=${a}`)}>{AREA_LABEL[a]}</Chip>
@@ -138,11 +156,16 @@ const description = isTodo(d.summary) ? SITE.description : d.summary;
         ))}
       </ul>
     </div>
-    {badge && (
-      <div class="shrink-0">
-        <JournalBadge badge={badge} size={132} />
-      </div>
-    )}
+    <div class="hidden max-w-[17rem] lg:block">
+      <PaperCover
+        id={entry.id}
+        title={cite.title}
+        chapter={chapter}
+        folio={`R · ${entry.id.slice(0, 18)}`}
+        venue={cite.venue}
+        year={cite.year ?? yearOf(d.date)}
+      />
+    </div>
   </header>
 
   <Section id="tldr" title="TL;DR">

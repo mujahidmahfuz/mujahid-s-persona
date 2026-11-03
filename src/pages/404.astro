@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '~/layouts/BaseLayout.astro';
+import Epigraph from '~/components/Epigraph.astro';
 import Button from '~/components/Button.astro';
 import { withBase } from '~/lib/paths';
 ---
@@ -8,6 +9,9 @@ import { withBase } from '~/lib/paths';
   <div class="container-site py-24">
     <p class="font-mono text-sm text-pink-ink">404</p>
     <h1 class="mt-2">This page does not exist</h1>
+    <div class="mt-10">
+      <Epigraph page="404" treatment="note" />
+    </div>
     <p class="mt-4 max-w-prose text-muted">
       The link may be old, or the page may have moved. Try searching, or start from the home page.
     </p>

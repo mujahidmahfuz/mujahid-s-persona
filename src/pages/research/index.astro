@@ -1,9 +1,10 @@
 ---
 import BaseLayout from '~/layouts/BaseLayout.astro';
 import Card from '~/components/Card.astro';
-import JournalBadge from '~/components/JournalBadge.astro';
+import PageIntro from '~/components/PageIntro.astro';
+import { chapterFor } from '~/lib/chapters';
 import FilterBar from '~/components/FilterBar.astro';
-import { getResearch, AREA_LABEL, KIND_LABEL, dateKey, yearOf, type Research, journalBadge } from '~/lib/content';
+import { getResearch, AREA_LABEL, KIND_LABEL, dateKey, yearOf, type Research } from '~/lib/content';
 import { entryPath, withBase } from '~/lib/paths';
 import BarList from '~/components/charts/BarList.astro';
 import { statusCounts } from '~/lib/charts';
@@ -38,14 +39,19 @@ const meta = (e: Research) => [e.cite.venue, e.cite.year ?? yearOf(e.data.date)]
   title="Research"
   description="Research by Md Mujahidul Islam: explainable AI, continual learning and quantum computing."
 >
-  <div class="container-site py-12 md:py-16">
-    <h1>Research</h1>
-    <p class="mt-4 max-w-prose text-muted">
-      Papers, studies and reports. Each has its own page with a plain-language summary, the method, sourced findings, and honest
-      notes on its limits. The status badge shows exactly where each piece of work stands.
+  <PageIntro
+    eyebrow="Chapter I · Research"
+    title="Research"
+    lede="Papers, studies and reports — each with its question, its method, what it found, and where it stops."
+    epigraph="research"
+    treatment="verse"
+  >
+    <p class="mt-5 max-w-xl text-ink-soft">
+      The stamp on each study says exactly where it stands, from an idea on paper to a published article.
     </p>
-
-    <div class="mt-10 grid gap-8 rounded-card border border-blue-200 p-6 md:grid-cols-2">
+  </PageIntro>
+  <div class="container-site py-12">
+    <div class="paper-card grid gap-8 rounded-card p-6 md:grid-cols-2">
       <BarList title="By area" items={byArea} />
       <BarList title="By status" items={byStatus} />
     </div>
@@ -66,7 +72,7 @@ const meta = (e: Research) => [e.cite.venue, e.cite.year ?? yearOf(e.data.date)]
       />
       <ul class="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" data-filter-scope="research" data-reveal-group>
         {work.map((e) => (
-          <li data-filter-item>
+          <li data-filter-item data-chapter={chapterFor(e.data.areas)}>
             <Card
               variant="research"
               href={entryPath(e)}
@@ -85,9 +91,7 @@ const meta = (e: Research) => [e.cite.venue, e.cite.year ?? yearOf(e.data.date)]
                 kind: e.data.kind,
               }}
               sorts={{ date: dateKey(e.data.date), featured: `${e.data.featured ? 1 : 0}${dateKey(e.data.date)}` }}
-            >
-              {journalBadge(e) && <JournalBadge slot="badge" badge={journalBadge(e)!} size={64} reveal={false} />}
-            </Card>
+            />
           </li>
         ))}
       </ul>

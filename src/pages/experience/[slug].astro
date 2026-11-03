@@ -1,6 +1,7 @@
 ---
 import { render, type CollectionEntry } from 'astro:content';
 import BaseLayout from '~/layouts/BaseLayout.astro';
+import Epigraph from '~/components/Epigraph.astro';
 import PrevNext from '~/components/PrevNext.astro';
 import Chip from '~/components/Chip.astro';
 import Todo from '~/components/Todo.astro';
@@ -33,6 +34,9 @@ const label = (e: E) => (e.data.course ? `${e.data.role} — ${e.data.course}` :
       <a href={withBase('/experience/')}>Experience</a>
     </p>
     <h1 class="mt-3">{title}</h1>
+    <div class="mt-8 mb-2">
+      <Epigraph page={`experience/${entry.id}`} treatment="margin" />
+    </div>
     <p class="mt-3 text-lg text-muted">{d.org}</p>
     <dl class="mt-6 grid max-w-2xl gap-4 text-sm sm:grid-cols-2">
       <div>

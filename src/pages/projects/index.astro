@@ -1,5 +1,7 @@
 ---
 import BaseLayout from '~/layouts/BaseLayout.astro';
+import PageIntro from '~/components/PageIntro.astro';
+import { chapterFor } from '~/lib/chapters';
 import Card from '~/components/Card.astro';
 import FilterBar from '~/components/FilterBar.astro';
 import { getPublic, CATEGORY_LABEL, dateKey, yearOf, formatRange } from '~/lib/content';
@@ -30,12 +32,20 @@ const years = uniq(all.map((p) => yearOf(p.data.period.start)).filter((y): y is 
 ---
 
 <BaseLayout title="Projects" description="Software, hardware and research-tool projects by Md Mujahidul Islam.">
-  <div class="container-site py-12 md:py-16">
-    <h1>Projects</h1>
-    <p class="mt-4 max-w-prose text-muted">
+  <PageIntro
+    eyebrow="Chapter II · The workshop"
+    title="Projects"
+    lede="Things made to find out whether an idea survives contact with reality — finished, unfinished, and some still only drawn."
+    epigraph="projects"
+    treatment="margin"
+    layout="split"
+  >
+    <p class="mt-5 max-w-xl text-ink-soft">
       Things I have built — apps, solvers, teaching material and hardware experiments — with an honest status for each.
     </p>
-    <div class="mt-10 grid gap-8 rounded-card border border-blue-200 p-6 md:grid-cols-2">
+  </PageIntro>
+  <div class="container-site py-12 md:py-14">
+    <div class="paper-card grid gap-8 rounded-card p-6 md:grid-cols-2">
       <BarList title="By category" items={byCategory} />
       <BarList title="By status" items={byStatus} />
     </div>
@@ -52,7 +62,7 @@ const years = uniq(all.map((p) => yearOf(p.data.period.start)).filter((y): y is 
       />
       <ul class="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" data-filter-scope="projects" data-reveal-group>
         {all.map((p) => (
-          <li data-filter-item>
+          <li data-filter-item data-chapter={chapterFor(p.data.areas)}>
             <Card
               variant="project"
               href={entryPath(p)}

@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '~/layouts/BaseLayout.astro';
+import PageIntro from '~/components/PageIntro.astro';
 import Card from '~/components/Card.astro';
 import { getPublic, formatDate } from '~/lib/content';
 import { entryPath } from '~/lib/paths';
@@ -8,9 +9,17 @@ const notes = (await getPublic('notes')).sort((a, b) => b.data.date.localeCompar
 ---
 
 <BaseLayout title="Notes" description="Research notes by Md Mujahidul Islam.">
-  <div class="container-site py-12 md:py-16">
-    <h1>Notes</h1>
-    <p class="mt-4 max-w-prose text-muted">Short research notes. Also available as an RSS feed.</p>
+  <PageIntro
+    eyebrow="Archive · The journal"
+    title="Notes"
+    lede="An evolving journal of research notes — half-thoughts, corrections, and things worth writing down."
+    epigraph="notes"
+    treatment="note"
+    layout="split"
+  >
+    <p class="mt-5 max-w-xl text-ink-soft">Short research notes. Also available as an RSS feed.</p>
+  </PageIntro>
+  <div class="container-site py-12 md:py-14">
     {notes.length > 0 ? (
       <ul class="mt-10 grid gap-6 md:grid-cols-2" data-reveal-group>
         {notes.map((n) => (

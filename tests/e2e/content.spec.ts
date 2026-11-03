@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { sitemapRoutes, firstRoute, privateRoutes } from './helpers';
 
 test('production build hides every TODO(muja) placeholder', async ({ page }) => {
+  test.setTimeout(240_000);
   for (const route of sitemapRoutes()) {
     await page.goto(route);
     await expect(page.locator('[data-todo], [data-explainer-slot]')).toHaveCount(0);

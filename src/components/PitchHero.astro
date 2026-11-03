@@ -1,0 +1,62 @@
+---
+/**
+ * Sports hero: the pitch at night. The field markings draw themselves once (stroke-dashoffset,
+ * 1.6 s ease-out) when the section is revealed — the page lays out its own pitch.
+ * Reduced motion: the markings are simply there.
+ */
+interface Props {
+  eyebrow: string;
+  title: string;
+}
+const { eyebrow, title } = Astro.props;
+---
+
+<section class="pitch-hero relative overflow-hidden bg-petrol text-ivory" data-surface="dark" data-reveal>
+  <svg
+    class="pitch-lines absolute inset-0 h-full w-full"
+    viewBox="0 0 1200 520"
+    preserveAspectRatio="xMidYMid slice"
+    aria-hidden="true"
+  >
+    <g fill="none" stroke="#e8c06a" stroke-opacity="0.32" stroke-width="2">
+      <rect x="40" y="30" width="1120" height="460" pathLength="1" />
+      <line x1="600" y1="30" x2="600" y2="490" pathLength="1" />
+      <circle cx="600" cy="260" r="78" pathLength="1" />
+      <rect x="40" y="140" width="150" height="240" pathLength="1" />
+      <rect x="1010" y="140" width="150" height="240" pathLength="1" />
+      <rect x="40" y="205" width="55" height="110" pathLength="1" />
+      <rect x="1105" y="205" width="55" height="110" pathLength="1" />
+      <path d="M190 215 A 62 62 0 0 1 190 305" pathLength="1" />
+      <path d="M1010 215 A 62 62 0 0 0 1010 305" pathLength="1" />
+    </g>
+    <circle cx="600" cy="260" r="5" fill="#e8c06a" fill-opacity="0.6"></circle>
+  </svg>
+  <div class="relative container-site py-16 md:py-24">
+    <p class="label-mono text-saffron-light">{eyebrow}</p>
+    <h1 class="mt-4 text-[clamp(2.6rem,2rem+2.6vw,4.6rem)]">{title}</h1>
+    <slot />
+  </div>
+</section>
+
+<style>
+  .pitch-lines :is(rect, line, circle, path) {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 0;
+    transition: stroke-dashoffset 1.6s var(--ease-out);
+  }
+  :global(.js) .pitch-hero:not(:global(.is-in)) .pitch-lines :is(rect, line, circle, path) {
+    stroke-dashoffset: 1;
+  }
+  .pitch-hero :global(.chart-bar) {
+    background: var(--color-saffron-light);
+  }
+  .pitch-hero :global(figcaption),
+  .pitch-hero :global(.text-muted) {
+    color: var(--color-ivory);
+  }
+  /* the hero itself does not slide; only its markings draw */
+  :global(.js) .pitch-hero[data-reveal]:not(:global(.is-in)) {
+    opacity: 1;
+    transform: none;
+  }
+</style>

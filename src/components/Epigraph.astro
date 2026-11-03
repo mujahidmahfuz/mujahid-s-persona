@@ -42,7 +42,8 @@ if (e.type === 'quran') {
   cite = 'Original reflection';
   source = '';
 } else {
-  if (!(verified as Record<string, { ok: boolean }>)[e.id]?.ok) throw new Error(`Epigraph ${e.id}: quotation not verified — run npm run epigraphs`);
+  if (!(verified as Record<string, { ok: boolean }>)[e.id]?.ok)
+    throw new Error(`Epigraph ${e.id}: quotation not verified — run npm run epigraphs`);
   english = e.text;
   cite = e.attribution;
   source = e.source;
@@ -56,21 +57,20 @@ const long = english.length > 260;
   data-reveal
   data-surface={onDark ? 'dark' : undefined}
 >
-  {
-    t === 'note' && (
-      <span class="epigraph-pin label-mono" aria-hidden="true">
-        from the margins
-      </span>
-    )
-  }
-  {
-    arabic && (
-      <p class="epigraph-ar" lang="ar" dir="rtl">
-        {arabic}
-      </p>
-    )
-  }
-  <blockquote class="epigraph-en" cite={e.type === 'literature' || e.type === 'philosophy' || e.type === 'poetry' ? e.verifyUrl : undefined}>
+  {t === 'note' && (
+    <span class="epigraph-pin label-mono" aria-hidden="true">
+      from the margins
+    </span>
+  )}
+  {arabic && (
+    <p class="epigraph-ar" lang="ar" dir="rtl">
+      {arabic}
+    </p>
+  )}
+  <blockquote
+    class="epigraph-en"
+    cite={e.type === 'literature' || e.type === 'philosophy' || e.type === 'poetry' ? e.verifyUrl : undefined}
+  >
     <p>{e.type === 'quran' ? english : `“${english}”`}</p>
   </blockquote>
   <figcaption class="epigraph-cite">
@@ -161,6 +161,7 @@ const long = english.length > 260;
     }
     .epigraph--verse .epigraph-cite {
       grid-column: 1 / -1;
+      order: 3;
     }
   }
   .epigraph--verse .epigraph-ar {
@@ -189,7 +190,11 @@ const long = english.length > 260;
     max-width: 34rem;
     padding: 1.6rem 1.5rem 1.2rem;
     background-color: var(--color-ivory);
-    background-image: repeating-linear-gradient(to bottom, transparent 0 1.85rem, color-mix(in srgb, var(--color-indigo) 14%, transparent) 1.85rem 1.9rem);
+    background-image: repeating-linear-gradient(
+      to bottom,
+      transparent 0 1.85rem,
+      color-mix(in srgb, var(--color-indigo) 14%, transparent) 1.85rem 1.9rem
+    );
     border: 1px solid var(--color-rule);
     box-shadow: 0 14px 28px -22px rgba(40, 52, 47, 0.6);
     transform: rotate(-0.6deg);

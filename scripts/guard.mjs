@@ -216,6 +216,30 @@ if (existsSync(explainersDir)) {
   }
 }
 
+// 13. Epigraphs (Website_Redesign.md §5): exactly one per built page; no accidental repetition
+//     (only topic pages share the pool); every Quran reference is in the fetched cache.
+if (scanDist) {
+  const seen = new Map();
+  for (const f of walk(join(ROOT, 'dist'), { skip: new Set(['pagefind', '_astro', 'og']) }).filter((x) => x.endsWith('.html'))) {
+    const html = read(f);
+    const ids = [...html.matchAll(/data-epigraph="([^"]+)"/g)].map((m) => m[1]);
+    const page = rel(f);
+    if (ids.length !== 1) fail(`${page} has ${ids.length} epigraphs (expected exactly 1)`);
+    const id = ids[0];
+    if (id && !id.startsWith('pool/')) {
+      if (seen.has(id)) fail(`epigraph "${id}" used on both ${seen.get(id)} and ${page}`);
+      seen.set(id, page);
+    }
+  }
+}
+{
+  const reg = read(join(ROOT, 'src/data/epigraphs.ts'));
+  const cachePath = join(ROOT, 'src/data/cache/quran.json');
+  const cache = existsSync(cachePath) ? JSON.parse(read(cachePath)) : {};
+  for (const m of reg.matchAll(/ref: '([^']+)'/g))
+    if (!cache[m[1]]) fail(`epigraph Quran ${m[1]} is not in src/data/cache/quran.json (run npm run epigraphs)`);
+}
+
 // Built site must not contain a quantum-cookbook route
 if (scanDist && existsSync(join(ROOT, 'dist/quantum-cookbook'))) fail('dist/quantum-cookbook exists');
 

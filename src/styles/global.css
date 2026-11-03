@@ -10,9 +10,16 @@
 @import '@fontsource/cormorant-garamond/latin-500-italic.css';
 @import '@fontsource/ibm-plex-mono/latin-400.css';
 @import '@fontsource/ibm-plex-mono/latin-500.css';
-/* Arabic (Quranic epigraphs). unicode-range in these files means the font is only downloaded on pages with Arabic text. */
-@import '@fontsource/amiri/arabic-400.css';
-@import '@fontsource/amiri/arabic-700.css';
+/* Arabic (Quranic epigraphs): Amiri, subset to exactly the characters in the cached verses
+   (scripts/subset-arabic.py) — 39 KB instead of 106 KB. unicode-range keeps it off pages without Arabic. */
+@font-face {
+  font-family: 'Amiri';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../assets/fonts/amiri-epigraphs.woff2') format('woff2');
+  unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF;
+}
 
 @theme {
   --color-*: initial;
@@ -137,6 +144,8 @@
     scroll-padding-top: 5rem;
   }
   body {
+    /* safety net: decorative offsets (paper sheets, instrument labels) never cause sideways scroll */
+    overflow-x: clip;
     font-size: var(--text-body);
     line-height: 1.65;
     /* Paper grain: a 2 KB inline noise tile at very low opacity. Decorative, no request. */

@@ -25,17 +25,25 @@ const COL: Record<Chapter, [string, string, string]> = {
   people: ['#8e3b26', '#78805a', '#f0dcc6'],
 };
 const [ink, accent, soft] = COL[chapter];
-const motif =
-  id.startsWith('bwa') ? 'barycenter'
-  : id.startsWith('qip') ? 'adversary'
-  : id.startsWith('sleep') ? 'phases'
-  : id.startsWith('lossmap') || id.startsWith('photonic') ? 'lattice'
-  : id.startsWith('bee') ? 'comb'
-  : id.startsWith('nv') ? 'spectrum'
-  : id.startsWith('retinal') ? 'eye'
-  : id.startsWith('dicke') || id.startsWith('pauli') ? 'circuit'
-  : id.startsWith('music') ? 'rhythm'
-  : 'rings';
+const motif = id.startsWith('bwa')
+  ? 'barycenter'
+  : id.startsWith('qip')
+    ? 'adversary'
+    : id.startsWith('sleep')
+      ? 'phases'
+      : id.startsWith('lossmap') || id.startsWith('photonic')
+        ? 'lattice'
+        : id.startsWith('bee')
+          ? 'comb'
+          : id.startsWith('nv')
+            ? 'spectrum'
+            : id.startsWith('retinal')
+              ? 'eye'
+              : id.startsWith('dicke') || id.startsWith('pauli')
+                ? 'circuit'
+                : id.startsWith('music')
+                  ? 'rhythm'
+                  : 'rings';
 const bump = (mu: number, s: number, h: number) =>
   Array.from({ length: 41 }, (_, i) => {
     const x = i * 5;
@@ -48,151 +56,156 @@ const big = size === 'cover';
   <svg viewBox="0 0 240 320" class="absolute inset-0 h-full w-full" aria-hidden="true" preserveAspectRatio="xMidYMid slice">
     <rect x="10" y="10" width="220" height="300" fill="none" stroke={ink} stroke-opacity="0.35" />
     <rect x="16" y="16" width="208" height="288" fill="none" stroke={ink} stroke-opacity="0.18" />
-    <g transform="translate(0 22)">
-      {
-        motif === 'barycenter' && (
-          <g fill="none">
-            {[60, 85, 120, 140, 105].map((mu, i) => (
-              <path d={bump(mu, 18 + (i % 3) * 4, 60 + (i % 2) * 18)} stroke={ink} stroke-opacity="0.28" stroke-width="1.2" />
-            ))}
-            <path d={bump(100, 22, 96)} stroke={accent} stroke-width="3" />
-            <line x1="20" y1="150" x2="220" y2="150" stroke={ink} stroke-width="1" />
-          </g>
-        )
-      }
-      {
-        motif === 'adversary' && (
-          <g fill="none" stroke={ink} stroke-width="1.4">
-            {[70, 95, 120].map((y) => (
-              <line x1="30" y1={y} x2="105" y2={y} />
-            ))}
-            {[70, 95, 120].map((y) => (
-              <line x1="135" y1={y} x2="210" y2={y} />
-            ))}
-            <rect x="55" y="62" width="16" height="16" fill={soft} />
-            <rect x="78" y="87" width="16" height="16" fill={soft} />
-            <rect x="160" y="62" width="16" height="16" fill={soft} />
-            <rect x="182" y="112" width="16" height="16" fill={soft} />
-            <path d="M110 150 C 120 170, 120 170, 130 150" stroke={accent} stroke-width="2.5" />
-            <circle cx="120" cy="95" r="9" fill={accent} stroke="none" />
-          </g>
-        )
-      }
-      {
-        motif === 'phases' && (
-          <g>
-            {[0, 1, 2, 3, 4].map((i) => (
-              <g transform={`translate(${44 + i * 38} 100)`}>
-                <circle r="15" fill={ink} fill-opacity="0.85" />
-                <circle r="15" cx={-30 + i * 15} fill={soft} />
-              </g>
-            ))}
-            <path d="M30 150 Q 120 120 210 150" fill="none" stroke={accent} stroke-width="2.5" />
-          </g>
-        )
-      }
-      {
-        motif === 'lattice' && (
-          <g stroke={ink} stroke-width="2">
-            {Array.from({ length: 6 }, (_, r) =>
-              Array.from({ length: 6 }, (_, c) => {
-                const x = 45 + c * 30;
-                const y = 30 + r * 30;
-                const open = (r * 7 + c * 3) % 5 !== 0;
-                const down = (r * 3 + c * 5) % 4 !== 0;
-                return (
-                  <g>
-                    {c < 5 && open && <line x1={x} y1={y} x2={x + 30} y2={y} />}
-                    {r < 5 && down && <line x1={x} y1={y} x2={x} y2={y + 30} />}
-                    <circle cx={x} cy={y} r="3" fill={r === 2 ? accent : ink} stroke="none" />
-                  </g>
-                );
-              }),
-            )}
-          </g>
-        )
-      }
-      {
-        motif === 'comb' && (
-          <g fill="none" stroke={ink} stroke-width="1.4">
-            {Array.from({ length: 4 }, (_, r) =>
-              Array.from({ length: 4 }, (_, c) => {
-                const x = 60 + c * 36 + (r % 2) * 18;
-                const y = 40 + r * 31;
-                const pts = Array.from({ length: 6 }, (_, k) => `${x + 18 * Math.cos((Math.PI / 3) * k + Math.PI / 6)},${y + 18 * Math.sin((Math.PI / 3) * k + Math.PI / 6)}`).join(' ');
-                return <polygon points={pts} fill={(r + c) % 5 === 1 ? accent : 'none'} fill-opacity="0.8" />;
-              }),
-            )}
-          </g>
-        )
-      }
-      {
-        motif === 'spectrum' && (
-          <g fill="none">
-            <path d={`M20 150 ${Array.from({ length: 50 }, (_, i) => `L${20 + i * 4} ${150 - 70 * Math.exp(-(((i - 18) / 3) ** 2)) - 55 * Math.exp(-(((i - 31) / 3) ** 2))}`).join(' ')}`} stroke={ink} stroke-width="1.6" />
-            <path d={`M20 150 ${Array.from({ length: 50 }, (_, i) => `L${20 + i * 4} ${150 - 40 * Math.exp(-(((i - 22) / 4) ** 2)) - 40 * Math.exp(-(((i - 27) / 4) ** 2))}`).join(' ')}`} stroke={accent} stroke-width="2.5" />
-          </g>
-        )
-      }
-      {
-        motif === 'eye' && (
-          <g fill="none" stroke={ink} stroke-width="1.5">
-            <circle cx="120" cy="95" r="62" />
-            <circle cx="120" cy="95" r="22" fill={accent} fill-opacity="0.75" />
-            {[0, 40, 80, 130, 170, 220, 270, 320].map((a) => (
-              <path d={`M120 95 q ${30 * Math.cos(a)} ${30 * Math.sin(a)} ${58 * Math.cos((a * Math.PI) / 180)} ${58 * Math.sin((a * Math.PI) / 180)}`} stroke-opacity="0.5" />
-            ))}
-          </g>
-        )
-      }
-      {
-        motif === 'circuit' && (
-          <g fill="none" stroke={ink} stroke-width="1.4">
-            {[50, 75, 100, 125, 150].map((y) => (
-              <line x1="25" y1={y} x2="215" y2={y} />
-            ))}
-            {[60, 100, 140, 180].map((x, i) => (
-              <rect x={x} y={44 + (i % 3) * 25} width="14" height="14" fill={soft} />
-            ))}
-            <line x1="150" y1="40" x2="150" y2="160" stroke={accent} stroke-width="2.5" stroke-dasharray="4 4" />
-          </g>
-        )
-      }
-      {
-        motif === 'rhythm' && (
-          <g>
-            {Array.from({ length: 16 }, (_, i) => (
-              <rect x={28 + i * 12} y={150 - (20 + 60 * Math.abs(Math.sin(i * 0.7)))} width="6" height={20 + 60 * Math.abs(Math.sin(i * 0.7))} fill={i % 4 === 0 ? accent : ink} />
-            ))}
-          </g>
-        )
-      }
-      {
-        motif === 'rings' && (
-          <g fill="none" stroke={ink}>
-            {[20, 38, 56, 74].map((r) => (
-              <circle cx="120" cy="100" r={r} stroke-opacity="0.5" />
-            ))}
-            <circle cx="194" cy="100" r="6" fill={accent} stroke="none" />
-          </g>
-        )
-      }
+    <g transform="translate(0 6) scale(1 0.92)">
+      {motif === 'barycenter' && (
+        <g fill="none">
+          {[60, 85, 120, 140, 105].map((mu, i) => (
+            <path d={bump(mu, 18 + (i % 3) * 4, 60 + (i % 2) * 18)} stroke={ink} stroke-opacity="0.28" stroke-width="1.2" />
+          ))}
+          <path d={bump(100, 22, 96)} stroke={accent} stroke-width="3" />
+          <line x1="20" y1="150" x2="220" y2="150" stroke={ink} stroke-width="1" />
+        </g>
+      )}
+      {motif === 'adversary' && (
+        <g fill="none" stroke={ink} stroke-width="1.4">
+          {[70, 95, 120].map((y) => (
+            <line x1="30" y1={y} x2="105" y2={y} />
+          ))}
+          {[70, 95, 120].map((y) => (
+            <line x1="135" y1={y} x2="210" y2={y} />
+          ))}
+          <rect x="55" y="62" width="16" height="16" fill={soft} />
+          <rect x="78" y="87" width="16" height="16" fill={soft} />
+          <rect x="160" y="62" width="16" height="16" fill={soft} />
+          <rect x="182" y="112" width="16" height="16" fill={soft} />
+          <path d="M110 150 C 120 170, 120 170, 130 150" stroke={accent} stroke-width="2.5" />
+          <circle cx="120" cy="95" r="9" fill={accent} stroke="none" />
+        </g>
+      )}
+      {motif === 'phases' && (
+        <g>
+          {[0, 1, 2, 3, 4].map((i) => (
+            <g transform={`translate(${44 + i * 38} 100)`}>
+              <circle r="15" fill={ink} fill-opacity="0.85" />
+              <circle r="15" cx={-30 + i * 15} fill={soft} />
+            </g>
+          ))}
+          <path d="M30 150 Q 120 120 210 150" fill="none" stroke={accent} stroke-width="2.5" />
+        </g>
+      )}
+      {motif === 'lattice' && (
+        <g stroke={ink} stroke-width="2">
+          {Array.from({ length: 6 }, (_, r) =>
+            Array.from({ length: 6 }, (_, c) => {
+              const x = 45 + c * 30;
+              const y = 30 + r * 30;
+              const open = (r * 7 + c * 3) % 5 !== 0;
+              const down = (r * 3 + c * 5) % 4 !== 0;
+              return (
+                <g>
+                  {c < 5 && open && <line x1={x} y1={y} x2={x + 30} y2={y} />}
+                  {r < 5 && down && <line x1={x} y1={y} x2={x} y2={y + 30} />}
+                  <circle cx={x} cy={y} r="3" fill={r === 2 ? accent : ink} stroke="none" />
+                </g>
+              );
+            }),
+          )}
+        </g>
+      )}
+      {motif === 'comb' && (
+        <g fill="none" stroke={ink} stroke-width="1.4">
+          {Array.from({ length: 4 }, (_, r) =>
+            Array.from({ length: 4 }, (_, c) => {
+              const x = 60 + c * 36 + (r % 2) * 18;
+              const y = 40 + r * 31;
+              const pts = Array.from(
+                { length: 6 },
+                (_, k) =>
+                  `${x + 18 * Math.cos((Math.PI / 3) * k + Math.PI / 6)},${y + 18 * Math.sin((Math.PI / 3) * k + Math.PI / 6)}`,
+              ).join(' ');
+              return <polygon points={pts} fill={(r + c) % 5 === 1 ? accent : 'none'} fill-opacity="0.8" />;
+            }),
+          )}
+        </g>
+      )}
+      {motif === 'spectrum' && (
+        <g fill="none">
+          <path
+            d={`M20 150 ${Array.from({ length: 50 }, (_, i) => `L${20 + i * 4} ${150 - 70 * Math.exp(-(((i - 18) / 3) ** 2)) - 55 * Math.exp(-(((i - 31) / 3) ** 2))}`).join(' ')}`}
+            stroke={ink}
+            stroke-width="1.6"
+          />
+          <path
+            d={`M20 150 ${Array.from({ length: 50 }, (_, i) => `L${20 + i * 4} ${150 - 40 * Math.exp(-(((i - 22) / 4) ** 2)) - 40 * Math.exp(-(((i - 27) / 4) ** 2))}`).join(' ')}`}
+            stroke={accent}
+            stroke-width="2.5"
+          />
+        </g>
+      )}
+      {motif === 'eye' && (
+        <g fill="none" stroke={ink} stroke-width="1.5">
+          <circle cx="120" cy="95" r="62" />
+          <circle cx="120" cy="95" r="22" fill={accent} fill-opacity="0.75" />
+          {[0, 40, 80, 130, 170, 220, 270, 320].map((a) => (
+            <path
+              d={`M120 95 q ${30 * Math.cos(a)} ${30 * Math.sin(a)} ${58 * Math.cos((a * Math.PI) / 180)} ${58 * Math.sin((a * Math.PI) / 180)}`}
+              stroke-opacity="0.5"
+            />
+          ))}
+        </g>
+      )}
+      {motif === 'circuit' && (
+        <g fill="none" stroke={ink} stroke-width="1.4">
+          {[50, 75, 100, 125, 150].map((y) => (
+            <line x1="25" y1={y} x2="215" y2={y} />
+          ))}
+          {[60, 100, 140, 180].map((x, i) => (
+            <rect x={x} y={44 + (i % 3) * 25} width="14" height="14" fill={soft} />
+          ))}
+          <line x1="150" y1="40" x2="150" y2="160" stroke={accent} stroke-width="2.5" stroke-dasharray="4 4" />
+        </g>
+      )}
+      {motif === 'rhythm' && (
+        <g>
+          {Array.from({ length: 16 }, (_, i) => (
+            <rect
+              x={28 + i * 12}
+              y={150 - (20 + 60 * Math.abs(Math.sin(i * 0.7)))}
+              width="6"
+              height={20 + 60 * Math.abs(Math.sin(i * 0.7))}
+              fill={i % 4 === 0 ? accent : ink}
+            />
+          ))}
+        </g>
+      )}
+      {motif === 'rings' && (
+        <g fill="none" stroke={ink}>
+          {[20, 38, 56, 74].map((r) => (
+            <circle cx="120" cy="100" r={r} stroke-opacity="0.5" />
+          ))}
+          <circle cx="194" cy="100" r="6" fill={accent} stroke="none" />
+        </g>
+      )}
     </g>
   </svg>
   <div class="relative flex h-full flex-col justify-between p-[9%]" style={`color:${ink}`}>
     <p class="label-mono text-[0.6rem]">{folio}</p>
-    {
-      big && (
-        <div class="-mx-[9%] -mb-[9%] px-[9%] pt-3 pb-[11%]" style={`background:linear-gradient(to bottom, transparent, ${soft} 28%)`}>
-          <p class="font-serif text-[clamp(1rem,0.8rem+0.6vw,1.35rem)] leading-tight font-semibold" style={`color:${ink}`}>
-            {title}
-          </p>
-          <p class="label-mono mt-2 text-[0.58rem]">
-            {[venue, year].filter(Boolean).join(' · ')}
-          </p>
-        </div>
-      )
-    }
+    {big && (
+      <div
+        class="-mx-[9%] -mb-[9%] px-[9%] pt-3 pb-[11%]"
+        style={`background:linear-gradient(to bottom, transparent, ${soft} 28%)`}
+      >
+        <p
+          class="line-clamp-4 font-serif text-[clamp(0.85rem,0.7rem+0.4vw,1.1rem)] leading-tight font-semibold"
+          style={`color:${ink}`}
+        >
+          {title}
+        </p>
+        <p class="label-mono mt-2 text-[0.58rem]">{[venue, year].filter(Boolean).join(' · ')}</p>
+      </div>
+    )}
   </div>
-  <span class="label-mono absolute right-2 bottom-1.5 text-[0.5rem] opacity-80" style={`color:${ink}`}>original cover art</span>
+  <span class="label-mono absolute right-2 bottom-1.5 text-[0.5rem] opacity-80" style={`color:${ink}`}>
+    original cover art
+  </span>
 </div>

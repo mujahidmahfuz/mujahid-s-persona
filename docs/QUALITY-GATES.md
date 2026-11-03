@@ -21,7 +21,7 @@ Runs, in order, and fails fast:
 - No string `/quantum-cookbook` used as an internal route.
 - No `three` / `@react-three/*` import outside `src/explainers/**`.
 - No `client:load` on any component under `src/explainers/**`.
-- No pink (`#fd91cc`, `--color-pink`, `text-pink`) used as a text colour class on white backgrounds — grep for `text-pink` outside allowed blue containers (components mark allowed containers with `data-surface="blue"`).
+- No fill-only accent (`text-saffron`, `text-terracotta`, `text-copper`, `text-olive`, legacy `text-pink`) used as a text colour on light surfaces — allowed only in files that mark a `data-surface="dark"` container (see DESIGN §2).
 - No `lorem`, `ipsum`, `example.com`, `John Doe`, `TODO` (other than the `TODO(muja):` format), `console.log` in `src/`.
 - Student ID never appears in content or built HTML. The guard stores only a SHA-256 hash of the ID (Muja supplies it locally via an untracked `.env.local`, `STUDENT_ID_SHA256=...`) and hashes every 8-digit number found in `dist/` to compare. The raw ID is never committed.
 - Every explainer folder has `README.md` and `poster.png`; every `verified: true` explainer README contains "Source anchor:" and "Data provenance:" lines.
@@ -72,8 +72,8 @@ Playwright, Chromium only (pre-installed in CI with the official action):
 ### Design / accessibility
 | Mistake | Correct approach |
 |---|---|
-| Pink text on white | `--pink-ink` or blue |
-| Pink focus ring on white | Blue ring (+ optional pink halo) |
+| Fill-only accent as text on parchment | the `*-ink` variant (e.g. `terracotta-ink`) or indigo |
+| Low-contrast focus ring | Indigo ring on light, saffron-light on dark |
 | Colour as the only signal in charts | Add shape/labels/patterns |
 | Images without `alt` / decorative images with alt text | Meaningful alt, or `alt=""` for decoration |
 | Layout shift when explainer loads | Fixed aspect-ratio container + poster |
@@ -97,3 +97,13 @@ New TODO(muja) items: <count> — see TODO-MUJA.md
 Known limitations: <bullets>
 Next phase needs from Muja: <bullets>
 ```
+
+## 6. Redesign gates (Nov 2026)
+
+Guard (`scripts/guard.mjs`) additionally fails when:
+- a fill-only accent (`text-saffron`, `text-terracotta`, `text-copper`, `text-olive`, `text-pink`) is used as text outside `data-surface="dark"`;
+- a built page has zero or more than one `data-epigraph`, or a non-pool epigraph appears on two pages;
+- a Quran reference in `src/data/epigraphs.ts` is missing from `src/data/cache/quran.json`.
+
+E2E adds `tests/e2e/epigraphs.spec.ts` (one epigraph per page; Arabic has `lang="ar" dir="rtl"`; surah,
+verse and translation source are shown). Visual review at 360 px and 1440 px after every major change.

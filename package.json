@@ -16,11 +16,12 @@
     "guard": "node scripts/guard.mjs",
     "check": "astro check && tsc --noEmit && npm run lint && npm run test:unit && astro sync && node scripts/guard.mjs && npm run build && node scripts/guard.mjs --dist && node scripts/linkcheck.mjs",
     "test:e2e": "playwright test",
-    "sync:pubs": "node scripts/sync.ts",
+    "sync:pubs": "node scripts/sync.ts && node scripts/epigraphs.ts",
     "todos": "node scripts/todos.ts --list",
     "posters": "node scripts/posters.ts",
     "test:unit": "node --test \"src/explainers/**/*.test.ts\"",
-    "lighthouse": "lhci autorun --config=lighthouserc.cjs"
+    "lighthouse": "lhci autorun --config=lighthouserc.cjs",
+    "epigraphs": "node scripts/epigraphs.ts"
   },
   "dependencies": {
     "@astrojs/mdx": "^8.1.2",

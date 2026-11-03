@@ -1,6 +1,7 @@
 ---
 import { render, type CollectionEntry } from 'astro:content';
 import BaseLayout from '~/layouts/BaseLayout.astro';
+import Epigraph from '~/components/Epigraph.astro';
 import Chip from '~/components/Chip.astro';
 import PrevNext from '~/components/PrevNext.astro';
 import Todo from '~/components/Todo.astro';
@@ -29,6 +30,9 @@ const { Content } = await render(entry);
       <a href={withBase('/notes/')}>Notes</a>
     </p>
     <h1 class="mt-3">{entry.data.title}</h1>
+    <div class="mt-8 mb-2">
+      <Epigraph page={`notes/${entry.id}`} treatment="margin" />
+    </div>
     <p class="mt-2 text-muted">
       <time datetime={entry.data.date}>{formatDate(entry.data.date)}</time>
     </p>

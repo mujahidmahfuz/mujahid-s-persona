@@ -19,22 +19,20 @@ const isActive = (href: string) => current === href || current.startsWith(href);
 
     <nav aria-label="Main" class="hidden lg:block">
       <ul class="flex items-center gap-0.5">
-        {
-          NAV.map((item) => (
-            <li>
-              <a
-                href={withBase(item.href)}
-                class:list={[
-                  'nav-link relative rounded-sm px-3 py-2 text-[0.92rem] text-ink no-underline transition-colors duration-150 hover:text-verdigris',
-                  isActive(item.href) && 'is-active font-semibold text-verdigris',
-                ]}
-                aria-current={isActive(item.href) ? 'page' : undefined}
-              >
-                {item.label}
-              </a>
-            </li>
-          ))
-        }
+        {NAV.map((item) => (
+          <li>
+            <a
+              href={withBase(item.href)}
+              class:list={[
+                'nav-link relative rounded-sm px-3 py-2 text-[0.92rem] text-ink no-underline transition-colors duration-150 hover:text-verdigris',
+                isActive(item.href) && 'is-active font-semibold text-verdigris',
+              ]}
+              aria-current={isActive(item.href) ? 'page' : undefined}
+            >
+              {item.label}
+            </a>
+          </li>
+        ))}
       </ul>
     </nav>
 
@@ -50,26 +48,29 @@ const isActive = (href: string) => current === href || current.startsWith(href);
           <path d="m20 20-3.5-3.5"></path>
         </svg>
         <span class="sr-only sm:not-sr-only">Search</span>
-        <kbd aria-hidden="true" class="label-mono hidden rounded border border-rule px-1 text-[0.65rem] sm:inline">Ctrl K</kbd>
+        <kbd aria-hidden="true" class="label-mono hidden rounded border border-rule px-1 text-[0.65rem] sm:inline">
+          Ctrl K
+        </kbd>
       </a>
 
       <details class="relative lg:hidden" data-mobile-nav>
         <summary class="cursor-pointer list-none rounded-chip border border-ink-soft px-3 py-1.5 text-sm text-ink">Menu</summary>
         <nav aria-label="Main (mobile)" class="paper-card absolute right-0 mt-2 w-60 rounded-card p-2">
           <ul>
-            {
-              NAV.map((item) => (
-                <li>
-                  <a
-                    href={withBase(item.href)}
-                    class:list={['block rounded-sm px-3 py-2 text-ink no-underline hover:bg-paper-light', isActive(item.href) && 'font-semibold text-verdigris']}
-                    aria-current={isActive(item.href) ? 'page' : undefined}
-                  >
-                    {item.label}
-                  </a>
-                </li>
-              ))
-            }
+            {NAV.map((item) => (
+              <li>
+                <a
+                  href={withBase(item.href)}
+                  class:list={[
+                    'block rounded-sm px-3 py-2 text-ink no-underline hover:bg-paper-light',
+                    isActive(item.href) && 'font-semibold text-verdigris',
+                  ]}
+                  aria-current={isActive(item.href) ? 'page' : undefined}
+                >
+                  {item.label}
+                </a>
+              </li>
+            ))}
           </ul>
         </nav>
       </details>

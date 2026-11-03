@@ -15,6 +15,7 @@ import MathTex from '~/components/Math.astro';
 import Flow from '~/components/Flow.astro';
 import DotRank from '~/components/charts/DotRank.astro';
 import GithubStats from '~/components/GithubStats.astro';
+import { chapterFor } from '~/lib/chapters';
 import VideoFacade from '~/components/VideoFacade.astro';
 import { getPublic, getResearch, related, formatRange, CATEGORY_LABEL, githubRepo } from '~/lib/content';
 import { entryPath, topicPath, withBase } from '~/lib/paths';
@@ -47,6 +48,18 @@ const videos = (await getPublic('videos')).filter((v) =>
   v.data.related.some((r) => r.collection === 'projects' && r.slug === entry.id),
 );
 const period = formatRange(d.period.start, d.period.end, 'ongoing');
+const chapter = chapterFor(d.areas);
+// Honest stage notes — an idea is never presented as a product.
+const STATUS_NOTE: Record<string, string> = {
+  concept: 'An idea at the concept stage. Nothing described here is built yet.',
+  prototype: 'A working prototype: it runs, but it is not a finished product.',
+  'in-progress': 'Under active development; details will change.',
+  'in-preparation': 'Being prepared for release.',
+  'under-review': 'Under review.',
+  accepted: 'Accepted.',
+  published: 'Released.',
+  archived: 'Finished or paused, and kept here for the record.',
+};
 
 const toc = [
   { id: 'tldr', label: 'TL;DR' },
@@ -83,28 +96,52 @@ const jsonLd = d.repo
   toc={toc}
   jsonLd={jsonLd}
   ogImage={withBase(`/og/projects/${entry.id}.png`)}
+  chapter={chapter}
+  epigraph={`projects/${entry.id}`}
+  epigraphTreatment="margin"
 >
-  <header slot="header" class="max-w-4xl">
-    <p class="text-sm font-semibold text-pink-ink">
-      <a href={withBase('/projects/')}>Projects</a> · {CATEGORY_LABEL[d.category]}
-    </p>
-    <h1 class="mt-3">{d.title}</h1>
-    <div class="mt-4 flex flex-wrap items-center gap-3">
-      <StatusBadge status={d.status} />
-      {period && <span class="text-muted">{period}</span>}
+  <header slot="header" class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
+    <div class="max-w-4xl">
+      <nav aria-label="Breadcrumb" class="label-mono text-ink-soft">
+        <a href={withBase('/')} class="text-ink-soft">
+          Atlas
+        </a>{' '}
+        <span aria-hidden="true">›</span>{' '}
+        <a href={withBase('/projects/')} class="text-ink-soft">
+          Workshop
+        </a>{' '}
+        <span aria-hidden="true">›</span> <span class="text-[var(--accent-ink)]">{CATEGORY_LABEL[d.category]}</span>
+      </nav>
+      <h1 class="mt-5 text-[clamp(2.4rem,1.9rem+2.2vw,4rem)]">{d.title}</h1>
+      <div class="mt-5 flex flex-wrap items-center gap-3">
+        <StatusBadge status={d.status} />
+        {period && <span class="label-mono text-ink-soft">{period}</span>}
+      </div>
+      <p class="mt-3 max-w-xl text-sm text-ink-soft">{STATUS_NOTE[d.status]}</p>
+      <div class="mt-6">
+        <LinkRow links={links} label="Project links" />
+      </div>
     </div>
-    {d.stack.length > 0 && (
-      <ul class="mt-4 flex flex-wrap gap-2" aria-label="Stack">
-        {d.stack.map((s) => (
-          <li>
-            <Chip size="md">{s}</Chip>
-          </li>
-        ))}
-      </ul>
-    )}
-    <div class="mt-4">
-      <LinkRow links={links} label="Project links" />
-    </div>
+    <dl class="paper-card grid gap-3 rounded-card p-5 text-sm">
+      <div>
+        <dt class="label-mono text-ink-soft">Built with</dt>
+        <dd class="mt-2 flex flex-wrap gap-1.5">{d.stack.length ? d.stack.map((t) => <Chip>{t}</Chip>) : '—'}</dd>
+      </div>
+      {show(d.role) && !isTodo(d.role) && (
+        <div>
+          <dt class="label-mono text-ink-soft">My part</dt>
+          <dd class="mt-1">{d.role}</dd>
+        </div>
+      )}
+      {d.repo && (
+        <div>
+          <dt class="label-mono text-ink-soft">Repository</dt>
+          <dd class="mt-1 break-all">
+            <a href={`https://github.com/${d.repo}`}>{d.repo}</a>
+          </dd>
+        </div>
+      )}
+    </dl>
   </header>
 
   <Section id="tldr" title="TL;DR">

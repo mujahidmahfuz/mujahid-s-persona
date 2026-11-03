@@ -14,6 +14,18 @@ date: 'TODO(muja): date'
 
 Computational-only study treating low-field CW-ODMR as a non-identifiable inverse problem, with degeneracy-aware calibrated posterior inference.
 
+<Flow
+  kind="conceptual"
+  title="Why low-field ODMR is hard to invert"
+  source="project notes (CONTENT-INVENTORY §3)"
+  steps={[
+    { label: 'CW-ODMR spectrum', detail: 'Resonance lines of NV centres, measured at low magnetic field.' },
+    { label: 'Lines overlap', detail: 'Different field parameters can produce the same spectrum — the problem is non-identifiable.' },
+    { label: 'Degeneracy-aware inference', detail: 'Posterior inference that keeps every consistent explanation, not just one.' },
+    { label: 'Calibrated uncertainty', detail: 'An answer that says honestly how sure it is.' },
+  ]}
+/>
+
 <Todo inline={false}>problem statement</Todo>
 
 ## Method
