@@ -3,7 +3,7 @@ title: QLNRS — Quantum Large Neighbourhood Risk Search
 summary: A hybrid quantum-classical vehicle-routing solver built for the Fujitsu Quantum Simulator Challenge 2025–26. The final report states plainly that no quantum advantage in route cost was demonstrated.
 status: archived
 category: competition
-stack: [Python, NumPy, CP-QAOA, Fujitsu mpiQulacs (QARP)]
+stack: [Python, NumPy, SciPy (L-BFGS-B), Qiskit Aer, Fujitsu QARP + mpiQulacs]
 role: Built the QLNRS solver.
 period:
   start: 'TODO(muja): start month (YYYY-MM)'
@@ -11,44 +11,88 @@ period:
 links:
   report: 'TODO(muja): link to the final report PDF (if public)'
 highlights:
-  - text: Classical large-neighbourhood search with a risk-weighted destroy step and a CP-QAOA repair step on a subspace simulator, using a transposition mixer and a k²-dimensional encoding.
-    source: QLNRS final report (CONTENT-INVENTORY §4)
+  - text: Classical large-neighbourhood search with a chaos-risk-weighted destroy step and a constraint-preserving QAOA (CP-QAOA) repair step, using a transposition mixer and a k²-qubit one-hot encoding.
+    source: QLNRS final report §2, §5, §8
   - text: The CP-QAOA experiments ran on a local subspace simulator, which is equivalent to the full statevector for this circuit class because the mixer keeps every amplitude inside the feasible routes. One penalty-QUBO circuit (k = 4, 16 qubits, 4 MPI nodes, 1,024 shots) ran on Fujitsu's mpiQulacs as a hardware-connectivity baseline; 0.2% of its samples were feasible routes.
     source: QLNRS final report (27 May 2026), Abstract; fujitsu_jobs.json, job 7911328
-  - text: The transposition mixer keeps CP-QAOA at 100% route feasibility at every tested size, where the penalty-QUBO formulation collapses to about 10⁻⁸ % feasible at k = 6.
-    source: QLNRS final report, Abstract
-  - text: No demonstrated quantum advantage in route cost.
-    source: QLNRS final report (CONTENT-INVENTORY §4)
-learned: []
+  - text: The transposition mixer keeps CP-QAOA at 100% route feasibility at every tested size (a theorem, confirmed in every trial), while only about 1 in 95 million random penalty-QUBO samples is a valid route at k = 6.
+    source: QLNRS final report §4–5; exp2_penalty_20260519T000311.json
+  - text: On the synthetic Tokyo instances, QLNRS shortens routes by 3.46% (15 stops) and 2.60% (30 stops) against the greedy baseline — exactly as much as classical LNS. No quantum advantage in route cost was demonstrated, and the report says so.
+    source: QLNRS final report §8; exp5 / exp5b hybrid result JSONs
+learned:
+  - Getting a job onto real hardware can take longer than the algorithm — SSH access through a two-hop gateway failed repeatedly, so only one connectivity job ran before the deadline.
+  - A strong classical post-processor (2-opt) can erase any difference between repair methods; the benchmark has to be hard enough to tell them apart.
+  - More QAOA layers did not mean better answers — the classical optimiser, not the circuit, became the bottleneck.
 areas: [quantum-computing, optimization]
 tags: [vehicle-routing, qaoa, hybrid-quantum-classical, fujitsu-challenge]
 ---
 
+import QlnrsCharts from '~/components/projects/QlnrsCharts.astro';
+
 ## Why it exists
 
-QLNRS was built for the Fujitsu Quantum Simulator Challenge 2025–26. The task was vehicle routing: planning routes for a fleet of vehicles. The project tests whether a quantum subroutine can help inside a classical search method.
+QLNRS was built for the **Fujitsu Quantum Simulator Challenge 2025–26**, on a real problem: delivery routing for small businesses in Tokyo. Tokyo's 23 wards handle millions of parcels a day, and most dispatch still uses greedy nearest-neighbour routes. The question was whether a quantum subroutine can help inside a classical search — and, just as important, to show exactly where each approach struggles.
+
+The work tells the story in three stages: classical methods and where they fall short, a standard quantum formulation and why it fails, and a hybrid that fixes the failure.
 
 <Explainer id="qlnrs-lns-step" />
 
 ## How it works
 
-Large neighbourhood search (LNS) improves a solution by repeatedly destroying part of it and repairing it:
+Large neighbourhood search (LNS) improves a route by repeatedly destroying part of it and repairing it:
 
 <Flow
   title="One turn of the search"
-  source="QLNRS final report (CONTENT-INVENTORY §4)"
+  source="QLNRS final report §8.1"
   steps={[
-    { label: 'Current routes', detail: 'A full solution to the vehicle-routing instance.' },
-    { label: 'Destroy', detail: 'Remove part of the routes, chosen by a risk-weighted rule.' },
-    { label: 'Repair with CP-QAOA', detail: 'Rebuild the removed part on a feasibility-preserving subspace simulator.' },
-    { label: 'Accept or reject', detail: 'Keep the new routes or the old ones, then repeat.' },
+    { label: 'Current route', detail: 'Depot → every stop once → depot.' },
+    { label: 'Risk-weighted destroy', detail: 'Remove k neighbouring stops, chosen at random but weighted towards edges whose traffic is chaotic.' },
+    { label: 'Exact repair', detail: 'Find the best order for the k removed stops — the job CP-QAOA is built for.' },
+    { label: 'Polish and accept', detail: '2-opt clean-up, then a simulated-annealing accept or reject.' },
   ]}
 />
 
-1. **Destroy** — remove part of the current routes, chosen by a risk-weighted rule.
-2. **Repair** — rebuild the removed part with CP-QAOA run on a subspace simulator.
-3. **Accept or reject** the new solution, then repeat.
+- **Traffic risk.** Each road edge gets a chaos score from a synthetic traffic-speed series: the series is delay-embedded and its largest Lyapunov exponent estimated (Rosenstein method). Chaotic edges have unreliable travel times, so they cost more: w̃ = w × (1 + α·λ).
+- **Why the destroy step is random.** Always removing the riskiest stops made the search stall after one step — the same stops came back with the same answer. Sampling them with a softmax (temperature 0.3) fixed it.
+- **The quantum repair.** Re-ordering k stops is a choice among k! permutations. CP-QAOA works only inside that set: it starts in an equal superposition of all orderings, and its mixer swaps whole pairs of stops (a transposition — the Cayley graph of the symmetric group), so it can never produce an invalid route. **Every measurement is a valid route — a theorem, not a tuning result.** In the hybrid runs, the repair step found the exact best order by checking all k! orderings (at most 720), which is what the circuit is meant to reproduce.
 
-The quantum part uses a transposition mixer and a k²-dimensional encoding. CP-QAOA ran on a local subspace simulator; a single penalty-QUBO circuit was run on Fujitsu's mpiQulacs (job 7911328) to confirm the hardware path and the infeasibility baseline.
+## What I found
+
+**1 · The standard quantum encoding collapses.** Writing the routing problem as a penalty-QUBO puts it on k² qubits, but almost none of the 2^(k²) bit strings are valid routes. CP-QAOA stays at 100% at every size. The one job on Fujitsu's simulator (k = 4, 16 qubits, 4 MPI nodes, 1,024 shots, unoptimised parameters) returned 0.2% valid routes — confirming the collapse on Fujitsu's own system.
+
+<QlnrsCharts chart="feasibility" />
+
+**2 · CP-QAOA finds the optimum for small sub-problems.** With three layers it found the exact best order in every trial at k = 3 and 4. At k = 6 (720 orderings, 36 qubits) the mean gap was 1.79%: with 1,024 shots spread over 720 states, each ordering is seen only about once or twice.
+
+<QlnrsCharts chart="gap" />
+
+**3 · Deeper is not better.** At k = 6, in the final run four layers gave the smallest gap and five layers were worse again. Across every run the gap went up and down with depth instead of falling steadily (an earlier run had three layers best). The cause is the classical optimiser — L-BFGS-B with a few hundred evaluations — struggling with more parameters, not the circuit.
+
+<QlnrsCharts chart="depth" />
+
+**4 · On these instances, no route-cost advantage.** QLNRS beat the greedy route by 3.46% on 15 stops and 2.60% on 30 stops — but classical LNS and LNS with random quantum repair reached exactly the same route in every trial. The 2-opt polish pulls every variant into the same local optimum, and the synthetic traffic gives risk scores in a narrow band (about 0.03–0.11). Real traffic data (JARTIC) should spread them out; that is the next test.
+
+<QlnrsCharts chart="routes" />
+
+The classical baseline behind all of this (exact brute force vs greedy vs 2-opt, synthetic Shinjuku instances, seed 42):
+
+| Stops | Orderings | Optimal (m) | Greedy (m) | 2-opt (m) |
+|---|---|---|---|---|
+| 4 | 24 | 3,420 | 3,764 | 3,420 |
+| 6 | 720 | 5,359 | 5,437 | 5,384 |
+| 7 | 5,040 | 5,221 | 5,416 | 5,221 |
+| 9 | 362,880 | 5,694 | 6,098 | 6,098 |
+
+At 9 stops 2-opt gets stuck in the greedy route's local optimum (7.1% above optimal), which is why the repair step should be exact.
+
+## What was hard
+
+- **Getting onto the machine.** Access went through SSH keys and a two-hop gateway, and authentication kept failing with "permission denied" while the deadline approached. When it finally worked, there was time for one connectivity job (7911328), not the CP-QAOA study.
+- **Simulating 36 qubits.** The full state at k = 6 has 2³⁶ ≈ 69 billion amplitudes (about 1 TB of memory). Because CP-QAOA never leaves the 720 valid orderings, I simulated only that subspace — exactly equivalent for this circuit, and fast on a laptop.
+- **Bugs that looked like results.** An early objective computed the average energy over all states — a constant — so the optimiser was tuning a flat landscape. A column-wise mixer broke the "each stop once" rule. Both are logged and fixed.
+
+## What it did not show
+
+The 720-ordering sub-problem is still easy for a classical computer, so k = 6 cannot show a quantum speed-up. The instances are synthetic (a 1 km disk, synthetic traffic, no time windows or capacities), and the CP-QAOA circuit has not yet been compiled to Fujitsu's native gates or run on their hardware. The report also gives a CO₂ estimate, but it depends on the 15-stop result carrying over to real cities, so I do not repeat it here as a finding.
 
 <Explainer id="qlnrs-system-map" />

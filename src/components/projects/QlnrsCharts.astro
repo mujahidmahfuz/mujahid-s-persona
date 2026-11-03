@@ -1,0 +1,277 @@
+---
+/**
+ * QLNRS (Fujitsu Quantum Simulator Challenge) — charts of the project's own recorded results.
+ * Every number is copied from the result JSON named in `SOURCE` (Muja's fujitsu_results/ folder,
+ * the results submitted with the 27 May 2026 report). One run per chart, never mixed.
+ * Static SVG (no JS); each chart also carries its data as a screen-reader table.
+ */
+interface Props {
+  chart: 'feasibility' | 'gap' | 'depth' | 'routes';
+}
+const { chart } = Astro.props;
+
+const SOURCE = {
+  feasibility: 'quantum/exp2_penalty_20260519T000311.json (theoretical_frac, cpqaoa_feas); fujitsu_jobs.json, job 7911328',
+  gap: 'scaling/exp4_scaling_20260519T000702.json (p = 3, 20 trials per k)',
+  depth: 'quantum/exp3b_p_variation_k6_v2_20260520T005953.json (k = 6, 20 trials per depth)',
+  routes: 'hybrid/exp5_hybrid_20260519T000833.json and hybrid/exp5b_hybrid_hard_20260520T005334.json (20 trials)',
+} as const;
+
+// 1 — share of all bit strings that are valid routes (penalty-QUBO samples the whole space) vs CP-QAOA.
+const FEAS = [
+  { k: 2, qubits: 4, frac: 0.125 },
+  { k: 3, qubits: 9, frac: 0.01171875 },
+  { k: 4, qubits: 16, frac: 0.0003662109 },
+  { k: 5, qubits: 25, frac: 3.5763e-6 },
+  { k: 6, qubits: 36, frac: 1.05e-8 },
+];
+const HW = { k: 4, frac: 0.002 }; // mpiQulacs job 7911328, unoptimised penalty-QUBO, 1,024 shots
+
+// 2 — CP-QAOA optimality gap vs sub-problem size.
+const GAP = [
+  { k: 3, mean: 0.0, sd: 0.0 },
+  { k: 4, mean: 0.0, sd: 0.0 },
+  { k: 5, mean: 2.23, sd: 6.45 },
+  { k: 6, mean: 1.79, sd: 4.83 },
+];
+
+// 3 — CP-QAOA depth study at k = 6.
+const DEPTH = [
+  { p: 2, mean: 3.16, sd: 5.38 },
+  { p: 3, mean: 5.09, sd: 9.2 },
+  { p: 4, mean: 0.65, sd: 1.57 },
+  { p: 5, mean: 2.85, sd: 5.02 },
+];
+
+// 4 — mean route cost (m), 20 trials; every LNS variant has std = 0.
+const ROUTES = [
+  {
+    name: '15 stops',
+    rows: [
+      { m: 'Nearest neighbour (greedy)', cost: 7433.1 },
+      { m: 'Classical LNS', cost: 7175.8 },
+      { m: 'LNS + random quantum repair', cost: 7175.8 },
+      { m: 'QLNRS', cost: 7175.8 },
+    ],
+  },
+  {
+    name: '30 stops',
+    rows: [
+      { m: 'Nearest neighbour (greedy)', cost: 8319.4 },
+      { m: 'Classical LNS', cost: 8102.7 },
+      { m: 'LNS + random quantum repair', cost: 8102.7 },
+      { m: 'QLNRS', cost: 8102.7 },
+    ],
+  },
+];
+
+const fmtFrac = (f: number) =>
+  f >= 0.001 ? `${+(f * 100).toPrecision(3)}%` : `1 in ${Math.round(1 / f).toLocaleString('en-US')}`;
+
+// feasibility geometry: log10 axis from 1e-8 to 1
+const FX0 = 150;
+const FX1 = 700;
+const TICK: Record<number, string> = { [-8]: '1 in 10⁸', [-6]: '1 in 10⁶', [-4]: '1 in 10⁴', [-2]: '1%', 0: '100%' };
+const lx = (f: number) => FX0 + ((Math.log10(f) + 8) / 8) * (FX1 - FX0);
+---
+
+{chart === 'feasibility' && (
+  <figure class="my-8">
+    <figcaption class="text-sm font-semibold text-blue">How often a sample is a valid route</figcaption>
+    <svg viewBox="0 0 760 300" class="mt-3 h-auto w-full" aria-hidden="true">
+      {[-8, -6, -4, -2, 0].map((e) => (
+        <g>
+          <line x1={lx(10 ** e)} x2={lx(10 ** e)} y1={20} y2={250} stroke="#c9b186" stroke-width={1} />
+          <text x={lx(10 ** e)} y={272} text-anchor="middle" font-size="14" fill="#4c574d">
+            {TICK[e]}
+          </text>
+        </g>
+      ))}
+      {FEAS.map((r, i) => {
+        const y = 40 + i * 46;
+        return (
+          <g>
+            <text x={8} y={y + 5} font-size="15" font-weight="600" fill="#26332e">
+              k = {r.k}
+            </text>
+            <text x={58} y={y + 5} font-size="13" fill="#4c574d">
+              {r.qubits} qubits
+            </text>
+            <line x1={lx(r.frac)} x2={lx(1)} y1={y} y2={y} stroke="#c9b186" stroke-dasharray="3 4" />
+            <circle cx={lx(r.frac)} cy={y} r={7} fill="#354a87" stroke="#fbf6ea" stroke-width={2} />
+            <rect x={lx(1) - 7} y={y - 7} width={14} height={14} fill="#b65d42" stroke="#fbf6ea" stroke-width={2} />
+            {r.k === HW.k && <circle cx={lx(HW.frac)} cy={y} r={8} fill="none" stroke="#26332e" stroke-width={2} />}
+          </g>
+        );
+      })}
+    </svg>
+    <ul class="mt-2 flex flex-wrap gap-x-5 gap-y-1 text-sm text-ink" aria-label="Legend">
+      <li class="flex items-center gap-2">
+        <svg width="14" height="14" aria-hidden="true">
+          <circle cx="7" cy="7" r="6" fill="#354a87" />
+        </svg>
+        Penalty-QUBO (share of all bit strings that are valid routes)
+      </li>
+      <li class="flex items-center gap-2">
+        <svg width="14" height="14" aria-hidden="true">
+          <rect x="1" y="1" width="12" height="12" fill="#b65d42" />
+        </svg>
+        CP-QAOA (always 100%)
+      </li>
+      <li class="flex items-center gap-2">
+        <svg width="16" height="16" aria-hidden="true">
+          <circle cx="8" cy="8" r="6" fill="none" stroke="#26332e" stroke-width="2" />
+        </svg>
+        Measured on Fujitsu mpiQulacs, k = 4: 0.2%
+      </li>
+    </ul>
+    <div class="sr-only">
+      <table>
+        <caption>Valid-route rate by sub-problem size</caption>
+        <thead>
+          <tr>
+            <th scope="col">k</th>
+            <th scope="col">Qubits</th>
+            <th scope="col">Penalty-QUBO (random sample)</th>
+            <th scope="col">CP-QAOA</th>
+          </tr>
+        </thead>
+        <tbody>
+          {FEAS.map((r) => (
+            <tr>
+              <td>{r.k}</td>
+              <td>{r.qubits}</td>
+              <td>{fmtFrac(r.frac)}</td>
+              <td>100%</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p class="mt-2 text-xs text-ink-soft">
+      Log scale. At k = 6 only {fmtFrac(1.05e-8)} bit strings is a valid route. Source: {SOURCE.feasibility}.
+    </p>
+  </figure>
+)}
+
+{(chart === 'gap' || chart === 'depth') &&
+  (() => {
+    const rows = chart === 'gap' ? GAP.map((r) => ({ x: `k = ${r.k}`, ...r })) : DEPTH.map((r) => ({ x: `p = ${r.p}`, ...r }));
+    const best = chart === 'depth' ? 'p = 4' : null;
+    const max = chart === 'gap' ? 10 : 15;
+    const H = 200;
+    const y = (v: number) => 230 - (Math.min(v, max) / max) * H;
+    const w = 600 / rows.length;
+    return (
+      <figure class="my-8">
+        <figcaption class="text-sm font-semibold text-blue">
+          {chart === 'gap'
+            ? 'CP-QAOA optimality gap by sub-problem size (p = 3)'
+            : 'CP-QAOA optimality gap by circuit depth (k = 6)'}
+        </figcaption>
+        <svg viewBox="0 0 760 270" class="mt-3 h-auto w-full max-w-3xl" aria-hidden="true">
+          {[0, max / 2, max].map((t) => (
+            <g>
+              <line x1={90} x2={720} y1={y(t)} y2={y(t)} stroke="#c9b186" stroke-width={t === 0 ? 1.5 : 0.8} />
+              <text x={80} y={y(t) + 5} text-anchor="end" font-size="14" fill="#4c574d">
+                {t}%
+              </text>
+            </g>
+          ))}
+          {rows.map((r, i) => {
+            const cx = 100 + w * i + w / 2;
+            const top = r.mean + r.sd;
+            return (
+              <g>
+                <rect
+                  x={cx - 28}
+                  y={y(r.mean)}
+                  width={56}
+                  height={Math.max(230 - y(r.mean), 0)}
+                  rx={4}
+                  fill={r.x === best ? '#b65d42' : '#354a87'}
+                />
+                {r.sd > 0 && (
+                  <g stroke="#26332e" stroke-width={1.5}>
+                    <line x1={cx} x2={cx} y1={y(r.mean)} y2={y(top)} />
+                    <line x1={cx - 8} x2={cx + 8} y1={y(top)} y2={y(top)} />
+                  </g>
+                )}
+                <text x={cx + 34} y={y(r.mean) + 4} font-size="14" font-weight="600" fill="#26332e">
+                  {r.mean.toFixed(2)}%
+                </text>
+                <text x={cx} y={256} text-anchor="middle" font-size="15" font-weight="600" fill="#26332e">
+                  {r.x}
+                </text>
+                {top > max && (
+                  <text x={cx} y={y(max) - 6} text-anchor="middle" font-size="12" fill="#4c574d">
+                    +sd {top.toFixed(1)}%
+                  </text>
+                )}
+              </g>
+            );
+          })}
+        </svg>
+        <div class="sr-only">
+          <table>
+            <caption>Optimality gap, mean and standard deviation over 20 trials</caption>
+            <thead>
+              <tr>
+                <th scope="col">{chart === 'gap' ? 'Sub-problem size' : 'Depth'}</th>
+                <th scope="col">Mean gap</th>
+                <th scope="col">Standard deviation</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((r) => (
+                <tr>
+                  <td>{r.x}</td>
+                  <td>{r.mean.toFixed(2)}%</td>
+                  <td>{r.sd.toFixed(2)}%</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p class="mt-2 text-xs text-ink-soft">
+          Bars: mean gap to the brute-force optimum over 20 trials; whiskers: one standard deviation above the mean.
+          {chart === 'depth' && ' Highlighted: the best depth.'} Source: {SOURCE[chart]}.
+        </p>
+      </figure>
+    );
+  })()}
+
+{chart === 'routes' && (
+  <figure class="my-8">
+    <figcaption class="text-sm font-semibold text-blue">Mean route length (metres), 20 trials</figcaption>
+    <div class="mt-3 grid gap-6 md:grid-cols-2">
+      {ROUTES.map((g) => {
+        const lo = 6500;
+        const hi = Math.max(...g.rows.map((r) => r.cost));
+        return (
+          <div>
+            <p class="label-mono text-ink-soft">{g.name}</p>
+            <ul class="mt-2 space-y-[3px]">
+              {g.rows.map((r) => (
+                <li class="grid grid-cols-[minmax(9rem,45%)_1fr_4.5rem] items-center gap-2 text-sm">
+                  <span class:list={['text-ink', r.m === 'QLNRS' && 'font-semibold']}>{r.m}</span>
+                  <span class="block h-5 rounded-r-[4px] bg-paper-light" aria-hidden="true">
+                    <span
+                      class="block h-full rounded-r-[4px]"
+                      style={`width:${((r.cost - lo) / (hi - lo)) * 100}%;background:${r.m === 'QLNRS' ? '#b65d42' : '#354a87'}`}
+                    />
+                  </span>
+                  <span class="text-right font-mono tabular-nums">{r.cost.toLocaleString('en-US')}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        );
+      })}
+    </div>
+    <p class="mt-2 text-xs text-ink-soft">
+      Bars start at 6,500 m so the gap is visible. Every LNS variant reaches the same route in every trial (std = 0). Source:{' '}
+      {SOURCE.routes}.
+    </p>
+  </figure>
+)}
