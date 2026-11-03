@@ -145,7 +145,7 @@ _Generated 2026-11-03 by `scripts/todos.ts`. In production builds each of these 
   - [ ] problem statement (line 19)
 - **src/content/research/qip-2025.mdx**
   - [ ] what you did (e.g. literature review, writing, figures) (line 13)
-  - [ ] confirm or replace this summary with your own words (it is based on Semantic Scholar's machine-generated summary of the abstract), and add the survey's main categories and conclusions (line 44)
+  - [ ] confirm or replace this summary with your own words (it is based on Semantic Scholar's machine-generated summary of the abstract), and add the survey's main categories and conclusions (line 43)
 - **src/content/research/retinal-reliability.mdx**
   - [ ] your role (line 7)
   - [ ] date (line 10)

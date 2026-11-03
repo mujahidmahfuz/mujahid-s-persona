@@ -143,7 +143,7 @@ export const EPIGRAPHS: Epigraph[] = [
   { id: 'projects/mujaverse', type: 'quran', ref: '13:11', why: 'Change begins within — building something.' },
 
   // ---------- experience / achievements / sports ----------
-  { id: 'experience/research-ozaydin', type: 'quran', ref: '39:9', why: 'Are those who know equal to those who do not?' },
+  { id: 'experience/undergraduate-researcher', type: 'quran', ref: '39:9', why: 'Are those who know equal to those who do not?' },
   {
     id: 'experience/ta-intro-python',
     type: 'philosophy',

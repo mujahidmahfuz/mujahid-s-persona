@@ -8,10 +8,9 @@ export const SITE = {
   url: 'https://mujahidmahfuz.github.io',
   tagline: 'Undergraduate researcher — machine learning, explainable AI and quantum computing',
   description:
-    'Md Mujahidul Islam (Muja) is an undergraduate researcher at Tokyo International University working with Prof. Fatih Ozaydin on explainable AI, continual learning and quantum information.',
+    'I am Md Mujahidul Islam, known as Muja — an undergraduate researcher at Tokyo International University working on explainable AI, continual learning and quantum information.',
   affiliation: 'Institute for International Strategy and Emerging Technologies, Tokyo International University',
   university: 'Tokyo International University',
-  advisor: 'Prof. Fatih Ozaydin',
   sourceRepo: 'https://github.com/mujahidmahfuz/mujahid-s-persona',
   quantumCookbook: 'https://mujahidmahfuz.github.io/quantum-cookbook/',
   orcidId: '0009-0007-8507-3370',

@@ -3,10 +3,9 @@ role: Student Assistant
 org: Tokyo International University
 type: sa
 course: Blockchain
-supervisor: Prof. Fatih Ozaydin
 start: 2026-04
 end: 2026-08
-description: Supported sessions and student questions in the Blockchain course taught by Prof. Fatih Ozaydin.
+description: Supported sessions and student questions in the Blockchain course.
 tags: [teaching, blockchain, cryptography]
 ---
 

@@ -32,7 +32,7 @@ const items = await timelineItems();
         <div class="prose-site mt-8">{isTodo(LONG_BIO) ? <Todo text={LONG_BIO} inline={false} /> : <p>{LONG_BIO}</p>}</div>
       )}
       <p class="mt-8 max-w-2xl text-ink-soft">
-        I work at the {SITE.affiliation}, advised by {SITE.advisor}. The rest of this atlas is the long version: the{' '}
+        I work at the {SITE.affiliation}. The rest of this atlas is the long version: the{' '}
         <a href={withBase('/research/')}>research</a>, the <a href={withBase('/projects/')}>things I have built</a>, and the{' '}
         <a href={withBase('/sports/')}>pitch</a>.
       </p>

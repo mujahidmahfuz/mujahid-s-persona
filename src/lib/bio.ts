@@ -3,7 +3,7 @@
  * The long bio must be written by Muja.
  */
 export const SHORT_BIO =
-  'Md Mujahidul Islam (Muja) is an undergraduate researcher at Tokyo International University working with Prof. Fatih Ozaydin on explainable AI, continual learning and quantum information. His work appears in Knowledge-Based Systems and Quantum Information Processing.';
+  'I am Md Mujahidul Islam, known as Muja — an undergraduate researcher at Tokyo International University working on explainable AI, continual learning and quantum information. My work appears in Knowledge-Based Systems and Quantum Information Processing.';
 
 export const LONG_BIO = 'TODO(muja): 150–250 words in your own voice — why these fields, what question drives you.';
 
