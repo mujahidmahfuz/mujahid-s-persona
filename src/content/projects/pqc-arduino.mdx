@@ -10,9 +10,6 @@ stack: [C, Arduino UNO (AVR), ML-KEM, SLH-DSA, liboqs (PC reference)]
 role: Creator — porting, optimisation, hardware testing and the security audit.
 period:
   start: 2026-06
-links:
-  repo: https://github.com/mujahidmahfuz/PQC-on-resource-constrained-devices-e.g-Arduino-R3-
-repo: mujahidmahfuz/PQC-on-resource-constrained-devices-e.g-Arduino-R3-
 highlights:
   - text: Full CCA-secure ML-KEM-512 (Fujisaki–Okamoto transform) runs on the UNO — encapsulation in 934 ms, decapsulation in 133 ms — with tamper detection working.
     source: ROADMAP.md, Phase 1, Method 5
@@ -24,10 +21,8 @@ highlights:
     source: ROADMAP.md, New Work Track 1 (29–30 Aug 2026)
   - text: PQC-Restore — encrypted checkpoints in EEPROM let an ML-KEM-512 operation resume after interruption; secure and adaptive checkpointing pass hardware demos.
     source: ROADMAP.md, New Work Track 2 (31 Aug 2026 →)
-  - text: PQC deployment on extremely constrained devices is not blocked only by algorithm size — memory architecture is the key challenge.
-    source: PQC-on-resource-constrained-devices README
-  - text: A taxonomy of PQC-migration defects mined from 8 GitHub repositories.
-    source: CONTENT-INVENTORY §4
+  - text: The barrier is memory layout, not only algorithm size — a direct port fails because the keys are bigger than the RAM, and placing keys in Flash, ciphertext in EEPROM and streaming one polynomial at a time makes it fit.
+    source: ROADMAP.md, Phase 1 (Method 1 and key tricks)
 areas: [cryptography, systems]
 tags: [post-quantum-cryptography, ml-kem, slh-dsa, sphincs-plus, arduino, embedded]
 ---
