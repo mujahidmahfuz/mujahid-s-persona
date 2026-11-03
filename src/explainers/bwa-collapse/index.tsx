@@ -4,7 +4,7 @@ import { PlayPause } from '../shared/PlayPause';
 import { Legend } from '../shared/Legend';
 import { useStepper } from '../shared/useStepper';
 import type { ExplainerProps } from '../types';
-import { B, D, E, euclideanMean, l2, toSimplex, signVote, consensusStandIn } from './model';
+import { B, D, E, euclideanMean, l2, toSimplex, signVote, bwaConsensus } from './model';
 
 const STEPS = [
   {
@@ -25,7 +25,7 @@ const STEPS = [
   {
     label: '4 Consensus',
     caption:
-      'The distributions are merged into one consensus profile (the paper uses a Wasserstein barycenter) and each feature’s sign goes to a binomial test. Inconsistent features abstain instead of silently shrinking.',
+      'The distributions are merged into one consensus profile by an entropic Wasserstein barycenter (the paper’s Algorithm 1) and each feature’s sign goes to a binomial test. Inconsistent features abstain instead of silently shrinking.',
   },
 ] as const;
 
@@ -50,10 +50,8 @@ export default function BwaCollapse({ onReady }: ExplainerProps) {
     const mean = euclideanMean(E);
     const simplex = E.map(toSimplex);
     const votes = signVote(E);
-    const consensus = consensusStandIn(E);
-    // BWA-v1 uses a global normalisation: restore a natural scale with the replicates' average L1 norm.
-    const scale = E.reduce((s, r) => s + r.reduce((a, x) => a + Math.abs(x), 0), 0) / B;
-    const final = consensus.map((c, j) => c * scale * (votes[j]!.sign || 1));
+    // Entropic Wasserstein barycenter (Algorithm 1), signs from the test, energy-preserving rescale.
+    const final = bwaConsensus(E);
     return { mean, simplex, votes, final, meanNorm: l2(mean), avgNorm: E.reduce((s, r) => s + l2(r), 0) / B };
   }, []);
 

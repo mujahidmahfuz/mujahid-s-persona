@@ -1,6 +1,18 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { E, B, D, euclideanMean, l2, toSimplex, signTestP, signVote, consensusStandIn } from './model.ts';
+import {
+  E,
+  B,
+  D,
+  euclideanMean,
+  l2,
+  toSimplex,
+  signTestP,
+  signVote,
+  wassersteinBarycenter,
+  bwaConsensus,
+  BARYCENTER_E,
+} from './model.ts';
 
 const close = (a: number, b: number, eps = 1e-9) => assert.ok(Math.abs(a - b) < eps, `${a} ≉ ${b}`);
 
@@ -41,9 +53,28 @@ test('sign vote keeps unanimous features and abstains on the rest at α = 0.05',
   assert.deepEqual(v, [1, -1, 0, 0, 1, 0, 0, -1]);
 });
 
-test('consensus stand-in is a probability vector', () => {
+test('barycenter is a probability vector and converges', () => {
+  const { mu, iterations } = wassersteinBarycenter(E);
   close(
-    consensusStandIn(E).reduce((a, b) => a + b, 0),
+    mu.reduce((a, b) => a + b, 0),
     1,
   );
+  assert.ok(mu.every((x) => x > 0));
+  assert.ok(iterations < 30000);
+});
+
+test('stored barycenter equals a fresh Algorithm-1 run (and POT, to 5 dp)', () => {
+  const { mu } = wassersteinBarycenter(E);
+  mu.forEach((x, j) => assert.ok(Math.abs(x - BARYCENTER_E[j]!) < 1e-4, `feature ${j}: ${x} vs ${BARYCENTER_E[j]}`));
+});
+
+test('barycenter of identical replicates is that replicate (up to entropic blur)', () => {
+  const row = toSimplex(E[0]!);
+  const { mu } = wassersteinBarycenter([E[0]!, E[0]!, E[0]!]);
+  mu.forEach((x, j) => assert.ok(Math.abs(x - row[j]!) < 0.02, `feature ${j}: ${x} vs ${row[j]}`));
+});
+
+test('consensus keeps the replicates’ mean L2 energy (core.py rescale)', () => {
+  const target = E.reduce((s, r) => s + l2(r), 0) / B;
+  close(l2(bwaConsensus(E)), target);
 });

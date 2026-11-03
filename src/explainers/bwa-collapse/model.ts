@@ -1,7 +1,8 @@
 /**
  * Toy data and arithmetic for the BWA explainer. Everything here is ILLUSTRATIVE:
  * a hand-written 6 × 8 attribution matrix, not data from the paper.
- * Method structure from the BWA preprint abstract (doi:10.2139/ssrn.7292748).
+ * Method structure from the BWA preprint abstract (doi:10.2139/ssrn.7292748) and the paper's
+ * Algorithm 1 / public reference code (core.py).
  */
 
 /** B = 6 bootstrap replicates × d = 8 features. Features 3, 4, 6 and 7 flip sign across replicates. */
@@ -57,20 +58,81 @@ export function signVote(m: readonly (readonly number[])[], alpha = ALPHA): { si
   });
 }
 
-const median = (xs: number[]) => {
-  const s = [...xs].sort((a, b) => a - b);
-  const h = Math.floor(s.length / 2);
-  return s.length % 2 ? s[h]! : (s[h - 1]! + s[h]!) / 2;
+/**
+ * Ground cost between features — the `"euclidean"` option of the reference implementation
+ * (github.com/mujahidmahfuz/bootstrap-wasserstein-alignment, core.py `_compute_cost_matrix`):
+ * |i − j| between feature indices, divided by its maximum. The toy has no feature matrix X, so the
+ * default correlation cost (1 − |corr|) cannot be formed; this choice is stated in the UI.
+ */
+export function indexCost(d: number): number[][] {
+  return Array.from({ length: d }, (_, i) => Array.from({ length: d }, (_, j) => Math.abs(i - j) / (d - 1)));
+}
+
+/** core.py default entropic regularisation. */
+export const EPSILON = 0.01;
+
+const lse = (xs: number[]) => {
+  const m = Math.max(...xs);
+  return m === -Infinity ? m : m + Math.log(xs.reduce((a, x) => a + Math.exp(x - m), 0));
 };
 
 /**
- * Consensus magnitude profile — SCHEMATIC STAND-IN. The paper aggregates the simplex measures
- * with an (entropic) Wasserstein barycenter; this toy uses the renormalised per-feature median
- * so the picture can be drawn without the paper's ground cost. Labelled as such in the UI.
+ * Entropic Wasserstein barycenter of the replicates' simplex measures, uniform weights —
+ * the paper's Algorithm 1 (iterative Bregman projections, Benamou et al. 2015; POT `ot.barycenter`),
+ * run in the log domain so ε = 0.01 does not underflow. Returns the barycenter and the iterations used.
  */
-export function consensusStandIn(m: readonly (readonly number[])[]): number[] {
-  const P = m.map(toSimplex);
-  const med = P[0]!.map((_, j) => median(P.map((p) => p[j]!)));
-  const s = med.reduce((a, x) => a + x, 0);
-  return med.map((x) => x / s);
+export function wassersteinBarycenter(
+  m: readonly (readonly number[])[],
+  C: readonly (readonly number[])[] = indexCost(m[0]!.length),
+  eps = EPSILON,
+  maxIter = 30000,
+  tol = 1e-5,
+): { mu: number[]; iterations: number } {
+  const d = m[0]!.length;
+  const logA = m.map((row) => toSimplex(row).map((x) => Math.log(x + 1e-10)));
+  const logK = C.map((r) => r.map((c) => -c / eps));
+  const logKv = (lv: number[]) => logK.map((r) => lse(r.map((k, j) => k + lv[j]!)));
+  const logKtu = (lu: number[]) => logK[0]!.map((_, j) => lse(logK.map((r, i) => r[j]! + lu[i]!)));
+  let logV = m.map(() => new Array<number>(d).fill(0));
+  let logU: number[][] | null = null;
+  let logMu = new Array<number>(d).fill(-Math.log(d));
+  let it = 0;
+  for (; it < maxIter; it++) {
+    const logKV = logV.map((lv) => logKv(lv));
+    // Residual of the previous sweep: row marginals u_b ⊙ K v_b against a_b (column marginals are exact).
+    if (logU) {
+      const err = Math.max(
+        ...logA.map((la, b) => la.reduce((s, x, i) => s + Math.abs(Math.exp(logU![b]![i]! + logKV[b]![i]!) - Math.exp(x)), 0)),
+      );
+      if (err < tol) break;
+    }
+    // u_b = a_b ⊘ (K v_b);   μ = exp( (1/B) Σ_b log(Kᵀ u_b) );   v_b = μ ⊘ (Kᵀ u_b)
+    logU = logA.map((la, b) => la.map((x, i) => x - logKV[b]![i]!));
+    const logKtU = logU.map((lu) => logKtu(lu));
+    logMu = logKtU[0]!.map((_, j) => logKtU.reduce((s, r) => s + r[j]!, 0) / logKtU.length);
+    logV = logKtU.map((r) => logMu.map((x, j) => x - r[j]!));
+  }
+  const mu = logMu.map(Math.exp);
+  const z = mu.reduce((a, x) => a + x, 0);
+  return { mu: mu.map((x) => x / z), iterations: it + 1 };
+}
+
+/**
+ * The converged barycenter of the toy matrix E (ε = 0.01, index cost), as computed by
+ * `wassersteinBarycenter(E)` (~17 000 sweeps) and cross-checked against POT's `ot.barycenter`
+ * (method "sinkhorn_log", fully converged) to five decimals. Stored so the page does not spend
+ * ~0.4 s of main-thread time on every visit; the unit test recomputes it and fails on any drift.
+ */
+export const BARYCENTER_E: readonly number[] = [0.22452, 0.17391, 0.19758, 0.02195, 0.12256, 0.14477, 0.01494, 0.09978];
+
+/**
+ * BWA-v1-style consensus: barycenter magnitudes, signs from the sign test (abstained features keep
+ * their magnitude, drawn as outlines), rescaled so its L2 norm equals the replicates' mean L2 norm
+ * (core.py `_rescale_consensus`, "preserve attribution energy").
+ */
+export function bwaConsensus(m: readonly (readonly number[])[], mu: readonly number[] = BARYCENTER_E): number[] {
+  const votes = signVote(m);
+  const target = m.reduce((s, r) => s + l2(r), 0) / m.length;
+  const k = target / l2(mu);
+  return mu.map((x, j) => x * k * (votes[j]!.sign || 1));
 }
