@@ -66,6 +66,9 @@ manuscripts are usually reusable on a personal site — check each publisher's a
 - [ ] **BWA reference code** (your GitHub repo, not this site) — `core.py` `fit()` passes the weights to `ot.barycenter` as (replicates × features), but POT expects (features × replicates). Checked with POT 0.9.7: it raises `ValueError` whenever B ≠ d, and would silently compute the wrong thing if B = d. Fix: `ot.barycenter(weights.T, C, ...)`.
 - [ ] **Sound Society** — added as a public project page (live link only; the repo is private). Check you are happy for it to be listed, and that the description is right.
 
+- [ ] **Sound Society / LinkedIn** — LinkedIn blocks automated reading, so the page is written from the repo. Paste the LinkedIn project text and I will use it.
+- [ ] **QLNRS report tables** (your FINAL_REPORT.md, not the site) — Table 3 mixes a 18 May run (k = 5: 0.76%) with a 19 May run (k = 6: 1.79%); Table 4's p = 4 row takes its mean (0.65%) and its std (2.47%) from different runs. "1.05 × 10⁻⁸ %" should read 1.05 × 10⁻⁸ (a fraction, about 1 in 95 million). The site charts use one run each, from fujitsu_results/.
+
 <!-- AUTO-GENERATED BELOW — scripts/todos.ts rewrites everything under this line -->
 
 ## Placeholders found in content (65)
