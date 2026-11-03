@@ -3,18 +3,20 @@ title: QLNRS — Quantum Large Neighbourhood Risk Search
 summary: A hybrid quantum-classical vehicle-routing solver built for the Fujitsu Quantum Simulator Challenge 2025–26. The final report states plainly that no quantum advantage in route cost was demonstrated.
 status: archived
 category: competition
-stack: [CP-QAOA, Fujitsu FX700, Slurm]
+stack: [Python, NumPy, CP-QAOA, Fujitsu mpiQulacs (QARP)]
 role: Built the QLNRS solver.
 period:
   start: 'TODO(muja): start month (YYYY-MM)'
-  end: 'TODO(muja): end month (YYYY-MM)'
+  end: 2026-05
 links:
   report: 'TODO(muja): link to the final report PDF (if public)'
 highlights:
   - text: Classical large-neighbourhood search with a risk-weighted destroy step and a CP-QAOA repair step on a subspace simulator, using a transposition mixer and a k²-dimensional encoding.
     source: QLNRS final report (CONTENT-INVENTORY §4)
-  - text: Experiments ran as Slurm jobs on Fujitsu's FX700 cluster.
-    source: CV, Nov 2026; CONTENT-INVENTORY §4
+  - text: The CP-QAOA experiments ran on a local subspace simulator, which is equivalent to the full statevector for this circuit class because the mixer keeps every amplitude inside the feasible routes. One penalty-QUBO circuit (k = 4, 16 qubits, 4 MPI nodes, 1,024 shots) ran on Fujitsu's mpiQulacs as a hardware-connectivity baseline; 0.2% of its samples were feasible routes.
+    source: QLNRS final report (27 May 2026), Abstract; fujitsu_jobs.json, job 7911328
+  - text: The transposition mixer keeps CP-QAOA at 100% route feasibility at every tested size, where the penalty-QUBO formulation collapses to about 10⁻⁸ % feasible at k = 6.
+    source: QLNRS final report, Abstract
   - text: No demonstrated quantum advantage in route cost.
     source: QLNRS final report (CONTENT-INVENTORY §4)
 learned: []
@@ -38,7 +40,7 @@ Large neighbourhood search (LNS) improves a solution by repeatedly destroying pa
   steps={[
     { label: 'Current routes', detail: 'A full solution to the vehicle-routing instance.' },
     { label: 'Destroy', detail: 'Remove part of the routes, chosen by a risk-weighted rule.' },
-    { label: 'Repair with CP-QAOA', detail: 'Rebuild the removed part on a subspace simulator (Slurm jobs on FX700).' },
+    { label: 'Repair with CP-QAOA', detail: 'Rebuild the removed part on a feasibility-preserving subspace simulator.' },
     { label: 'Accept or reject', detail: 'Keep the new routes or the old ones, then repeat.' },
   ]}
 />
@@ -47,6 +49,6 @@ Large neighbourhood search (LNS) improves a solution by repeatedly destroying pa
 2. **Repair** — rebuild the removed part with CP-QAOA run on a subspace simulator.
 3. **Accept or reject** the new solution, then repeat.
 
-The quantum part uses a transposition mixer and a k²-dimensional encoding. Jobs ran through Slurm on Fujitsu's FX700 cluster.
+The quantum part uses a transposition mixer and a k²-dimensional encoding. CP-QAOA ran on a local subspace simulator; a single penalty-QUBO circuit was run on Fujitsu's mpiQulacs (job 7911328) to confirm the hardware path and the infeasibility baseline.
 
 <Explainer id="qlnrs-system-map" />
