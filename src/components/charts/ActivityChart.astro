@@ -3,7 +3,9 @@
  * Gantt-style activity timeline from education / experience / sports / papers & awards.
  * One hue (deep blue); identity comes from lane labels, not colour. Expected (future) spans are
  * hatched; year-only dates are drawn as thin bands across the year. A pink "now" line marks the
- * build date. Every segment is a focusable link with a hover/focus tooltip and screen-reader text.
+ * build date. The chart is a visual summary only: the same entries are listed in full by the Timeline
+ * that follows it on /about, so the plot is hidden from assistive tech (no duplicate reading) and its
+ * bars are out of the tab order. Mouse users keep the hover tooltips and links.
  */
 import { activityLanes, type Segment } from '~/lib/charts';
 
@@ -27,8 +29,13 @@ let k = 0;
 
 <figure data-reveal class="m-0">
   <figcaption class="text-sm font-semibold text-blue">Activity over time</figcaption>
-  <div class="mt-3 overflow-x-auto" tabindex="0" role="region" aria-label="Activity timeline (scrolls sideways on small screens)">
-    <div class="relative min-w-[40rem] pb-8">
+  <div
+    class="mt-3 overflow-x-auto"
+    tabindex="0"
+    role="region"
+    aria-label="Activity over time — a visual summary of the timeline listed below (scrolls sideways on small screens)"
+  >
+    <div class="relative min-w-[40rem] pb-8" aria-hidden="true">
       {/* year grid */}
       <div class="pointer-events-none absolute inset-y-0 right-0 left-32" aria-hidden="true">
         {years.map((y) => (
@@ -59,7 +66,7 @@ let k = 0;
                     return (
                       <Tag
                         href={s.href}
-                        tabindex={s.href ? undefined : 0}
+                        tabindex={s.href ? -1 : undefined}
                         class:list={[
                           'group/seg absolute top-0 h-full rounded-[4px] no-underline focus-visible:z-10',
                           s.yearOnly && 'top-1.5 h-3',
@@ -76,12 +83,8 @@ let k = 0;
                         >
                           {label && <span class="block truncate px-2 text-xs leading-6 font-semibold text-white">{s.label}</span>}
                         </span>
-                        <span class="sr-only">
-                          {lane.name}: {s.label}, {s.detail}
-                        </span>
                         <span
-                          role="tooltip"
-                          class="pointer-events-none invisible absolute bottom-full left-0 z-20 mb-1 w-max max-w-64 rounded-lg bg-ink px-2 py-1 text-xs text-white opacity-0 shadow-lg transition-opacity duration-150 group-hover/seg:visible group-hover/seg:opacity-100 group-focus-visible/seg:visible group-focus-visible/seg:opacity-100"
+                          class="pointer-events-none invisible absolute bottom-full left-0 z-20 mb-1 w-max max-w-64 rounded-lg bg-ink px-2 py-1 text-xs text-white opacity-0 shadow-lg transition-opacity duration-150 group-hover/seg:visible group-hover/seg:opacity-100"
                           aria-hidden="true"
                         >
                           <strong class="block">{s.label}</strong>
