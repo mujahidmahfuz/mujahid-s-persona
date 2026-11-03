@@ -1,0 +1,55 @@
+---
+# Source: Muja's local repo sound_society/ (what_this_is_about.txt, DEPLOY.txt, backend/app/services/*.py
+# docstrings, backend/tests), read 2026-11-04. The GitHub repo is private, so only the live site is linked.
+title: Sound Society
+summary: An anonymous community platform where ordinary people can question officials and report problems in their area — roads, hospitals, corruption — with strict moderation, a public status timeline for every report, and a trust score that only rewards.
+status: prototype
+category: platform
+role: Creator — designed and built the backend, frontend and deployment.
+period:
+  start: 2026-10
+stack: [Python, FastAPI, SQLAlchemy, PostgreSQL, React, TypeScript, Tailwind CSS, Docker]
+links:
+  live: https://sound-society.onrender.com/
+highlights:
+  - text: Posts are anonymous. Emails and device IDs are stored only as keyed hashes, which cannot be turned back into the original.
+    source: backend/app/services/hashing.py
+  - text: Text is checked before it goes live — phone numbers, emails and long ID numbers (to stop doxxing), threats, and abusive words in English, Bangla and regional dialects, including disguised spellings.
+    source: backend/app/services/moderation.py
+  - text: Every report moves through open → seen → in progress → resolved on a public timeline; named responders (for example a union office) can update it and the writer is notified.
+    source: backend/app/services/post_status.py, responders.py
+  - text: A trust score rewards truth, responsibility, kindness and courage and never punishes; others see only a tier badge.
+    source: backend/app/services/trust.py
+  - text: About 510 backend tests (pytest).
+    source: backend/tests, counted 2026-11-04
+areas: [hci, systems]
+tags: [civic-tech, moderation, anonymity, fastapi, react]
+---
+
+## Why it exists
+
+In many places, people who question the powerful are silenced. Sound Society is a social website where anyone in a community can raise a problem — a broken road, a ruined hospital, a false promise — and ask the people responsible to answer, without giving their name. The whole community sees the question, and the office it concerns can answer in public.
+
+There are deliberately no private messages, no followers and no blocking: the platform is for public questions, not for fights. Abusive or hateful posts are removed, and a report button sends false or harmful posts to the admins.
+
+<Flow
+  title="The life of a report"
+  source="backend/app/services/post_status.py"
+  steps={[
+    { label: 'Post', detail: 'An anonymous member writes a report, optionally with photos or video.' },
+    { label: 'Checked', detail: 'Moderation blocks personal details, threats and abuse before it goes live.' },
+    { label: 'Seen', detail: 'A responder for that office marks it seen.' },
+    { label: 'In progress', detail: 'The responder says work has started.' },
+    { label: 'Resolved', detail: 'An admin confirms the problem is solved; the writer is told at every step.' },
+  ]}
+/>
+
+## How it is ordered
+
+The “Most Urgent” tab ranks posts by `(votes + 1) / (hours since posting + 2)^1.2` — the same shape as Hacker News’ formula, with gentler gravity, so an important report in a small community does not sink too fast. The “Recent” tab shows the newest first.
+
+## How it is built
+
+- **Backend** — FastAPI with Pydantic, SQLAlchemy and Alembic on PostgreSQL; per-route rate limits; Cloudflare Turnstile against bots; email or Google sign-in.
+- **Frontend** — React, TypeScript and Tailwind CSS.
+- **Deployment** — one Docker image serving both, on free tiers (Render, Supabase for the database and media).

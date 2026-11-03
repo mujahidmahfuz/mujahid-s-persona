@@ -141,6 +141,12 @@ export const EPIGRAPHS: Epigraph[] = [
     why: 'An AI companion for blind users.',
   },
   { id: 'projects/mujaverse', type: 'quran', ref: '13:11', why: 'Change begins within — building something.' },
+  {
+    id: 'projects/sound-society',
+    type: 'quran',
+    ref: '3:104',
+    why: 'A community that enjoins what is right and forbids what is wrong — public accountability.',
+  },
 
   // ---------- experience / achievements / sports ----------
   { id: 'experience/undergraduate-researcher', type: 'quran', ref: '39:9', why: 'Are those who know equal to those who do not?' },
