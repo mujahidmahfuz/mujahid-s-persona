@@ -43,7 +43,7 @@ const hub = front.pts[0]!;
           y1={pts[a]!.y}
           x2={pts[b]!.x}
           y2={pts[b]!.y}
-          stroke="#c7d3f0"
+          stroke="#c9b186"
           stroke-opacity="0.45"
           stroke-width="1.2"
         />
@@ -60,13 +60,13 @@ const hub = front.pts[0]!;
       cy={hub.y}
       r="9"
       fill="none"
-      stroke="#fd91cc"
+      stroke="#b65d42"
       stroke-width="2"
       style={`transform-origin:${hub.x}px ${hub.y}px`}
     ></circle>
-    <circle cx={hub.x} cy={hub.y} r="7" fill="#fd91cc"></circle>
+    <circle cx={hub.x} cy={hub.y} r="7" fill="#b65d42"></circle>
     {sig.map((d, i) => (
-      <circle class="hero-signal" r="3.5" fill="#fd91cc" style={`offset-path:path('${d}');animation-delay:${i * 1.7}s`} />
+      <circle class="hero-signal" r="3.5" fill="#b65d42" style={`offset-path:path('${d}');animation-delay:${i * 1.7}s`} />
     ))}
   </g>
 </svg>

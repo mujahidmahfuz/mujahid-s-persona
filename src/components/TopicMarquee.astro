@@ -11,7 +11,7 @@ interface Props {
 const { tags } = Astro.props;
 ---
 
-<div class="marquee relative overflow-hidden border-y border-white/15 bg-blue-900 py-3" data-surface="blue" aria-label="Topics">
+<div class="marquee relative overflow-hidden border-y border-white/15 bg-blue-900 py-3" data-surface="dark" aria-label="Topics">
   <div class="marquee-track flex w-max gap-3">
     {[0, 1].map((copy) => (
       <ul class="flex shrink-0 gap-3" aria-hidden={copy === 1 ? 'true' : undefined}>

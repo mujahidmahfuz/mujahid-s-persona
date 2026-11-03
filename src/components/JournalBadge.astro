@@ -23,9 +23,9 @@ const label = `Published in ${badge.name}${badge.publisher ? ` (${badge.publishe
     <defs>
       <path id={id} d="M60 60 m -45 0 a 45 45 0 1 1 90 0 a 45 45 0 1 1 -90 0"></path>
     </defs>
-    <circle cx="60" cy="60" r="58" fill="#09318d"></circle>
-    <circle cx="60" cy="60" r="54" fill="none" stroke="#fd91cc" stroke-width="1.5"></circle>
-    <circle cx="60" cy="60" r="34" fill="#061f5c" stroke="#ffffff" stroke-opacity="0.35"></circle>
+    <circle cx="60" cy="60" r="58" fill="#354a87"></circle>
+    <circle cx="60" cy="60" r="54" fill="none" stroke="#b65d42" stroke-width="1.5"></circle>
+    <circle cx="60" cy="60" r="34" fill="#17363d" stroke="#ffffff" stroke-opacity="0.35"></circle>
     <g class="journal-ring">
       <text font-size="8.4" font-weight="700" letter-spacing="1.1" fill="#ffffff">
         <textPath href={`#${id}`} textLength="282" lengthAdjust="spacingAndGlyphs">
@@ -45,13 +45,13 @@ const label = `Published in ${badge.name}${badge.publisher ? ` (${badge.publishe
       {badge.abbr}
     </text>
     {badge.quartile && (
-      <text x="60" y="78" text-anchor="middle" font-size="12" font-weight="700" fill="#fd91cc">
+      <text x="60" y="78" text-anchor="middle" font-size="12" font-weight="700" fill="#b65d42">
         {badge.quartile}
         {badge.year ? ` · ${badge.year}` : ''}
       </text>
     )}
     {!badge.quartile && badge.year && (
-      <text x="60" y="80" text-anchor="middle" font-size="11" font-weight="700" fill="#fd91cc">
+      <text x="60" y="80" text-anchor="middle" font-size="11" font-weight="700" fill="#b65d42">
         {badge.year}
       </text>
     )}

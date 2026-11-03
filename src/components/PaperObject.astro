@@ -1,0 +1,178 @@
+---
+/**
+ * A publication as a physical object (Website_Redesign.md §9–10): layered paper, original cover,
+ * full bibliographic block, a status stamp and separate actions. Nothing important is hidden
+ * behind hover; the pointer tilt (≤ 4°, fine pointers only, off under reduced motion) is an extra.
+ */
+import PaperCover from './PaperCover.astro';
+import BibtexButton from './BibtexButton.astro';
+import { bibtex, type Research } from '~/lib/content';
+import { chapterFor } from '~/lib/chapters';
+import { entryPath } from '~/lib/paths';
+import { isMe } from '~/lib/content';
+import { show } from '~/lib/todo';
+
+interface Props {
+  entry: Research;
+  folio: string;
+  compact?: boolean;
+}
+const { entry, folio, compact = false } = Astro.props;
+const d = entry.data;
+const c = entry.cite;
+const chapter = chapterFor(d.areas);
+const bib = d.doi ? bibtex(d.doi) : undefined;
+const volume = [c.volume && `Vol. ${c.volume}`, c.issue && `Issue ${c.issue}`, c.pages && `Article ${c.pages}`].filter(Boolean).join(' · ');
+const stamp = d.status === 'published' ? 'Published' : d.status === 'accepted' ? 'Accepted' : d.status.replace('-', ' ');
+const pdf = d.links.pdf && show(d.links.pdf) ? d.links.pdf : undefined;
+const preprint = d.links.preprint && show(d.links.preprint) ? d.links.preprint : undefined;
+---
+
+<article class="paper-object group" data-paper data-chapter={chapter} data-tilt>
+  <div class="paper-body">
+  <div class="paper-sheets" aria-hidden="true"></div>
+  <div class="paper-face relative grid gap-6 p-5 sm:grid-cols-[minmax(9rem,13rem)_1fr] sm:p-7">
+    <a href={entryPath(entry)} class="block self-start no-underline" tabindex="-1" aria-hidden="true">
+      <PaperCover id={entry.id} title={c.title} chapter={chapter} folio={folio} venue={c.venue} year={c.year} />
+    </a>
+    <div class="min-w-0">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <p class="label-mono text-ink-soft">{folio} · {c.venue ?? 'Journal'}</p>
+        <span class="paper-stamp label-mono" data-status={d.status}>{stamp}</span>
+      </div>
+      <h3 class={compact ? 'mt-3 text-[1.5rem]' : 'mt-3 text-[clamp(1.5rem,1.2rem+1vw,2.1rem)]'}>
+        <a href={entryPath(entry)} class="text-verdigris no-underline hover:underline">{c.title}</a>
+      </h3>
+      <p class="mt-3 text-[0.95rem]">
+        {
+          c.authors.map((a, i) => (
+            <>
+              {isMe(a) ? <strong class="font-semibold">{a}</strong> : <span>{a}</span>}
+              {i < c.authors.length - 1 && ', '}
+            </>
+          ))
+        }
+      </p>
+      <dl class="label-mono mt-4 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-ink-soft normal-case">
+        {c.year && (<><dt>Year</dt><dd>{c.year}</dd></>)}
+        {volume && (<><dt>Issue</dt><dd>{volume}</dd></>)}
+        {d.doi && (<><dt>DOI</dt><dd class="break-all"><a href={`https://doi.org/${d.doi}`}>{d.doi}</a></dd></>)}
+      </dl>
+      {!compact && show(d.summary) && <p class="mt-4 max-w-prose text-ink">{d.summary}</p>}
+      <ul class="mt-5 flex flex-wrap gap-2" aria-label={`Actions for ${c.title}`}>
+        <li><a class="paper-action is-primary" href={entryPath(entry)}>Read the paper’s page <span aria-hidden="true">→</span></a></li>
+        {pdf && <li><a class="paper-action" href={pdf}>Open PDF</a></li>}
+        {pdf && <li><a class="paper-action" href={pdf} download>Download PDF</a></li>}
+        {preprint && <li><a class="paper-action" href={preprint}>Preprint (SSRN)</a></li>}
+        {d.doi && <li><a class="paper-action" href={`https://doi.org/${d.doi}`}>View at publisher</a></li>}
+      </ul>
+      {!pdf && <p class="mt-2 text-xs text-ink-soft">The published PDF is behind the publisher’s paywall{preprint ? '; the preprint is open' : ''}.</p>}
+      {bib && !compact && <BibtexButton bibtex={bib} id={entry.id} />}
+    </div>
+  </div>
+  </div>
+</article>
+
+<style>
+  .paper-object {
+    position: relative;
+  }
+  .paper-body {
+    position: relative;
+    transform: perspective(1200px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(var(--lift, 0px));
+    transition: transform 400ms var(--ease-out);
+  }
+  .paper-face {
+    background: var(--color-ivory);
+    border: 1px solid var(--color-rule);
+    box-shadow:
+      0 1px 0 rgba(40, 52, 47, 0.05),
+      0 18px 34px -26px rgba(40, 52, 47, 0.55);
+    transition: box-shadow 400ms var(--ease-out);
+  }
+  /* two sheets beneath, slightly offset — a stack of printed pages */
+  .paper-sheets,
+  .paper-sheets::before {
+    position: absolute;
+    inset: 0;
+    background: var(--color-paper-light);
+    border: 1px solid var(--color-rule);
+  }
+  .paper-sheets {
+    transform: translate(7px, 7px) rotate(0.6deg);
+  }
+  .paper-sheets::before {
+    content: '';
+    transform: translate(6px, 5px) rotate(0.5deg);
+    background: var(--color-paper);
+  }
+  .paper-stamp {
+    border: 1.5px solid var(--accent-ink);
+    color: var(--accent-ink);
+    padding: 0.15rem 0.55rem;
+    border-radius: 2px;
+    transform: rotate(-3deg);
+  }
+  .paper-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    border: 1px solid var(--color-ink-soft);
+    border-radius: 2px;
+    padding: 0.4rem 0.75rem;
+    font-size: 0.875rem;
+    color: var(--color-ink);
+    text-decoration: none;
+    background: var(--color-ivory);
+    transition:
+      background-color 150ms var(--ease-out),
+      border-color 150ms var(--ease-out);
+  }
+  .paper-action:hover {
+    border-color: var(--accent-ink);
+    background: var(--accent-soft);
+  }
+  .paper-action.is-primary {
+    background: var(--accent-ink);
+    border-color: var(--accent-ink);
+    color: var(--color-ivory);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .paper-object:hover .paper-body {
+      --lift: -4px;
+    }
+    .paper-object:hover .paper-face {
+      box-shadow:
+        0 1px 0 rgba(40, 52, 47, 0.05),
+        0 28px 44px -26px rgba(40, 52, 47, 0.6);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .paper-body {
+      transform: none !important;
+    }
+  }
+</style>
+
+<script>
+  // Gentle perspective follow (≤ 4°) for fine pointers; nothing on touch or reduced motion.
+  const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (fine && !calm) {
+    document.querySelectorAll<HTMLElement>('[data-tilt]').forEach((el) => {
+      el.addEventListener('pointermove', (e) => {
+        const r = el.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width - 0.5;
+        const y = (e.clientY - r.top) / r.height - 0.5;
+        const body = el.querySelector<HTMLElement>('.paper-body')!;
+        body.style.setProperty('--ry', `${(x * 4).toFixed(2)}deg`);
+        body.style.setProperty('--rx', `${(-y * 3).toFixed(2)}deg`);
+      });
+      el.addEventListener('pointerleave', () => {
+        const body = el.querySelector<HTMLElement>('.paper-body')!;
+        body.style.setProperty('--ry', '0deg');
+        body.style.setProperty('--rx', '0deg');
+      });
+    });
+  }
+</script>

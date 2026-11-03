@@ -8,7 +8,7 @@ const font = (pkg: string, file: string) => readFileSync(join(process.cwd(), 'no
 let fonts: { name: string; data: Buffer; weight: 400 | 700; style: 'normal' }[] | undefined;
 function loadFonts() {
   fonts ??= [
-    { name: 'Space Grotesk', data: font('space-grotesk', 'space-grotesk-latin-700-normal.woff'), weight: 700, style: 'normal' },
+    { name: 'Cormorant Garamond', data: font('cormorant-garamond', 'cormorant-garamond-latin-600-normal.woff'), weight: 700, style: 'normal' },
     { name: 'Inter', data: font('inter', 'inter-latin-400-normal.woff'), weight: 400, style: 'normal' },
   ];
   return fonts;
@@ -26,34 +26,34 @@ export async function ogImage({ eyebrow, title, footer }: { eyebrow: string; tit
       height: '100%',
       display: 'flex',
       flexDirection: 'column',
-      background: '#09318d',
+      background: '#f2e6cc',
       padding: '56px 72px',
       fontFamily: 'Inter',
-      color: '#ffffff',
+      color: '#26332e',
     },
     [
-      h('div', { display: 'flex', height: 40, alignItems: 'center', gap: 16, fontSize: 28, color: '#fd91cc' }, [
-        h('div', { width: 18, height: 18, borderRadius: 9, background: '#fd91cc' }),
+      h('div', { display: 'flex', height: 40, alignItems: 'center', gap: 16, fontSize: 28, color: '#8e3b26' }, [
+        h('div', { width: 18, height: 18, borderRadius: 9, background: '#b65d42' }),
         eyebrow,
       ]),
       h('div', { display: 'flex', height: 380, alignItems: 'center' }, [
         h(
           'div',
-          { display: 'flex', fontFamily: 'Space Grotesk', fontWeight: 700, fontSize: size, lineHeight: 1.12, maxWidth: 1050 },
+          { display: 'flex', fontFamily: 'Cormorant Garamond', fontWeight: 700, fontSize: size + 6, lineHeight: 1.08, color: '#1d4b45', maxWidth: 1050 },
           title,
         ),
       ]),
-      h('div', { display: 'flex', height: 90, alignItems: 'flex-end', fontSize: 26, color: '#c7d3f0' }, [
+      h('div', { display: 'flex', height: 90, alignItems: 'flex-end', fontSize: 26, color: '#4c574d' }, [
         h('div', { display: 'flex', flexDirection: 'column' }, [
           h(
             'div',
             {
               display: 'flex',
-              fontFamily: 'Space Grotesk',
+              fontFamily: 'Cormorant Garamond',
               fontWeight: 700,
-              color: '#ffffff',
+              color: '#1d4b45',
               fontSize: 30,
-              borderBottom: '5px solid #fd91cc',
+              borderBottom: '3px solid #d3a13c',
               paddingBottom: 4,
             },
             'Md Mujahidul Islam',

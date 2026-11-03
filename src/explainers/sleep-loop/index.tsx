@@ -52,13 +52,13 @@ export default function SleepLoop({ onReady }: ExplainerProps) {
               markerHeight="6"
               orient="auto-start-reverse"
             >
-              <path d="M0 0L10 5L0 10z" fill="#09318d" />
+              <path d="M0 0L10 5L0 10z" fill="#354a87" />
             </marker>
           </defs>
           {/* loop edges with flowing dashes */}
           <path
             d={`M${155 + BW / 2} 70 H${550 - BW / 2 - 6}`}
-            stroke="#09318d"
+            stroke="#354a87"
             strokeWidth="2.5"
             className="ex-flow"
             markerEnd="url(#sl-arrow)"
@@ -66,7 +66,7 @@ export default function SleepLoop({ onReady }: ExplainerProps) {
           />
           <path
             d={`M550 ${70 + BH / 2} V${250 - BH / 2 - 4}`}
-            stroke="#09318d"
+            stroke="#354a87"
             strokeWidth="2.5"
             className="ex-flow"
             markerEnd="url(#sl-arrow)"
@@ -74,7 +74,7 @@ export default function SleepLoop({ onReady }: ExplainerProps) {
           />
           <path
             d={`M${550 - BW / 2} 250 H${155 + BW / 2 + 6}`}
-            stroke="#09318d"
+            stroke="#354a87"
             strokeWidth="2.5"
             className="ex-flow"
             markerEnd="url(#sl-arrow)"
@@ -82,15 +82,15 @@ export default function SleepLoop({ onReady }: ExplainerProps) {
           />
           <path
             d={`M155 ${250 - BH / 2} V${70 + BH / 2 + 4}`}
-            stroke="#09318d"
+            stroke="#354a87"
             strokeWidth="2.5"
             className="ex-flow"
             markerEnd="url(#sl-arrow)"
             fill="none"
           />
           {/* "keep training" branch from the gate back to wake */}
-          <path d="M550 38 C 500 -4, 210 -4, 155 38" stroke="#c7d3f0" strokeWidth="2" fill="none" markerEnd="url(#sl-arrow)" />
-          <text x={352} y={-12} fontSize="13" textAnchor="middle" fill="#4a5677">
+          <path d="M550 38 C 500 -4, 210 -4, 155 38" stroke="#c9b186" strokeWidth="2" fill="none" markerEnd="url(#sl-arrow)" />
+          <text x={352} y={-12} fontSize="13" textAnchor="middle" fill="#4c574d">
             not yet → keep training
           </text>
 
@@ -110,8 +110,8 @@ export default function SleepLoop({ onReady }: ExplainerProps) {
                   width={w}
                   height={BH}
                   rx={14}
-                  fill={on ? '#09318d' : '#ffffff'}
-                  stroke={on ? '#fd91cc' : '#09318d'}
+                  fill={on ? '#354a87' : '#ffffff'}
+                  stroke={on ? '#b65d42' : '#354a87'}
                   strokeWidth={on ? 4 : 2}
                   style={{ transition: 'fill 300ms var(--ease-out), stroke 300ms var(--ease-out)' }}
                 />
@@ -121,12 +121,12 @@ export default function SleepLoop({ onReady }: ExplainerProps) {
                   fontSize="15"
                   fontWeight={700}
                   textAnchor="middle"
-                  fill={on ? '#ffffff' : '#09318d'}
+                  fill={on ? '#ffffff' : '#354a87'}
                 >
                   {n.label}
                 </text>
                 {isGate && (
-                  <text x={n.x} y={n.y + 18} fontSize="13" textAnchor="middle" fill={on ? '#ffffff' : '#4a5677'}>
+                  <text x={n.x} y={n.y + 18} fontSize="13" textAnchor="middle" fill={on ? '#ffffff' : '#4c574d'}>
                     {GATES[gate].name}
                   </text>
                 )}
@@ -138,7 +138,7 @@ export default function SleepLoop({ onReady }: ExplainerProps) {
             cx={0}
             cy={0}
             r={11}
-            fill="#fd91cc"
+            fill="#b65d42"
             stroke="#ffffff"
             strokeWidth="3"
             className="ex-morph"

@@ -1,49 +1,65 @@
 ---
+/**
+ * Homepage — "the entrance to the atlas" (Website_Redesign.md §6). Nine movements:
+ * opening · epigraph · featured research · workshop · publications · on the desk · ledger ·
+ * beyond research · questions & closing. Facts come only from the content collections.
+ */
+import { Image } from 'astro:assets';
 import BaseLayout from '~/layouts/BaseLayout.astro';
-import Button from '~/components/Button.astro';
+import Epigraph from '~/components/Epigraph.astro';
+import CelestialInstrument from '~/components/CelestialInstrument.astro';
+import PaperObject from '~/components/PaperObject.astro';
+import PaperCover from '~/components/PaperCover.astro';
 import Card from '~/components/Card.astro';
-import JournalBadge from '~/components/JournalBadge.astro';
-import SectionHeading from '~/components/SectionHeading.astro';
-import { getResearch, getPublic, dateKey, formatDate, formatRange, yearOf, journalBadge } from '~/lib/content';
+import StatusBadge from '~/components/StatusBadge.astro';
+import { getResearch, getPublic, dateKey, formatDate, formatRange, yearOf } from '~/lib/content';
+import { chapterFor, CHAPTER_LABEL } from '~/lib/chapters';
 import { entryPath, withBase } from '~/lib/paths';
 import { SHORT_BIO } from '~/lib/bio';
 import { PROFILES, SITE } from '~/lib/site';
 import { show } from '~/lib/todo';
-import { Image } from 'astro:assets';
-import HeroNetwork from '~/components/HeroNetwork.astro';
-import TopicMarquee from '~/components/TopicMarquee.astro';
-import StatTiles from '~/components/charts/StatTiles.astro';
-import BarList from '~/components/charts/BarList.astro';
-import ActivityChart from '~/components/charts/ActivityChart.astro';
-import { areaCounts, statusCounts, stats } from '~/lib/charts';
 import tiuSeal from '~/assets/sports/tiu-seal.png';
 
-const research = (await getResearch()).filter((r) => r.data.status !== 'concept');
-const featuredResearch = [...research]
+const research = await getResearch();
+const projects = await getPublic('projects');
+const featuredResearch = research
+  .filter((r) => r.data.status !== 'concept')
   .sort((a, b) => Number(b.data.featured) - Number(a.data.featured) || dateKey(b.data.date).localeCompare(dateKey(a.data.date)))
   .slice(0, 3);
-const projects = await getPublic('projects');
-const featuredProjects = [...projects]
+const featuredProjects = projects
   .filter((p) => p.data.status !== 'concept')
-  .sort(
-    (a, b) =>
-      Number(b.data.featured) - Number(a.data.featured) ||
-      b.data.highlights.length - a.data.highlights.length ||
-      a.id.localeCompare(b.id),
-  )
+  .sort((a, b) => Number(b.data.featured) - Number(a.data.featured) || b.data.highlights.length - a.data.highlights.length || a.id.localeCompare(b.id))
   .slice(0, 3);
-const latestAward = (await getPublic('awards')).sort((a, b) => dateKey(b.data.date).localeCompare(dateKey(a.data.date)))[0];
+const publications = research.filter((r) => r.data.doi).sort((a, b) => (b.cite.year ?? 0) - (a.cite.year ?? 0));
+const onDesk = [...research, ...projects]
+  .filter((e) => e.data.status === 'in-progress' || e.data.status === 'in-preparation')
+  .sort((a, b) => a.data.title.localeCompare(b.data.title))
+  .slice(0, 6);
+const awards = (await getPublic('awards')).sort((a, b) => dateKey(b.data.date).localeCompare(dateKey(a.data.date)));
 const sports = (await getPublic('sports'))[0];
-const headline = await stats();
-const tagCount = new Map<string, number>();
-for (const e of [...(await getResearch()), ...(await getPublic('projects'))])
-  for (const t of e.data.tags) tagCount.set(t, (tagCount.get(t) ?? 0) + 1);
-const allTags = [...tagCount]
-  .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
-  .slice(0, 24)
-  .map(([t]) => t);
-const byArea = await areaCounts();
-const byStatus = await statusCounts();
+const teaching = (await getPublic('experience')).filter((e) => e.data.type === 'ta' || e.data.type === 'sa');
+
+// Questions the work keeps returning to — each paraphrases the linked page's own problem statement.
+const find = (id: string) => [...research, ...projects].find((e) => e.id === id);
+const QUESTIONS = [
+  { q: 'How can an explanation stay steady when there are far fewer examples than features?', id: 'bwa-bootstrap-wasserstein-alignment' },
+  { q: 'When should a learning machine sleep — and how often is enough?', id: 'sleep-continual-learning' },
+  { q: 'Could a photonic quantum computer that tracks its own losses tolerate more of them?', id: 'lossmap-photonic-loss' },
+  { q: 'Is a council of models, judging each other blind, better than any one of them?', id: 'llm-council' },
+  { q: 'How little memory can a post-quantum signature live in?', id: 'pqc-arduino' },
+]
+  .map((x) => ({ ...x, entry: find(x.id) }))
+  .filter((x) => x.entry);
+
+const CONTENTS = [
+  { n: 'I', label: 'Research', href: '/research/', note: `${research.length} studies` },
+  { n: 'II', label: 'Projects', href: '/projects/', note: `${projects.length} things made` },
+  { n: 'III', label: 'Publications', href: '/publications/', note: `${publications.length} papers` },
+  { n: 'IV', label: 'Achievements', href: '/achievements/', note: `${awards.length} entries` },
+  { n: 'V', label: 'Sports', href: '/sports/', note: 'the pitch' },
+  { n: 'VI', label: 'About', href: '/about/', note: 'the person' },
+];
+const roman = ['I', 'II', 'III'];
 
 const person = {
   '@context': 'https://schema.org',
@@ -61,152 +77,287 @@ const person = {
 ---
 
 <BaseLayout title={SITE.name} description={SHORT_BIO} jsonLd={person} type="profile">
-  <section class="relative overflow-hidden bg-blue text-white" data-surface="blue" aria-labelledby="hero-title">
-    <div class="pointer-events-none absolute inset-y-0 right-0 w-full opacity-35 lg:w-1/2 lg:opacity-100" aria-hidden="true">
-      <HeroNetwork />
-    </div>
-    <div class="relative container-site py-16 md:py-24">
-      <p class="font-semibold text-pink">Undergraduate researcher · Machine learning · Quantum computing</p>
-      <h1 id="hero-title" class="mt-4 max-w-3xl">
-        <span class="accent-underline">{SITE.name}</span>
-      </h1>
-      <p class="mt-6 max-w-2xl text-lg text-white/90">{SHORT_BIO}</p>
-      <div class="mt-8 flex flex-wrap gap-3">
-        <Button href={withBase('/research/')} variant="on-blue">
-          See the research
-        </Button>
-        <a
-          href={withBase('/cv/')}
-          class="inline-flex items-center rounded-chip border-2 border-white px-5 py-2.5 font-semibold no-underline transition-colors duration-200 hover:border-pink"
-        >
-          CV
-        </a>
-        <a
-          href={withBase('/contact/')}
-          class="inline-flex items-center rounded-chip border-2 border-white px-5 py-2.5 font-semibold no-underline transition-colors duration-200 hover:border-pink"
-        >
-          Contact
-        </a>
+  <!-- 1 · Opening -->
+  <section class="graticule relative overflow-hidden" aria-labelledby="hero-title">
+    <div class="container-site grid items-center gap-10 py-14 md:py-20 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
+      <div class="relative">
+        <p class="label-mono text-terracotta-ink">Folio I · Tokyo International University</p>
+        <h1 id="hero-title" class="mt-5 text-[clamp(3rem,2.2rem+3.4vw,5.6rem)] leading-[0.95]">
+          Md Mujahidul<br /><span class="italic">Islam</span>
+        </h1>
+        <p class="mt-7 max-w-xl font-serif text-[clamp(1.35rem,1.15rem+0.8vw,1.85rem)] leading-snug text-ink italic">
+          An unfinished atlas of the questions I keep returning to — how machines explain themselves, how they remember, and how the quantum world computes.
+        </p>
+        <p class="mt-6 max-w-xl text-ink-soft">{SHORT_BIO}</p>
+        <nav aria-label="Contents" class="mt-10 max-w-xl">
+          <p class="label-mono text-ink-soft">Contents</p>
+          <ol class="mt-3 divide-y divide-rule border-y border-rule">
+            {
+              CONTENTS.map((c) => (
+                <li>
+                  <a href={withBase(c.href)} class="contents-row group flex items-baseline gap-4 py-2.5 text-ink no-underline">
+                    <span class="label-mono w-8 text-terracotta-ink">{c.n}</span>
+                    <span class="font-serif text-xl font-semibold text-verdigris group-hover:underline">{c.label}</span>
+                    <span class="contents-leader flex-1 border-b border-dotted border-rule" aria-hidden="true" />
+                    <span class="label-mono text-ink-soft normal-case">{c.note}</span>
+                  </a>
+                </li>
+              ))
+            }
+          </ol>
+        </nav>
       </div>
-      <div class="mt-12 max-w-3xl">
-        <StatTiles items={headline} />
+      <div class="mx-auto w-full max-w-[34rem]">
+        <CelestialInstrument />
+        <p class="label-mono mt-3 text-center text-ink-soft normal-case">Six chapters of work — the markers grow with what each holds. Choose one to begin.</p>
       </div>
     </div>
   </section>
 
-  <TopicMarquee tags={allTags} />
-
-  <section class="container-site py-16" aria-labelledby="featured-research">
-    <div class="flex flex-wrap items-end justify-between gap-4">
-      <SectionHeading id="featured-research" eyebrow="Research">
-        Featured research
-      </SectionHeading>
-      <a href={withBase('/research/')} class="mb-6 font-semibold">
-        All research →
-      </a>
-    </div>
-    <ul class="grid gap-6 md:grid-cols-2 lg:grid-cols-3" data-reveal-group>
-      {featuredResearch.map((r) => (
-        <li>
-          <Card
-            variant="research"
-            href={entryPath(r)}
-            title={r.data.title}
-            summary={r.data.summary}
-            status={r.data.status}
-            tags={r.data.tags}
-            meta={[r.cite.venue, r.cite.year ?? yearOf(r.data.date)].filter(Boolean).join(' · ') || undefined}
-          >
-            {journalBadge(r) && <JournalBadge slot="badge" badge={journalBadge(r)!} size={64} reveal={false} />}
-          </Card>
-        </li>
-      ))}
-    </ul>
-  </section>
-
-  <section class="border-y border-blue-200 py-16" aria-labelledby="glance">
+  <!-- 2 · Epigraph, at dusk -->
+  <section class="surface-dark py-16 md:py-24" data-surface="dark" aria-label="Epigraph">
     <div class="container-site">
-      <SectionHeading id="glance" eyebrow="At a glance">
-        The work in numbers
-      </SectionHeading>
-      <p class="-mt-2 mb-8 max-w-prose text-muted">
-        Counted from the research and project pages on this site, so these update whenever a page is added.
-      </p>
-      <div class="grid gap-10 md:grid-cols-2">
-        <BarList title="Research and projects by area" items={byArea} />
-        <BarList
-          title="Where each piece of work stands"
-          items={byStatus}
-          note="From idea to published. Concepts are plans, not results."
-        />
-      </div>
-      <div class="mt-12">
-        <ActivityChart />
-      </div>
+      <Epigraph page="home" treatment="grand" onDark />
     </div>
   </section>
 
-  <section class="bg-blue-050 py-16" aria-labelledby="featured-projects">
-    <div class="container-site">
-      <div class="flex flex-wrap items-end justify-between gap-4">
-        <SectionHeading id="featured-projects" eyebrow="Projects">
-          Things I have built
-        </SectionHeading>
-        <a href={withBase('/projects/')} class="mb-6 font-semibold">
-          All projects →
-        </a>
+  <!-- 3 · Featured research — an editorial list -->
+  <section class="container-site py-20" aria-labelledby="featured-research">
+    <div class="flex flex-wrap items-end justify-between gap-4 border-b border-rule pb-4">
+      <div>
+        <p class="label-mono text-terracotta-ink">Chapter I</p>
+        <h2 id="featured-research" class="mt-2">What I am trying to understand</h2>
       </div>
-      <ul class="grid gap-6 md:grid-cols-2 lg:grid-cols-3" data-reveal-group>
-        {featuredProjects.map((p) => (
-          <li>
-            <Card
-              variant="project"
-              href={entryPath(p)}
-              title={p.data.title}
-              summary={p.data.summary}
-              status={p.data.status}
-              tags={p.data.stack}
-              meta={formatRange(p.data.period.start, p.data.period.end, 'ongoing')}
-            />
+      <a href={withBase('/research/')} class="font-semibold">All research <span aria-hidden="true">→</span></a>
+    </div>
+    <ol class="mt-2" data-reveal-group>
+      {
+        featuredResearch.map((r, i) => (
+          <li class="research-row grid gap-6 border-b border-rule py-8 md:grid-cols-[4rem_minmax(0,1fr)_12rem] md:items-start" data-chapter={chapterFor(r.data.areas)}>
+            <span class="font-serif text-4xl text-[var(--accent)] italic">{roman[i]}</span>
+            <div>
+              <p class="label-mono text-ink-soft">
+                {CHAPTER_LABEL[chapterFor(r.data.areas)]} · {[r.cite.venue, r.cite.year ?? yearOf(r.data.date)].filter(Boolean).join(' · ')}
+              </p>
+              <h3 class="mt-2 text-[clamp(1.5rem,1.25rem+0.9vw,2.1rem)]">
+                <a href={entryPath(r)} class="text-verdigris no-underline hover:underline">
+                  {r.data.title}
+                </a>
+              </h3>
+              <p class="mt-3 max-w-2xl text-ink">{r.data.summary}</p>
+              <div class="mt-4 flex flex-wrap items-center gap-3">
+                <StatusBadge status={r.data.status} />
+                <a href={entryPath(r)} class="text-sm font-semibold">
+                  Enter the paper <span aria-hidden="true">→</span>
+                </a>
+              </div>
+            </div>
+            <a href={entryPath(r)} class="hidden md:block" tabindex="-1" aria-hidden="true">
+              <PaperCover id={r.id} title={r.data.title} chapter={chapterFor(r.data.areas)} folio={`R-${String(i + 1).padStart(2, '0')}`} size="thumb" />
+            </a>
           </li>
-        ))}
+        ))
+      }
+    </ol>
+  </section>
+
+  <!-- 4 · The workshop -->
+  <section class="bg-paper-light py-20" aria-labelledby="workshop">
+    <div class="container-site">
+      <div class="grid gap-6 md:grid-cols-[1fr_1.2fr] md:items-end">
+        <div>
+          <p class="label-mono text-terracotta-ink">Chapter II</p>
+          <h2 id="workshop" class="mt-2">The workshop</h2>
+        </div>
+        <p class="max-w-xl text-ink-soft md:justify-self-end">
+          Things I have built to see whether an idea survives contact with reality. Each card turns over for a short account; the status says how far it got.
+        </p>
+      </div>
+      <ul class="mt-10 grid gap-6 md:grid-cols-3" data-reveal-group>
+        {
+          featuredProjects.map((p) => (
+            <li data-chapter={chapterFor(p.data.areas)}>
+              <Card
+                variant="project"
+                href={entryPath(p)}
+                title={p.data.title}
+                summary={p.data.summary}
+                status={p.data.status}
+                tags={p.data.stack}
+                meta={formatRange(p.data.period.start, p.data.period.end, 'ongoing')}
+              />
+            </li>
+          ))
+        }
+      </ul>
+      <p class="mt-8 text-right"><a href={withBase('/projects/')} class="font-semibold">Everything in the workshop <span aria-hidden="true">→</span></a></p>
+    </div>
+  </section>
+
+  <!-- 5 · Publications -->
+  <section class="container-site py-20" aria-labelledby="library">
+    <p class="label-mono text-terracotta-ink">Chapter III</p>
+    <h2 id="library" class="mt-2">From the library</h2>
+    <p class="mt-3 max-w-2xl text-ink-soft">Work that has passed peer review and found a home in a journal.</p>
+    <div class="mt-10 grid gap-12 xl:grid-cols-2">
+      {publications.map((p, i) => <PaperObject entry={p} folio={`P-${String(i + 1).padStart(2, '0')}`} compact />)}
+    </div>
+  </section>
+
+  <!-- 6 · On the desk -->
+  <section class="border-y border-rule py-16" aria-labelledby="desk">
+    <div class="container-site grid gap-10 md:grid-cols-[18rem_1fr]">
+      <div>
+        <p class="label-mono text-terracotta-ink">Current explorations</p>
+        <h2 id="desk" class="mt-2 text-[clamp(1.7rem,1.4rem+1vw,2.3rem)]">On the desk now</h2>
+        <p class="mt-3 text-sm text-ink-soft">Unfinished, and labelled as such. Some will become papers; some will become lessons.</p>
+      </div>
+      <ul class="grid gap-x-10 sm:grid-cols-2" data-reveal-group>
+        {
+          onDesk.map((e) => (
+            <li class="flex items-baseline gap-3 border-b border-dotted border-rule py-3" data-chapter={chapterFor(e.data.areas)}>
+              <span class="mt-1 inline-block h-2.5 w-2.5 shrink-0 rounded-full bg-[var(--accent)]" aria-hidden="true" />
+              <span class="min-w-0">
+                <a href={entryPath(e)} class="font-serif text-lg font-semibold text-verdigris no-underline hover:underline">
+                  {e.data.title}
+                </a>
+                <span class="label-mono block text-ink-soft normal-case">
+                  {e.data.status.replace('-', ' ')} · {CHAPTER_LABEL[chapterFor(e.data.areas)]}
+                </span>
+              </span>
+            </li>
+          ))
+        }
       </ul>
     </div>
   </section>
 
-  <div class="container-site grid gap-8 py-16 md:grid-cols-2" data-reveal-group>
-    {latestAward && (
-      <section aria-labelledby="latest-achievement" class="rounded-card border border-blue-200 p-6">
-        <p class="text-sm font-semibold tracking-wide text-pink-ink uppercase">Latest achievement</p>
-        <h2 id="latest-achievement" class="mt-2 text-h3">
-          <a href={entryPath(latestAward)}>{latestAward.data.title}</a>
-        </h2>
-        <p class="mt-2 text-muted">{[latestAward.data.issuer, formatDate(latestAward.data.date)].filter(Boolean).join(' · ')}</p>
-        {show(latestAward.data.description) && <p class="mt-3">{latestAward.data.description}</p>}
-        <a href={withBase('/achievements/')} class="mt-4 inline-block font-semibold">
-          All achievements →
-        </a>
-      </section>
-    )}
-    {sports && (
-      <section aria-labelledby="sports-strip" class="rounded-card bg-blue p-6 text-white" data-surface="blue">
-        <div class="flex items-start justify-between gap-4">
-          <p class="text-sm font-semibold tracking-wide text-pink uppercase">Off the desk</p>
-          <span class="rounded-xl bg-white p-1.5">
-            <Image src={tiuSeal} alt="Tokyo International University seal" width={56} height={56} class="h-14 w-14" />
-          </span>
-        </div>
-        <h2 id="sports-strip" class="mt-2 text-h3">
-          <a href={entryPath(sports)}>{sports.data.team}</a>
-        </h2>
-        <p class="mt-2 text-white/90">
-          {sports.data.sport}, {formatRange(sports.data.start, sports.data.end)}. Competed in the{' '}
-          {sports.data.leagues.join(' and the ')}.
-        </p>
-        <a href={withBase('/sports/')} class="mt-4 inline-block font-semibold">
-          Sports →
-        </a>
-      </section>
-    )}
-  </div>
+  <!-- 7 · A ledger of achievements -->
+  <section class="container-site py-20" aria-labelledby="ledger">
+    <div class="grid gap-10 md:grid-cols-[1fr_1.4fr]">
+      <div>
+        <p class="label-mono text-terracotta-ink">Chapter IV</p>
+        <h2 id="ledger" class="mt-2">A short ledger</h2>
+        <p class="mt-3 max-w-sm text-ink-soft">Not a scoreboard — a few moments that marked the way, with their context on each page.</p>
+        <a href={withBase('/achievements/')} class="mt-5 inline-block font-semibold">The full ledger <span aria-hidden="true">→</span></a>
+      </div>
+      <ol class="border-t-2 border-ink" data-reveal-group>
+        {
+          awards.map((a) => (
+            <li class="grid grid-cols-[5.5rem_1fr] gap-4 border-b border-rule py-4">
+              <span class="label-mono pt-1 text-ink-soft">{formatDate(a.data.date) ?? '—'}</span>
+              <span>
+                <a href={entryPath(a)} class="font-serif text-xl font-semibold text-verdigris no-underline hover:underline">
+                  {a.data.title}
+                </a>
+                {show(a.data.description) && <span class="mt-1 block text-sm text-ink-soft">{a.data.description}</span>}
+              </span>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <!-- 8 · Beyond research -->
+  <section class="bg-petrol py-20 text-ivory" data-surface="dark" aria-labelledby="beyond">
+    <div class="container-site">
+      <p class="label-mono text-saffron-light">Chapter V</p>
+      <h2 id="beyond" class="mt-2">Beyond the desk</h2>
+      <div class="mt-10 grid gap-10 md:grid-cols-2">
+        {
+          sports && (
+            <article class="flex gap-6" data-reveal>
+              <span class="shrink-0 self-start rounded-md bg-ivory p-2">
+                <Image src={tiuSeal} alt="Tokyo International University seal" width={88} height={88} class="h-[88px] w-[88px]" />
+              </span>
+              <div>
+                <p class="label-mono text-saffron-light">On the pitch · {formatRange(sports.data.start, sports.data.end)}</p>
+                <h3 class="mt-2 text-2xl">
+                  <a href={entryPath(sports)}>{sports.data.team}</a>
+                </h3>
+                <p class="mt-2 text-ivory/90">
+                  {sports.data.sport} for {sports.data.org}, in the {sports.data.leagues.join(' and the ')}. A different kind of discipline: ninety minutes, eleven people, no undo.
+                </p>
+              </div>
+            </article>
+          )
+        }
+        <article data-reveal>
+          <p class="label-mono text-saffron-light">In the classroom</p>
+          <h3 class="mt-2 text-2xl">Teaching, and being taught by it</h3>
+          <ul class="mt-3 space-y-2 text-ivory/90">
+            {teaching.map((t) => (
+              <li>
+                <a href={entryPath(t)}>{t.data.course ? `${t.data.role} — ${t.data.course}` : t.data.role}</a>
+                <span class="label-mono ml-2 text-ivory/80 normal-case">{formatRange(t.data.start, t.data.end)}</span>
+              </li>
+            ))}
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9 · Questions, then the door -->
+  <section class="container-site py-20" aria-labelledby="questions">
+    <p class="label-mono text-terracotta-ink">Personal reflections</p>
+    <h2 id="questions" class="mt-2">Questions I keep coming back to</h2>
+    <ol class="mt-8 max-w-4xl" data-reveal-group>
+      {
+        QUESTIONS.map((x, i) => (
+          <li class="flex gap-5 border-b border-rule py-5" data-chapter={chapterFor(x.entry!.data.areas)}>
+            <span class="label-mono pt-2 text-[var(--accent-ink)]">Q{i + 1}</span>
+            <a href={entryPath(x.entry!)} class="font-serif text-[clamp(1.35rem,1.15rem+0.7vw,1.85rem)] leading-snug text-ink italic no-underline hover:underline">
+              {x.q}
+            </a>
+          </li>
+        ))
+      }
+    </ol>
+    <div class="paper-card mt-16 grid gap-6 rounded-card p-8 md:grid-cols-[1fr_auto] md:items-center md:p-10" data-reveal>
+      <div>
+        <p class="font-serif text-[clamp(1.6rem,1.3rem+1vw,2.3rem)] leading-tight text-verdigris">If any of these questions are yours too, write to me.</p>
+        <p class="mt-2 text-ink-soft">Collaborations, corrections and good arguments are all welcome.</p>
+      </div>
+      <div class="flex flex-wrap gap-3">
+        <a href={withBase('/contact/')} class="paper-cta is-primary">Begin a conversation</a>
+        <a href={withBase('/cv/')} class="paper-cta">Read the CV</a>
+      </div>
+    </div>
+  </section>
 </BaseLayout>
+
+<style>
+  @media (hover: hover) and (pointer: fine) {
+    .contents-row:hover .contents-leader {
+      border-bottom-color: var(--color-terracotta);
+    }
+  }
+  .paper-cta {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid var(--color-verdigris);
+    border-radius: 2px;
+    padding: 0.7rem 1.2rem;
+    font-weight: 600;
+    color: var(--color-verdigris);
+    text-decoration: none;
+    transition:
+      background-color 150ms var(--ease-out),
+      transform 120ms var(--ease-out);
+  }
+  .paper-cta:hover {
+    background: var(--color-paper-light);
+  }
+  .paper-cta.is-primary {
+    background: var(--color-verdigris);
+    color: var(--color-ivory);
+  }
+  .paper-cta.is-primary:hover {
+    background: var(--color-petrol);
+  }
+  .paper-cta:active {
+    transform: scale(0.98);
+  }
+</style>

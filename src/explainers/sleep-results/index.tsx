@@ -22,7 +22,7 @@ function Bars({
   const PLOT_W = 500;
   return (
     <g>
-      <text x={0} y={y0} fontSize="15" fontWeight={700} fill="#09318d">
+      <text x={0} y={y0} fontSize="15" fontWeight={700} fill="#354a87">
         {chart.title}
       </text>
       {chart.bars.map((b, i) => {
@@ -30,10 +30,10 @@ function Bars({
         const f = b.value / chart.max;
         return (
           <g key={b.label}>
-            <text x={LABEL_W - 10} y={y + 17} fontSize="14" textAnchor="end" fill="#0b1530" fontWeight={b.ours ? 700 : 400}>
+            <text x={LABEL_W - 10} y={y + 17} fontSize="14" textAnchor="end" fill="#26332e" fontWeight={b.ours ? 700 : 400}>
               {b.label}
             </text>
-            <rect x={LABEL_W} y={y} width={PLOT_W} height={26} fill="#eef2fb" rx={3} />
+            <rect x={LABEL_W} y={y} width={PLOT_W} height={26} fill="#efe3c8" rx={3} />
             <rect
               x={LABEL_W}
               y={y}
@@ -41,8 +41,8 @@ function Bars({
               height={26}
               rx={3}
               className="ex-bar-h ex-move"
-              fill={b.ours ? '#09318d' : '#c7d3f0'}
-              stroke={b.ours ? 'none' : '#09318d'}
+              fill={b.ours ? '#354a87' : '#c9b186'}
+              stroke={b.ours ? 'none' : '#354a87'}
               strokeDasharray={b.ours ? undefined : '4 3'}
               vectorEffect="non-scaling-stroke"
               style={{ transform: `scaleX(${shown ? f : 0})`, transitionDelay: `${(offset + i) * 90}ms` }}
@@ -52,7 +52,7 @@ function Bars({
               y={y + 18}
               fontSize="14"
               fontWeight={700}
-              fill="#0b1530"
+              fill="#26332e"
               className="ex-fade"
               style={{ opacity: shown ? 1 : 0, transitionDelay: `${350 + (offset + i) * 90}ms` }}
             >
@@ -84,7 +84,7 @@ export default function SleepResults({ onReady }: ExplainerProps) {
             x={200}
             y={122}
             fontSize="14"
-            fill="#b0306f"
+            fill="#8e3b26"
             fontWeight={700}
             className="ex-fade"
             style={{ opacity: shown ? 1 : 0, transitionDelay: '600ms' }}

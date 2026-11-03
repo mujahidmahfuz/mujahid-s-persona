@@ -72,16 +72,14 @@ for (const f of srcText) {
   if (/explainers\//.test(text) && /client:load/.test(text)) fail(`${r} hydrates an explainer with client:load`);
 }
 
-// 6. Pink as text colour on white
+// 6. Low-contrast accents (saffron, light saffron, terracotta, copper, olive) used as TEXT outside a dark
+//    surface. They are for fills/marks on light paper; text uses the *-ink variants (DESIGN §3).
 for (const f of srcText) {
   const r = rel(f);
   const text = read(f);
-  const pinkText = /\btext-pink(?!-ink)\b(?:-100)?/g;
-  if (pinkText.test(text) && !text.includes('data-surface="blue"') && !text.includes("data-surface='blue'")) {
-    fail(`${r} uses text-pink outside a data-surface="blue" container`);
-  }
-  if (/(?<![-\w])color\s*:\s*(#fd91cc|var\(--color-pink\))/i.test(text) && !/data-surface|surface-blue|on-blue/.test(text)) {
-    fail(`${r} sets CSS color to pink — use --color-pink-ink or blue on white`);
+  const weak = /\btext-(pink(?!-ink)|saffron(?!-ink)(?:-light)?|terracotta(?!-ink)|copper|olive(?!-ink))\b/;
+  if (weak.test(text) && !text.includes('data-surface="dark"') && !text.includes("data-surface='dark'")) {
+    fail(`${r} uses a fill-only accent as text outside a data-surface="dark" container`);
   }
 }
 

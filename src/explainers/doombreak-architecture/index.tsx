@@ -29,15 +29,15 @@ export default function DoomBreakArchitecture({ onReady }: ExplainerProps) {
                   width={210}
                   height={64}
                   rx={12}
-                  fill={on ? '#ffe6f3' : '#eef2fb'}
-                  stroke={on ? '#fd91cc' : '#c7d3f0'}
+                  fill={on ? '#f3ddc4' : '#efe3c8'}
+                  stroke={on ? '#b65d42' : '#c9b186'}
                   strokeWidth={on ? 5 : 2}
                 />
-                <text x={x + 105} y={48} textAnchor="middle" fontSize="22" fontWeight={on ? 700 : 400} fill="#09318d">
+                <text x={x + 105} y={48} textAnchor="middle" fontSize="22" fontWeight={on ? 700 : 400} fill="#354a87">
                   {f.label.slice(2)}
                 </text>
                 {i < FLOW.length - 1 && (
-                  <path d={`M${x + 214} 42 h30`} stroke="#09318d" strokeWidth="3" markerEnd="url(#arrow-db)" />
+                  <path d={`M${x + 214} 42 h30`} stroke="#354a87" strokeWidth="3" markerEnd="url(#arrow-db)" />
                 )}
               </g>
             );
@@ -52,7 +52,7 @@ export default function DoomBreakArchitecture({ onReady }: ExplainerProps) {
               markerHeight="6"
               orient="auto-start-reverse"
             >
-              <path d="M0 0L10 5L0 10z" fill="#09318d" />
+              <path d="M0 0L10 5L0 10z" fill="#354a87" />
             </marker>
           </defs>
         </svg>
@@ -82,7 +82,7 @@ export default function DoomBreakArchitecture({ onReady }: ExplainerProps) {
                       : `M${pa.x + BW} ${y} H${pb.x - 4}`
                   }
                   fill="none"
-                  stroke="#09318d"
+                  stroke="#354a87"
                   strokeWidth="3"
                   markerEnd="url(#arrow-db)"
                   markerStart={twoWay ? 'url(#arrow-db)' : undefined}
@@ -92,7 +92,7 @@ export default function DoomBreakArchitecture({ onReady }: ExplainerProps) {
                   y={b === 'fastapi' ? y + 30 : pa.y - 12}
                   textAnchor="middle"
                   fontSize="15"
-                  fill="#4a5677"
+                  fill="#4c574d"
                 >
                   {label}
                 </text>
@@ -110,8 +110,8 @@ export default function DoomBreakArchitecture({ onReady }: ExplainerProps) {
                   width={BW}
                   height={BH}
                   rx={12}
-                  fill={on ? '#09318d' : '#ffffff'}
-                  stroke={on ? '#fd91cc' : '#09318d'}
+                  fill={on ? '#354a87' : '#ffffff'}
+                  stroke={on ? '#b65d42' : '#354a87'}
                   strokeWidth={on ? 5 : 2}
                 />
                 <text
@@ -120,7 +120,7 @@ export default function DoomBreakArchitecture({ onReady }: ExplainerProps) {
                   textAnchor="middle"
                   fontSize="17"
                   fontWeight={700}
-                  fill={on ? '#ffffff' : '#09318d'}
+                  fill={on ? '#ffffff' : '#354a87'}
                 >
                   {b.label}
                 </text>

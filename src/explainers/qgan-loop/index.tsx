@@ -26,28 +26,28 @@ function Block({ x, y, title, quantum, active }: { x: number; y: number; title: 
         width={w}
         height={h}
         rx={14}
-        fill={active ? '#09318d' : '#ffffff'}
-        stroke={quantum ? '#fd91cc' : '#09318d'}
+        fill={active ? '#354a87' : '#ffffff'}
+        stroke={quantum ? '#b65d42' : '#354a87'}
         strokeWidth={quantum ? 5 : 2}
         style={{ transition: 'fill 300ms var(--ease-out), stroke 300ms var(--ease-out)' }}
       />
-      <text x={x} y={y - 16} fontSize="18" fontWeight={700} textAnchor="middle" fill={active ? '#ffffff' : '#09318d'}>
+      <text x={x} y={y - 16} fontSize="18" fontWeight={700} textAnchor="middle" fill={active ? '#ffffff' : '#354a87'}>
         {title}
       </text>
       {quantum ? (
         // circuit symbol: three wires with gates
-        <g stroke={active ? '#ffffff' : '#09318d'} strokeWidth="2" fill="none">
+        <g stroke={active ? '#ffffff' : '#354a87'} strokeWidth="2" fill="none">
           {[0, 1, 2].map((i) => (
             <line key={i} x1={x - 60} x2={x + 60} y1={y + 6 + i * 12} y2={y + 6 + i * 12} />
           ))}
-          <rect x={x - 38} y={y} width={14} height={12} fill={active ? '#09318d' : '#ffffff'} />
-          <rect x={x - 6} y={y + 12} width={14} height={12} fill={active ? '#09318d' : '#ffffff'} />
+          <rect x={x - 38} y={y} width={14} height={12} fill={active ? '#354a87' : '#ffffff'} />
+          <rect x={x - 6} y={y + 12} width={14} height={12} fill={active ? '#354a87' : '#ffffff'} />
           <line x1={x + 30} x2={x + 30} y1={y + 6} y2={y + 30} />
-          <circle cx={x + 30} cy={y + 6} r={3} fill={active ? '#ffffff' : '#09318d'} />
+          <circle cx={x + 30} cy={y + 6} r={3} fill={active ? '#ffffff' : '#354a87'} />
         </g>
       ) : (
         // network symbol: 3–2 nodes
-        <g fill={active ? '#ffffff' : '#09318d'} stroke={active ? '#ffffff' : '#09318d'} strokeWidth="1.2">
+        <g fill={active ? '#ffffff' : '#354a87'} stroke={active ? '#ffffff' : '#354a87'} strokeWidth="1.2">
           {[0, 1, 2].map((i) =>
             [0, 1].map((k) => <line key={`${i}${k}`} x1={x - 30} y1={y + 2 + i * 13} x2={x + 30} y2={y + 9 + k * 13} />),
           )}
@@ -59,7 +59,7 @@ function Block({ x, y, title, quantum, active }: { x: number; y: number; title: 
           ))}
         </g>
       )}
-      <text x={x - 14} y={y + h / 2 + 20} fontSize="13" textAnchor="end" fill={quantum ? '#b0306f' : '#4a5677'} fontWeight={700}>
+      <text x={x - 14} y={y + h / 2 + 20} fontSize="13" textAnchor="end" fill={quantum ? '#8e3b26' : '#4c574d'} fontWeight={700}>
         {quantum ? 'quantum circuit' : 'classical network'}
       </text>
     </g>
@@ -114,7 +114,7 @@ export default function QganLoop({ onReady }: ExplainerProps) {
               markerHeight="6"
               orient="auto-start-reverse"
             >
-              <path d="M0 0L10 5L0 10z" fill="#09318d" />
+              <path d="M0 0L10 5L0 10z" fill="#354a87" />
             </marker>
             <marker
               id="qg-arrow-pink"
@@ -125,46 +125,46 @@ export default function QganLoop({ onReady }: ExplainerProps) {
               markerHeight="6"
               orient="auto-start-reverse"
             >
-              <path d="M0 0L10 5L0 10z" fill="#b0306f" />
+              <path d="M0 0L10 5L0 10z" fill="#8e3b26" />
             </marker>
           </defs>
           {/* data paths */}
           <path
             d={`M${NOISE.x + 30} ${NOISE.y} H${G.x - 106}`}
-            stroke="#09318d"
+            stroke="#354a87"
             strokeWidth="2.5"
             className="ex-flow"
             markerEnd="url(#qg-arrow)"
           />
           <path
             d={`M${G.x + 100} ${G.y} H${D.x - 106}`}
-            stroke="#09318d"
+            stroke="#354a87"
             strokeWidth="2.5"
             className="ex-flow"
             markerEnd="url(#qg-arrow)"
           />
           <path
             d={`M${REAL.x} ${REAL.y - 16} V${D.y + 54}`}
-            stroke="#09318d"
+            stroke="#354a87"
             strokeWidth="2.5"
             className="ex-flow"
             markerEnd="url(#qg-arrow)"
           />
           <path
             d={`M${D.x} ${D.y - 48} V${SCORE.y + 22}`}
-            stroke="#09318d"
+            stroke="#354a87"
             strokeWidth="2.5"
             markerEnd="url(#qg-arrow)"
             className="ex-fade"
             style={{ opacity: step >= 2 ? 1 : 0.25 }}
           />
 
-          <circle cx={NOISE.x} cy={NOISE.y} r={26} fill="#eef2fb" stroke="#c7d3f0" />
-          <text x={NOISE.x} y={NOISE.y + 5} fontSize="14" textAnchor="middle" fill="#09318d" fontWeight={700}>
+          <circle cx={NOISE.x} cy={NOISE.y} r={26} fill="#efe3c8" stroke="#c9b186" />
+          <text x={NOISE.x} y={NOISE.y + 5} fontSize="14" textAnchor="middle" fill="#354a87" fontWeight={700}>
             noise
           </text>
-          <rect x={REAL.x - 70} y={REAL.y - 16} width={140} height={34} rx={8} fill="#eef2fb" stroke="#c7d3f0" />
-          <text x={REAL.x} y={REAL.y + 6} fontSize="14" textAnchor="middle" fill="#09318d" fontWeight={700}>
+          <rect x={REAL.x - 70} y={REAL.y - 16} width={140} height={34} rx={8} fill="#efe3c8" stroke="#c9b186" />
+          <text x={REAL.x} y={REAL.y + 6} fontSize="14" textAnchor="middle" fill="#354a87" fontWeight={700}>
             real data
           </text>
           <rect
@@ -173,11 +173,11 @@ export default function QganLoop({ onReady }: ExplainerProps) {
             width={180}
             height={34}
             rx={8}
-            fill={step >= 2 ? '#ffe6f3' : '#eef2fb'}
-            stroke="#c7d3f0"
+            fill={step >= 2 ? '#f3ddc4' : '#efe3c8'}
+            stroke="#c9b186"
             style={{ transition: 'fill 300ms var(--ease-out)' }}
           />
-          <text x={SCORE.x} y={SCORE.y + 4} fontSize="14" textAnchor="middle" fill="#09318d" fontWeight={700}>
+          <text x={SCORE.x} y={SCORE.y + 4} fontSize="14" textAnchor="middle" fill="#354a87" fontWeight={700}>
             real or generated?
           </text>
 
@@ -194,24 +194,24 @@ export default function QganLoop({ onReady }: ExplainerProps) {
           <g className="ex-fade" style={{ opacity: step === 3 ? 1 : 0 }}>
             <path
               d={`M${SCORE.x - 92} ${SCORE.y} H${G.x} V${G.y - 52}`}
-              stroke="#b0306f"
+              stroke="#8e3b26"
               strokeWidth="2.5"
               fill="none"
               strokeDasharray="6 4"
               markerEnd="url(#qg-arrow-pink)"
             />
-            <text x={(G.x + SCORE.x) / 2 - 40} y={SCORE.y - 4} fontSize="13" fill="#b0306f" fontWeight={700} textAnchor="middle">
+            <text x={(G.x + SCORE.x) / 2 - 40} y={SCORE.y - 4} fontSize="13" fill="#8e3b26" fontWeight={700} textAnchor="middle">
               update: fool the discriminator
             </text>
             <path
               d={`M${SCORE.x + 92} ${SCORE.y} H${D.x + 140} V${D.y} H${D.x + 104}`}
-              stroke="#b0306f"
+              stroke="#8e3b26"
               strokeWidth="2.5"
               fill="none"
               strokeDasharray="6 4"
               markerEnd="url(#qg-arrow-pink)"
             />
-            <text x={D.x + 44} y={D.y + 112} fontSize="13" fill="#b0306f" fontWeight={700}>
+            <text x={D.x + 44} y={D.y + 112} fontSize="13" fill="#8e3b26" fontWeight={700}>
               <tspan x={D.x + 44}>update: tell</tspan>
               <tspan x={D.x + 44} dy="16">
                 them apart
@@ -224,8 +224,8 @@ export default function QganLoop({ onReady }: ExplainerProps) {
             cx={0}
             cy={0}
             r={10}
-            fill="#fd91cc"
-            stroke="#09318d"
+            fill="#b65d42"
+            stroke="#354a87"
             strokeWidth="2"
             className="ex-morph"
             style={{ transform: `translate(${fakePos.x}px, ${fakePos.y}px)` }}
@@ -235,7 +235,7 @@ export default function QganLoop({ onReady }: ExplainerProps) {
             cy={0}
             r={10}
             fill="#ffffff"
-            stroke="#09318d"
+            stroke="#354a87"
             strokeWidth="2"
             className="ex-morph"
             style={{ transform: `translate(${realPos.x}px, ${realPos.y}px)` }}
@@ -246,9 +246,9 @@ export default function QganLoop({ onReady }: ExplainerProps) {
         <PlayPause playing={playing} onToggle={toggle} atEnd={step === STEPS.length - 1} />
         <Legend
           items={[
-            { label: 'Quantum part', color: '#fd91cc', shape: 'square' },
-            { label: 'Generated sample', color: '#fd91cc', shape: 'circle' },
-            { label: 'Update', color: '#b0306f', shape: 'dashed' },
+            { label: 'Quantum part', color: '#b65d42', shape: 'square' },
+            { label: 'Generated sample', color: '#b65d42', shape: 'circle' },
+            { label: 'Update', color: '#8e3b26', shape: 'dashed' },
           ]}
         />
       </div>

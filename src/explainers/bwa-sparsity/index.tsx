@@ -47,19 +47,19 @@ export default function BwaSparsity({ onReady }: ExplainerProps) {
                 x2={LABEL_W + (t / AXIS_MAX) * PLOT_W}
                 y1={18}
                 y2={H - 26}
-                stroke="#eef2fb"
+                stroke="#efe3c8"
               />
-              <text x={LABEL_W + (t / AXIS_MAX) * PLOT_W} y={H - 8} fontSize="13" textAnchor="middle" fill="#4a5677">
+              <text x={LABEL_W + (t / AXIS_MAX) * PLOT_W} y={H - 8} fontSize="13" textAnchor="middle" fill="#4c574d">
                 {t.toFixed(1)}
               </text>
             </g>
           ))}
           {rows.map((g) => (
             <g key={g.setting}>
-              <text x={0} y={g.top + 4} fontSize="14" fontWeight={700} fill="#09318d">
+              <text x={0} y={g.top + 4} fontSize="14" fontWeight={700} fill="#354a87">
                 {g.domain}
               </text>
-              <text x={0} y={g.top + 21} fontSize="12" fill="#4a5677">
+              <text x={0} y={g.top + 21} fontSize="12" fill="#4c574d">
                 {g.setting}
               </text>
               {g.bars.map((b) => (
@@ -69,7 +69,7 @@ export default function BwaSparsity({ onReady }: ExplainerProps) {
                     y={b.y + BAR_H / 2 + 5}
                     fontSize="13"
                     textAnchor="end"
-                    fill="#0b1530"
+                    fill="#26332e"
                     fontWeight={b.ours ? 700 : 400}
                   >
                     {b.method}
@@ -81,8 +81,8 @@ export default function BwaSparsity({ onReady }: ExplainerProps) {
                     height={BAR_H}
                     rx={3}
                     className="ex-bar-h ex-move"
-                    fill={b.ours ? '#09318d' : '#c7d3f0'}
-                    stroke={b.ours ? 'none' : '#09318d'}
+                    fill={b.ours ? '#354a87' : '#c9b186'}
+                    stroke={b.ours ? 'none' : '#354a87'}
                     strokeDasharray={b.ours ? undefined : '4 3'}
                     vectorEffect="non-scaling-stroke"
                     style={{ transform: `scaleX(${shown ? frac(b.gini) : 0})`, transitionDelay: `${b.i * 70}ms` }}
@@ -92,7 +92,7 @@ export default function BwaSparsity({ onReady }: ExplainerProps) {
                     y={b.y + BAR_H / 2 + 5}
                     fontSize="13"
                     fontWeight={700}
-                    fill="#0b1530"
+                    fill="#26332e"
                     className="ex-fade"
                     style={{ opacity: shown ? 1 : 0, transitionDelay: `${300 + b.i * 70}ms` }}
                   >

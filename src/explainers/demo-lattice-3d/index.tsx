@@ -100,15 +100,15 @@ export default function DemoLattice3D({ onReady }: ExplainerProps) {
           </div>
         }
       >
-        <Canvas frameloop="demand" dpr={[1, 2]} camera={{ position: START, fov: 45 }} style={{ background: '#061f5c' }}>
+        <Canvas frameloop="demand" dpr={[1, 2]} camera={{ position: START, fov: 45 }} style={{ background: '#17363d' }}>
           <ambientLight intensity={0.6} />
           <directionalLight position={[5, 8, 5]} intensity={1.2} />
           {pts.map((p, i) => (
             <mesh key={`${n}-${i}`} position={p}>
               <sphereGeometry args={[i === centre ? 0.22 : 0.14, 20, 20]} />
               <meshStandardMaterial
-                color={i === centre ? '#fd91cc' : '#ffffff'}
-                emissive={i === centre ? '#fd91cc' : '#000000'}
+                color={i === centre ? '#b65d42' : '#ffffff'}
+                emissive={i === centre ? '#b65d42' : '#000000'}
                 emissiveIntensity={0.4}
               />
             </mesh>
@@ -116,7 +116,7 @@ export default function DemoLattice3D({ onReady }: ExplainerProps) {
           <Html position={pts[centre]} center distanceFactor={10} zIndexRange={[10, 0]}>
             <span
               className="translate-y-6 rounded bg-blue-900 px-2 py-0.5 text-xs whitespace-nowrap text-pink"
-              data-surface="blue"
+              data-surface="dark"
             >
               centre
             </span>

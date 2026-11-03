@@ -1,0 +1,233 @@
+---
+/**
+ * The page's epigraph (Website_Redesign.md §5). One per route — `data-epigraph` is tested.
+ * Quranic text comes only from src/data/cache/quran.json (fetched by scripts/epigraphs.ts);
+ * literature only if verified in quotes-verified.json. Compositions: grand | verse | margin | note | plate.
+ */
+import { epigraphFor, TREATMENT, type Treatment } from '~/data/epigraphs';
+import quran from '~/data/cache/quran.json';
+import verified from '~/data/cache/quotes-verified.json';
+
+interface Props {
+  /** Route key: "home", "research", "research/<id>", "topics/<tag>"… */
+  page: string;
+  treatment?: Treatment;
+  class?: string;
+  onDark?: boolean;
+}
+const { page, treatment, class: className, onDark = false } = Astro.props;
+const e = epigraphFor(page);
+const t: Treatment = treatment ?? TREATMENT[page] ?? TREATMENT[page.split('/')[0]!] ?? 'verse';
+
+type QEntry = {
+  surah: { number: number; name: string; englishName: string; englishNameTranslation: string };
+  verses: { n: number; arabic: string; english: string }[];
+};
+const AR_DIGITS = '٠١٢٣٤٥٦٧٨٩';
+const arNum = (n: number) => String(n).replace(/\d/g, (d) => AR_DIGITS[Number(d)]!);
+
+let arabic: string | undefined;
+let english: string;
+let cite: string;
+let source: string;
+if (e.type === 'quran') {
+  const q = (quran as Record<string, QEntry>)[e.ref];
+  if (!q) throw new Error(`Epigraph ${e.id}: Quran ${e.ref} is not in src/data/cache/quran.json — run npm run epigraphs`);
+  arabic = q.verses.map((v) => `${v.arabic} ﴿${arNum(v.n)}﴾`).join(' ');
+  english = q.verses.map((v) => v.english).join(' ');
+  cite = `Surah ${q.surah.englishName} (${q.surah.englishNameTranslation}) ${e.ref}`;
+  source = 'Translation: Saheeh International · Arabic text: Tanzil';
+} else if (e.type === 'original') {
+  english = e.text;
+  cite = 'Original reflection';
+  source = '';
+} else {
+  if (!(verified as Record<string, { ok: boolean }>)[e.id]?.ok) throw new Error(`Epigraph ${e.id}: quotation not verified — run npm run epigraphs`);
+  english = e.text;
+  cite = e.attribution;
+  source = e.source;
+}
+const long = english.length > 260;
+---
+
+<figure
+  class:list={['epigraph', `epigraph--${t}`, long && 'epigraph--long', className]}
+  data-epigraph={e.id}
+  data-reveal
+  data-surface={onDark ? 'dark' : undefined}
+>
+  {
+    t === 'note' && (
+      <span class="epigraph-pin label-mono" aria-hidden="true">
+        from the margins
+      </span>
+    )
+  }
+  {
+    arabic && (
+      <p class="epigraph-ar" lang="ar" dir="rtl">
+        {arabic}
+      </p>
+    )
+  }
+  <blockquote class="epigraph-en" cite={e.type === 'literature' || e.type === 'philosophy' || e.type === 'poetry' ? e.verifyUrl : undefined}>
+    <p>{e.type === 'quran' ? english : `“${english}”`}</p>
+  </blockquote>
+  <figcaption class="epigraph-cite">
+    <span class="epigraph-rule" aria-hidden="true"></span>
+    <span class="label-mono">{cite}</span>
+    {source && <span class="epigraph-source">{source}</span>}
+  </figcaption>
+</figure>
+
+<style>
+  .epigraph {
+    --ep-ink: var(--color-ink);
+    --ep-soft: var(--color-ink-soft);
+    --ep-accent: var(--accent, var(--color-terracotta));
+    margin: 0;
+    color: var(--ep-ink);
+  }
+  .epigraph[data-surface='dark'] {
+    --ep-ink: var(--color-ivory);
+    --ep-soft: color-mix(in srgb, var(--color-ivory) 80%, transparent);
+    --ep-accent: var(--color-saffron-light);
+  }
+  .epigraph-ar {
+    font-family: var(--font-arabic);
+    line-height: 2.1;
+    color: var(--ep-ink);
+  }
+  .epigraph-en p {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-weight: 500;
+    line-height: 1.35;
+  }
+  .epigraph-cite {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem 0.75rem;
+    margin-top: 0.9rem;
+    color: var(--ep-soft);
+  }
+  .epigraph-rule {
+    display: inline-block;
+    width: 2.5rem;
+    height: 1px;
+    background: var(--ep-accent);
+    transform-origin: 0 50%;
+    transition: transform 700ms var(--ease-out) 200ms;
+  }
+  :global(.js) .epigraph[data-reveal]:not(:global(.is-in)) .epigraph-rule {
+    transform: scaleX(0);
+  }
+  .epigraph-source {
+    font-size: 0.75rem;
+  }
+
+  /* grand — the home and About pages: centred, large, Arabic above */
+  .epigraph--grand {
+    text-align: center;
+    max-width: 52rem;
+    margin-inline: auto;
+  }
+  .epigraph--grand .epigraph-ar {
+    font-size: clamp(1.4rem, 1.1rem + 1.2vw, 2.1rem);
+  }
+  .epigraph--grand .epigraph-en p {
+    font-size: clamp(1.45rem, 1.15rem + 1.3vw, 2.25rem);
+    margin-top: 0.75rem;
+  }
+  .epigraph--grand .epigraph-cite {
+    justify-content: center;
+  }
+
+  /* verse — Arabic and English side by side, between hairlines */
+  .epigraph--verse {
+    display: grid;
+    gap: 1rem 2.5rem;
+    border-block: 1px solid var(--color-rule);
+    padding-block: 1.5rem;
+  }
+  @media (min-width: 900px) {
+    .epigraph--verse:not(.epigraph--long) {
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+    }
+    .epigraph--verse .epigraph-ar {
+      order: 2;
+    }
+    .epigraph--verse .epigraph-cite {
+      grid-column: 1 / -1;
+    }
+  }
+  .epigraph--verse .epigraph-ar {
+    font-size: 1.45rem;
+  }
+  .epigraph--verse .epigraph-en p {
+    font-size: 1.35rem;
+  }
+
+  /* margin — a small inscription with an accent rule */
+  .epigraph--margin {
+    border-left: 2px solid var(--ep-accent);
+    padding-left: 1.1rem;
+    max-width: 30rem;
+  }
+  .epigraph--margin .epigraph-ar {
+    font-size: 1.15rem;
+  }
+  .epigraph--margin .epigraph-en p {
+    font-size: 1.15rem;
+  }
+
+  /* note — a journal note on ruled paper, pinned slightly askew */
+  .epigraph--note {
+    position: relative;
+    max-width: 34rem;
+    padding: 1.6rem 1.5rem 1.2rem;
+    background-color: var(--color-ivory);
+    background-image: repeating-linear-gradient(to bottom, transparent 0 1.85rem, color-mix(in srgb, var(--color-indigo) 14%, transparent) 1.85rem 1.9rem);
+    border: 1px solid var(--color-rule);
+    box-shadow: 0 14px 28px -22px rgba(40, 52, 47, 0.6);
+    transform: rotate(-0.6deg);
+  }
+  .epigraph--note .epigraph-en p {
+    font-size: 1.4rem;
+    line-height: 1.32;
+  }
+  .epigraph-pin {
+    position: absolute;
+    top: -0.65rem;
+    left: 1.25rem;
+    background: var(--color-terracotta-ink);
+    color: var(--color-ivory);
+    padding: 0.1rem 0.5rem;
+  }
+
+  /* plate — an engraved label, double border */
+  .epigraph--plate {
+    text-align: center;
+    max-width: 44rem;
+    margin-inline: auto;
+    padding: 1.5rem 1.75rem;
+    border: 3px double var(--color-rule);
+    background: color-mix(in srgb, var(--color-ivory) 70%, transparent);
+  }
+  .epigraph--plate .epigraph-ar {
+    font-size: 1.4rem;
+  }
+  .epigraph--plate .epigraph-en p {
+    font-size: 1.3rem;
+  }
+  .epigraph--plate .epigraph-cite {
+    justify-content: center;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .epigraph--note {
+      transform: none;
+    }
+  }
+</style>

@@ -30,7 +30,7 @@ export function Slider({ label, value, min, max, step = 1, onChange, format = St
         value={value}
         aria-valuetext={format(value)}
         onChange={(e) => onChange(Number(e.target.value))}
-        className="w-full accent-[#09318d]"
+        className="w-full accent-[#354a87]"
       />
     </div>
   );

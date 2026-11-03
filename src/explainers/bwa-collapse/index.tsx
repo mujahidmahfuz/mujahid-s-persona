@@ -70,12 +70,12 @@ export default function BwaCollapse({ onReady }: ExplainerProps) {
         <svg viewBox="0 0 820 372" className="h-auto w-full min-w-[720px] sm:h-full" aria-hidden="true">
           <defs>
             <pattern id="bwa-hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-              <line x1="0" y1="0" x2="0" y2="6" stroke="#b0306f" strokeWidth="2" />
+              <line x1="0" y1="0" x2="0" y2="6" stroke="#8e3b26" strokeWidth="2" />
             </pattern>
           </defs>
 
           {/* Left: replicate attributions */}
-          <text x={MINI_X0} y={22} fontSize="15" fontWeight={700} fill="#09318d">
+          <text x={MINI_X0} y={22} fontSize="15" fontWeight={700} fill="#354a87">
             {split ? 'Magnitude distributions (sign set aside)' : 'Bootstrap replicates'}
           </text>
           <g className="ex-fade" style={{ opacity: step === 1 ? 0.3 : 1 }}>
@@ -83,10 +83,10 @@ export default function BwaCollapse({ onReady }: ExplainerProps) {
               const base = ROW_Y0 + r * ROW_H + 26;
               return (
                 <g key={r}>
-                  <text x={MINI_X0 - 8} y={base + 4} fontSize="11" textAnchor="end" fill="#4a5677">
+                  <text x={MINI_X0 - 8} y={base + 4} fontSize="11" textAnchor="end" fill="#4c574d">
                     {`b${r + 1}`}
                   </text>
-                  <line x1={MINI_X0 - 2} x2={MINI_X0 + D * (MINI_W + MINI_GAP)} y1={base} y2={base} stroke="#c7d3f0" />
+                  <line x1={MINI_X0 - 2} x2={MINI_X0 + D * (MINI_W + MINI_GAP)} y1={base} y2={base} stroke="#c9b186" />
                   {row.map((v, j) => {
                     const s = split ? data.simplex[r]![j]! * 4 : v;
                     const x = MINI_X0 + j * (MINI_W + MINI_GAP);
@@ -98,7 +98,7 @@ export default function BwaCollapse({ onReady }: ExplainerProps) {
                           width={MINI_W}
                           height={MINI_UNIT}
                           className="ex-bar ex-morph"
-                          fill={v >= 0 || split ? '#09318d' : '#fd91cc'}
+                          fill={v >= 0 || split ? '#354a87' : '#b65d42'}
                           style={{ transform: `scaleY(${s})`, transitionDelay: `${j * 35 + r * 25}ms` }}
                         />
                         <text
@@ -106,7 +106,7 @@ export default function BwaCollapse({ onReady }: ExplainerProps) {
                           y={base + 14}
                           fontSize="11"
                           textAnchor="middle"
-                          fill={v >= 0 ? '#09318d' : '#b0306f'}
+                          fill={v >= 0 ? '#354a87' : '#8e3b26'}
                           className="ex-fade"
                           style={{ opacity: split ? 1 : 0 }}
                         >
@@ -122,10 +122,10 @@ export default function BwaCollapse({ onReady }: ExplainerProps) {
 
           {/* Right: Euclidean mean, then BWA consensus */}
           <g className="ex-fade" style={{ opacity: step === 0 ? 0 : 1 }}>
-            <text x={BIG_X0} y={22} fontSize="15" fontWeight={700} fill="#09318d">
+            <text x={BIG_X0} y={22} fontSize="15" fontWeight={700} fill="#354a87">
               {step >= 3 ? 'BWA consensus (v1-style sign test)' : 'Euclidean mean of the replicates'}
             </text>
-            <line x1={BIG_X0 - 6} x2={BIG_X0 + D * (BIG_W + BIG_GAP)} y1={BIG_BASE} y2={BIG_BASE} stroke="#4a5677" />
+            <line x1={BIG_X0 - 6} x2={BIG_X0 + D * (BIG_W + BIG_GAP)} y1={BIG_BASE} y2={BIG_BASE} stroke="#4c574d" />
             {data.mean.map((m, j) => {
               const x = BIG_X0 + j * (BIG_W + BIG_GAP);
               const vote = data.votes[j]!;
@@ -141,8 +141,8 @@ export default function BwaCollapse({ onReady }: ExplainerProps) {
                     width={BIG_W}
                     height={BIG_UNIT}
                     className="ex-bar ex-morph"
-                    fill={showFinal ? 'none' : '#09318d'}
-                    stroke={showFinal ? '#4a5677' : 'none'}
+                    fill={showFinal ? 'none' : '#354a87'}
+                    stroke={showFinal ? '#4c574d' : 'none'}
                     strokeDasharray="3 3"
                     vectorEffect="non-scaling-stroke"
                     style={{ transform: `scaleY(${step >= 1 ? m : 0})`, transitionDelay: `${j * 45}ms` }}
@@ -154,8 +154,8 @@ export default function BwaCollapse({ onReady }: ExplainerProps) {
                     width={BIG_W - 10}
                     height={BIG_UNIT}
                     className="ex-bar ex-morph"
-                    fill={abstain ? 'url(#bwa-hatch)' : f >= 0 ? '#09318d' : '#fd91cc'}
-                    stroke={abstain ? '#b0306f' : 'none'}
+                    fill={abstain ? 'url(#bwa-hatch)' : f >= 0 ? '#354a87' : '#b65d42'}
+                    stroke={abstain ? '#8e3b26' : 'none'}
                     strokeDasharray={abstain ? '4 3' : undefined}
                     vectorEffect="non-scaling-stroke"
                     style={{
@@ -164,7 +164,7 @@ export default function BwaCollapse({ onReady }: ExplainerProps) {
                       transitionDelay: `${200 + j * 60}ms`,
                     }}
                   />
-                  <text x={x + BIG_W / 2} y={BIG_BASE + 128} fontSize="13" textAnchor="middle" fill="#4a5677">
+                  <text x={x + BIG_W / 2} y={BIG_BASE + 128} fontSize="13" textAnchor="middle" fill="#4c574d">
                     {`f${j + 1}`}
                   </text>
                   <text
@@ -173,7 +173,7 @@ export default function BwaCollapse({ onReady }: ExplainerProps) {
                     fontSize="13"
                     textAnchor="middle"
                     fontWeight={700}
-                    fill={abstain ? '#b0306f' : '#09318d'}
+                    fill={abstain ? '#8e3b26' : '#354a87'}
                     className="ex-fade"
                     style={{ opacity: showFinal ? 1 : 0, transitionDelay: `${400 + j * 60}ms` }}
                   >
@@ -186,7 +186,7 @@ export default function BwaCollapse({ onReady }: ExplainerProps) {
               x={BIG_X0}
               y={BIG_BASE + 176}
               fontSize="13"
-              fill="#0b1530"
+              fill="#26332e"
               className="ex-fade"
               style={{ opacity: step === 1 || step === 2 ? 1 : 0 }}
             >
@@ -196,7 +196,7 @@ export default function BwaCollapse({ onReady }: ExplainerProps) {
               x={BIG_X0}
               y={BIG_BASE + 176}
               fontSize="13"
-              fill="#0b1530"
+              fill="#26332e"
               className="ex-fade"
               style={{ opacity: step >= 3 ? 1 : 0 }}
             >
@@ -210,10 +210,10 @@ export default function BwaCollapse({ onReady }: ExplainerProps) {
         <PlayPause playing={playing} onToggle={toggle} atEnd={step === STEPS.length - 1} />
         <Legend
           items={[
-            { label: 'Positive', color: '#09318d', shape: 'square' },
-            { label: 'Negative', color: '#fd91cc', shape: 'square' },
-            { label: 'Euclidean mean (ghost)', color: '#4a5677', shape: 'dashed' },
-            { label: 'Abstained', color: '#b0306f', shape: 'dashed' },
+            { label: 'Positive', color: '#354a87', shape: 'square' },
+            { label: 'Negative', color: '#b65d42', shape: 'square' },
+            { label: 'Euclidean mean (ghost)', color: '#4c574d', shape: 'dashed' },
+            { label: 'Abstained', color: '#8e3b26', shape: 'dashed' },
           ]}
         />
       </div>

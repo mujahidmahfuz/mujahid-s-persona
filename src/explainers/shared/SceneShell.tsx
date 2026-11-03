@@ -15,7 +15,7 @@ export function SceneShell({ label, onReset, keyboardHelp, children, controls }:
       <div role="img" aria-label={label} className="relative min-h-0 flex-1">
         {children}
       </div>
-      <div className="flex flex-wrap items-center gap-3 bg-blue-900 px-3 py-2 text-sm text-white" data-surface="blue">
+      <div className="flex flex-wrap items-center gap-3 bg-blue-900 px-3 py-2 text-sm text-white" data-surface="dark">
         {controls}
         {onReset && (
           <button

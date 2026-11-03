@@ -67,7 +67,7 @@ export default function Percolation({ onReady }: ExplainerProps) {
                 y1={A.y}
                 x2={B.x}
                 y2={B.y}
-                stroke={span ? '#fd91cc' : open ? '#09318d' : '#c7d3f0'}
+                stroke={span ? '#b65d42' : open ? '#354a87' : '#c9b186'}
                 strokeWidth={span ? 4.5 : open ? 3 : 1.2}
                 strokeLinecap="round"
                 opacity={open ? 1 : 0.6}
@@ -80,10 +80,10 @@ export default function Percolation({ onReady }: ExplainerProps) {
           {Array.from({ length: L * L }, (_, i) => {
             const P = pos(i);
             const span = state.spanning && state.root[i] === state.spanRoot;
-            return <circle key={i} cx={P.x} cy={P.y} r={span ? 3.2 : 2.2} fill={span ? '#b0306f' : '#09318d'} />;
+            return <circle key={i} cx={P.x} cy={P.y} r={span ? 3.2 : 2.2} fill={span ? '#8e3b26' : '#354a87'} />;
           })}
-          <rect x={1} y={1} width={4} height={SIZE - 2} fill="#09318d" opacity="0.25" />
-          <rect x={SIZE - 5} y={1} width={4} height={SIZE - 2} fill="#09318d" opacity="0.25" />
+          <rect x={1} y={1} width={4} height={SIZE - 2} fill="#354a87" opacity="0.25" />
+          <rect x={SIZE - 5} y={1} width={4} height={SIZE - 2} fill="#354a87" opacity="0.25" />
         </svg>
       </div>
       <div className="flex flex-col justify-center gap-3 sm:w-64">
@@ -130,9 +130,9 @@ export default function Percolation({ onReady }: ExplainerProps) {
         </p>
         <Legend
           items={[
-            { label: 'Open bond', color: '#09318d', shape: 'line' },
-            { label: 'Closed bond', color: '#c7d3f0', shape: 'line' },
-            { label: 'Spanning cluster', color: '#fd91cc', shape: 'line' },
+            { label: 'Open bond', color: '#354a87', shape: 'line' },
+            { label: 'Closed bond', color: '#c9b186', shape: 'line' },
+            { label: 'Spanning cluster', color: '#b65d42', shape: 'line' },
           ]}
         />
         <p className="text-xs text-muted">Exact threshold for the infinite square lattice: p = 0.5.</p>

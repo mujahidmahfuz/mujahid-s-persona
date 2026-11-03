@@ -28,7 +28,7 @@ const { searchable = true, ...seo } = Astro.props;
       document.documentElement.classList.add('js');
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#09318d" />
+    <meta name="theme-color" content="#f2e6cc" />
     <meta name="generator" content={Astro.generator} />
     <link rel="icon" href={withBase('/favicon.svg')} type="image/svg+xml" />
     <link rel="sitemap" href={withBase('/sitemap-index.xml')} />
@@ -36,7 +36,7 @@ const { searchable = true, ...seo } = Astro.props;
     <SEO {...seo} />
     <slot name="head" />
   </head>
-  <body class="flex min-h-screen flex-col bg-white text-ink antialiased">
+  <body class="flex min-h-screen flex-col text-ink antialiased">
     <a
       href="#main"
       class="sr-only z-50 rounded-lg border-2 border-blue bg-white px-4 py-2 font-semibold text-blue focus:not-sr-only focus:fixed focus:top-2 focus:left-2"
@@ -64,6 +64,14 @@ const { searchable = true, ...seo } = Astro.props;
         { rootMargin: '0px 0px -8% 0px' },
       );
       document.querySelectorAll('[data-reveal], [data-reveal-group]').forEach((el) => io.observe(el));
+      // Expensive or continuous animations pause when off-screen or when the tab is hidden.
+      const paused = new IntersectionObserver((entries) => {
+        for (const e of entries) e.target.classList.toggle('is-paused', !e.isIntersecting);
+      });
+      document.querySelectorAll('[data-pause-offscreen]').forEach((el) => paused.observe(el));
+      document.addEventListener('visibilitychange', () => {
+        document.documentElement.classList.toggle('tab-hidden', document.hidden);
+      });
     </script>
   </body>
 </html>

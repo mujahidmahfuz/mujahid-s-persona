@@ -1,0 +1,169 @@
+---
+/**
+ * Homepage instrument — an astrolabe whose ring markers are the six research chapters.
+ * Meaning, not decoration: each marker's size is the number of research + project entries in
+ * that chapter (counted at build), and each marker links to that part of the atlas.
+ * Motion: only the inner rete turns, very slowly (linear, 240 s); it pauses off-screen
+ * (data-pause-offscreen) and is still under reduced motion.
+ */
+import { getPublic, getResearch } from '~/lib/content';
+import { chapterFor, CHAPTER_LABEL, type Chapter } from '~/lib/chapters';
+import { withBase } from '~/lib/paths';
+
+const ORDER: Chapter[] = ['explainability', 'memory', 'quantum', 'life', 'machines', 'people'];
+const FIRST_AREA: Record<Chapter, string> = {
+  explainability: 'xai',
+  memory: 'continual-learning',
+  quantum: 'quantum-computing',
+  life: 'computational-biology',
+  machines: 'cryptography',
+  people: 'hci',
+};
+const FILL: Record<Chapter, string> = {
+  explainability: '#354a87',
+  memory: '#78455f',
+  quantum: '#1d4b45',
+  life: '#78805a',
+  machines: '#17363d',
+  people: '#b65d42',
+};
+const entries = [...(await getResearch()), ...(await getPublic('projects'))];
+const counts = Object.fromEntries(ORDER.map((c) => [c, entries.filter((e) => chapterFor(e.data.areas) === c).length])) as Record<Chapter, number>;
+const max = Math.max(1, ...Object.values(counts));
+
+const C = 300;
+const polar = (deg: number, r: number) => {
+  const a = ((deg - 90) * Math.PI) / 180;
+  return { x: C + r * Math.cos(a), y: C + r * Math.sin(a) };
+};
+const ticks = Array.from({ length: 72 }, (_, i) => i * 5);
+const markers = ORDER.map((c, i) => {
+  const deg = 15 + i * 60;
+  return { c, deg, ...polar(deg, 228), label: polar(deg, 262), r: 7 + 11 * Math.sqrt(counts[c] / max) };
+});
+const stars = [20, 75, 130, 200, 255, 310].map((deg, i) => ({ deg, r: 92 + (i % 3) * 28 }));
+---
+
+<figure class="instrument m-0" data-pause-offscreen>
+  <svg viewBox="0 0 600 600" class="h-auto w-full" role="img" aria-labelledby="instrument-title instrument-desc">
+    <title id="instrument-title">An instrument for finding your way through the atlas</title>
+    <desc id="instrument-desc">
+      A brass-coloured astrolabe. Its outer ring is marked in degrees; on the next ring sit six markers, one for each chapter of the work — {
+        ORDER.map((c) => `${CHAPTER_LABEL[c]} (${counts[c]})`).join(', ')
+      }. The size of a marker shows how many research and project entries the chapter holds. Each marker links to that chapter.
+    </desc>
+    <defs>
+      <radialGradient id="ins-face" cx="50%" cy="45%" r="60%">
+        <stop offset="0%" stop-color="#fbf6ea"></stop>
+        <stop offset="100%" stop-color="#e6d3af"></stop>
+      </radialGradient>
+    </defs>
+    <!-- mater -->
+    <circle cx={C} cy={C} r="292" fill="url(#ins-face)" stroke="#a8653a" stroke-width="2"></circle>
+    <circle cx={C} cy={C} r="284" fill="none" stroke="#a8653a" stroke-width="0.8"></circle>
+    {
+      ticks.map((d) => {
+        const long = d % 30 === 0;
+        const a = polar(d, 284);
+        const b = polar(d, long ? 266 : 276);
+        return <line x1={a.x} y1={a.y} x2={b.x} y2={b.y} stroke="#7a5410" stroke-width={long ? 1.4 : 0.7} />;
+      })
+    }
+    {
+      [0, 90, 180, 270].map((d) => {
+        const p = polar(d, 252);
+        return (
+          <text x={p.x} y={p.y + 4} text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="11" fill="#7a5410">
+            {d}°
+          </text>
+        );
+      })
+    }
+    <circle cx={C} cy={C} r="228" fill="none" stroke="#c9b186" stroke-width="1"></circle>
+    <circle cx={C} cy={C} r="160" fill="none" stroke="#c9b186" stroke-width="0.8" stroke-dasharray="2 5"></circle>
+    <line x1={C - 228} y1={C} x2={C + 228} y2={C} stroke="#c9b186" stroke-width="0.6"></line>
+    <line x1={C} y1={C - 228} x2={C} y2={C + 228} stroke="#c9b186" stroke-width="0.6"></line>
+
+    <!-- rete: the turning part -->
+    <g class="instrument-rete">
+      <circle cx={C} cy={C - 34} r="150" fill="none" stroke="#1d4b45" stroke-width="1.6"></circle>
+      <circle cx={C} cy={C + 52} r="84" fill="none" stroke="#1d4b45" stroke-width="1"></circle>
+      {
+        stars.map((s) => {
+          const tip = polar(s.deg, s.r);
+          const base = polar(s.deg + 9, s.r - 22);
+          return (
+            <g>
+              <line x1={C} y1={C} x2={tip.x} y2={tip.y} stroke="#1d4b45" stroke-width="0.8" stroke-opacity="0.55" />
+              <path d={`M${base.x} ${base.y} Q ${(base.x + tip.x) / 2 + 6} ${(base.y + tip.y) / 2 - 6} ${tip.x} ${tip.y}`} fill="none" stroke="#1d4b45" stroke-width="1.4" />
+              <circle cx={tip.x} cy={tip.y} r="3.2" fill="#d3a13c" stroke="#7a5410" stroke-width="0.8" />
+            </g>
+          );
+        })
+      }
+    </g>
+    <circle cx={C} cy={C} r="10" fill="#1d4b45"></circle>
+    <circle cx={C} cy={C} r="3.5" fill="#d3a13c"></circle>
+
+    <!-- chapters: links -->
+    {
+      markers.map((m) => (
+        <a href={withBase(`/research/?area=${FIRST_AREA[m.c]}`)} class="instrument-marker" aria-label={`${CHAPTER_LABEL[m.c]}: ${counts[m.c]} entries`}>
+          <circle cx={m.x} cy={m.y} r={m.r + 7} fill="transparent" />
+          <circle cx={m.x} cy={m.y} r={m.r} fill={FILL[m.c]} stroke="#fbf6ea" stroke-width="2.5" class="instrument-dot" style={`transform-origin:${m.x}px ${m.y}px`} />
+          <text
+            x={m.label.x}
+            y={m.label.y + 4}
+            text-anchor={m.deg < 180 ? 'start' : 'end'}
+            font-family="Cormorant Garamond, Georgia, serif"
+            font-style="italic"
+            font-size="18"
+            font-weight="600"
+            fill="#26332e"
+            dx={m.deg < 180 ? 8 : -8}
+          >
+            {CHAPTER_LABEL[m.c]}
+          </text>
+        </a>
+      ))
+    }
+  </svg>
+</figure>
+
+<style>
+  .instrument svg {
+    overflow: visible;
+  }
+  .instrument-rete {
+    transform-origin: 300px 300px;
+    animation: rete-turn 240s linear infinite;
+  }
+  @keyframes rete-turn {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  .instrument.is-paused .instrument-rete {
+    animation-play-state: paused;
+  }
+  .instrument-dot {
+    transition: transform 250ms var(--ease-out);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .instrument-marker:hover .instrument-dot {
+      transform: scale(1.18);
+    }
+  }
+  .instrument-marker:focus-visible {
+    outline: none;
+  }
+  .instrument-marker:focus-visible .instrument-dot {
+    stroke: #354a87;
+    stroke-width: 4;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .instrument-rete {
+      animation: none;
+    }
+  }
+</style>

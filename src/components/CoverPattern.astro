@@ -21,11 +21,11 @@ nodes.forEach((_, i) => {
 ---
 
 <svg viewBox="0 0 400 150" class="h-full w-full" aria-hidden="true" focusable="false" preserveAspectRatio="xMidYMid slice">
-  <rect width="400" height="150" fill="#09318d"></rect>
+  <rect width="400" height="150" style="fill:var(--accent-soft, #e2e1e8)"></rect>
   {edges.map(([a, b]) => (
-    <line x1={nodes[a]!.x} y1={nodes[a]!.y} x2={nodes[b]!.x} y2={nodes[b]!.y} stroke="#c7d3f0" stroke-opacity="0.35" />
+    <line x1={nodes[a]!.x} y1={nodes[a]!.y} x2={nodes[b]!.x} y2={nodes[b]!.y} style="stroke:var(--accent, #354a87)" stroke-opacity="0.45" />
   ))}
   {nodes.map((n, i) => (
-    <circle cx={n.x} cy={n.y} r={i === accent ? 6 : 3.5} fill={i === accent ? '#fd91cc' : '#ffffff'} />
+    <circle cx={n.x} cy={n.y} r={i === accent ? 6 : 3.5} style={i === accent ? 'fill:var(--accent-2, #d3a13c)' : 'fill:var(--accent, #354a87)'} />
   ))}
 </svg>
