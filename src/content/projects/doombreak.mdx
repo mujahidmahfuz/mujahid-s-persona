@@ -4,12 +4,11 @@ summary: An Android app, built with Flutter and Kotlin, for managing doom-scroll
 status: prototype
 category: mobile-app
 stack: [Flutter, Dart, Kotlin, FastAPI, Groq, Llama 3.3 70B]
-role: 'TODO(muja): your role (e.g. sole developer)'
+role: Developer — wrote the Flutter app and its Kotlin services (all 50 commits are mine).
 period:
-  start: 'TODO(muja): start month (YYYY-MM)'
+  start: 2026-06
 links:
   store: 'TODO(muja): Play Store link once public'
-  repo: 'TODO(muja): repository URL (if public)'
 highlights:
   - text: Session timer built as a state machine, with a full-screen lock overlay, escalating reminders, Mission Mode and a “Save Me” action.
     source: DoomBreak codebase (CONTENT-INVENTORY §4)
@@ -19,7 +18,9 @@ highlights:
     source: DoomBreak codebase (CONTENT-INVENTORY §4)
   - text: 41 model tests.
     source: DoomBreak test suite (CONTENT-INVENTORY §4)
-learned: []
+learned:
+  - A freeze can come from a widget nobody touches — bisecting the UI found it faster than reading the code.
+  - Build in phases with tests from day one; the CI pipeline and boot test came before the first feature.
 areas: [hci, systems]
 tags: [flutter, android, digital-wellbeing, llm]
 featured: true
@@ -31,31 +32,55 @@ explainers:
     verified: false
 ---
 
+
 ## Why it exists
 
-<Todo inline={false}>one paragraph: why you built DoomBreak and who it is for</Todo>
+Short-video feeds are designed so that there is always one more. DoomBreak is an Android app that interrupts the scroll on purpose: it watches how long you have been on distracting apps, warns you with reminders that get firmer, and, if you keep going, takes over the screen — then points you back to goals you set yourself.
+
+<Todo inline={false}>one or two sentences: why you built DoomBreak and who it is for</Todo>
 
 <Explainer id="doombreak-architecture" />
 
-## Features
-
-- **Session timer** — a state machine that tracks a scrolling session.
-- **Lock overlay** — a full-screen overlay when a session runs too long.
-- **Escalating reminders** before the lock.
-- **Mission Mode** and a **“Save Me”** action.
-- **AI coaching** — the app calls a FastAPI service, which uses Groq to run Llama 3.3 70B.
-- **Native usage tracking** (Kotlin), a **Net Momentum** score, **streaks** and **CSV export**.
+## How it works
 
 <Flow
   title="A session, as the app sees it"
-  source="EXPLAINERS §3 and CONTENT-INVENTORY §4"
+  source="DoomBreak codebase (lib/features/…) and commit history"
   steps={[
-    { label: 'Session timer', detail: 'A state machine tracks the scrolling session.' },
-    { label: 'Escalating reminders', detail: 'Reminders grow firmer as the session runs on.' },
-    { label: 'Lock overlay', detail: 'A full-screen overlay interrupts the scroll.' },
-    { label: '“Save Me”', detail: 'Ask the app for help breaking the loop; AI coaching via FastAPI + Groq.' },
+    { label: 'Session timer', detail: 'A state machine tracks the scrolling session, with a cooldown.' },
+    { label: 'Escalating reminders', detail: 'A reminder every 10 minutes by default, growing firmer; AI-written when online, local text when not.' },
+    { label: 'Intervention', detail: 'Vibration and a voice line; a background watchdog can take over the screen and pause media.' },
+    { label: 'Lock overlay', detail: 'A full-screen lock that blocks the back button and redirects to your own learning content.' },
+    { label: '“Save Me”', detail: 'An emergency button, and Mission Mode: focus blocks tied to a goal, aborted only with a typed reason.' },
   ]}
 />
 
-The app is in closed testing on Google Play.
+- **AI reminders that know your goals.** A FastAPI service on Render calls Groq (Llama 3.3 70B) to write reminders that reference your goals and their deadlines; if the network is down, the app falls back to local text.
+- **Usage, measured natively.** Kotlin code reads Android’s usage statistics; the Impact screen shows per-app time with app icons, and daily digests (12 pm, 6 pm, 11 pm) arrive with a pie chart drawn into the notification.
+- **One honest number per day — Net Momentum.** `focus minutes + 10 × goals completed − distraction minutes`. It feeds streaks, weekly and monthly trend charts, and a CSV export.
 
+## How it was built
+
+<Flow
+  title="Five phases, June–July 2026"
+  source="git history, 50 commits"
+  steps={[
+    { label: 'Phase 0 · 10 Jun', detail: 'Lint rules, CI pipeline, local database (Hive), boot test — before any feature.' },
+    { label: 'Phase 1 · 11–19 Jun', detail: 'Goals, session timer with lock overlay, escalating reminders, notifications, onboarding.' },
+    { label: 'Phase 2 · 20–22 Jun', detail: 'Content library, in-app YouTube with distractions hidden, Mission Mode, “Save Me”.' },
+    { label: 'Phase 3 · 27 Jun', detail: 'AI reminders via Groq, API deployed, deadline-aware goals.' },
+    { label: 'Phase 4–5 · 8–11 Jul', detail: 'Usage tracking, digests, Net Momentum, streaks, trends, CSV export; race-condition and data fixes.' },
+    { label: 'Interventions · 18–27 Jul', detail: 'Night scene during sessions, rescue overlay, voice alerts, background watchdog, permissions walkthrough.' },
+  ]}
+/>
+
+## What was hard
+
+- **The whole app froze — from a widget nobody touched.** After a reminder appeared, every tap anywhere stopped working. Instrumenting the app ruled out a deadlock (a heartbeat timer kept running), a system overlay stealing touches, the notification and the tooltips. Bisecting the UI found the cause: the reminder banner, mounted at the app’s root outside any screen, broke all input as soon as it contained two standard Material buttons — even untouched. The standard fix did not work, so the buttons were replaced with plain gesture-driven ones; the same fix was later needed in the goal picker.
+- **Counting usage correctly.** Usage was double-counted until fixed, and an async vibration call crashed the intervention screen.
+- **Races in the AI path.** Two reminders could be generated at once; a guard now allows one at a time.
+- **Android permissions.** Usage access, overlays and notifications each need a separate grant, so onboarding now explains each permission by what it enables.
+
+## What it does not do yet
+
+It is a prototype in closed testing on Google Play, not a public release, and there is no claim here about its effect on anyone’s screen time. It runs on Android only. The 41 automated tests cover the data models and the Net Momentum formula, app start-up and the reminder banner — not the interventions on a real device.
