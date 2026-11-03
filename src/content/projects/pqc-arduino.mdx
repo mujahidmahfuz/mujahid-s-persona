@@ -1,46 +1,64 @@
 ---
-title: Post-quantum signatures on Arduino UNO
-summary: Tests which post-quantum signature schemes fit an Arduino UNO's 32 KB Flash and 2 KB SRAM — SPHINCS+-SHA2-128s is the only viable one — plus a taxonomy of PQC-migration defects mined from 8 GitHub repositories.
+# Source: Muja's local folder Portable_PQC_Container/ — new-work(8-29-2026 onward)/ROADMAP.md (17 Sep 2026)
+# and llm-wiki.txt; read 2026-11-04. Earlier inventory claim ("SPHINCS+ the only viable scheme") dropped:
+# ML-DSA has not been tested yet, so it is not established.
+title: Post-quantum cryptography on an Arduino UNO
+summary: NIST post-quantum cryptography running entirely on an Arduino UNO (2 KB RAM, 32 KB Flash) — streaming ML-KEM key exchange at all three levels, SLH-DSA signatures, a security audit of the 8-bit ML-KEM-512, and crypto that resumes after a power cut.
 status: in-progress
 category: hardware
-stack: [Arduino UNO, SPHINCS+-SHA2-128s]
-role: 'TODO(muja): your role'
+stack: [C, Arduino UNO (AVR), ML-KEM, SLH-DSA, liboqs (PC reference)]
+role: Creator — porting, optimisation, hardware testing and the security audit.
 period:
-  start: 'TODO(muja): start month (YYYY-MM)'
+  start: 2026-06
 links:
   repo: https://github.com/mujahidmahfuz/PQC-on-resource-constrained-devices-e.g-Arduino-R3-
 repo: mujahidmahfuz/PQC-on-resource-constrained-devices-e.g-Arduino-R3-
 highlights:
+  - text: Full CCA-secure ML-KEM-512 (Fujisaki–Okamoto transform) runs on the UNO — encapsulation in 934 ms, decapsulation in 133 ms — with tamper detection working.
+    source: ROADMAP.md, Phase 1, Method 5
+  - text: ML-KEM-768 (about 1.8 s each way) and ML-KEM-1024 (3.0 s / 3.8 s, ciphertext stored through a PC relay) also pass on the UNO.
+    source: ROADMAP.md, Phase 2
+  - text: SLH-DSA-SHA2-128s verifies on the UNO in 25.5 s (signing works but takes about 13 hours); SLH-DSA-SHA2-128f signs in 38 minutes but cannot also verify within the Flash budget. Falcon signing is ruled out (it needs about 40 KB of RAM and floating point).
+    source: ROADMAP.md, Phase 2
+  - text: A security audit of the 8-bit ML-KEM-512 found and fixed a timing leak in the reject branch (confirmed on hardware), a decode bug, an AVR 16-bit integer overflow and a buffer-aliasing bug.
+    source: ROADMAP.md, New Work Track 1 (29–30 Aug 2026)
+  - text: PQC-Restore — encrypted checkpoints in EEPROM let an ML-KEM-512 operation resume after interruption; secure and adaptive checkpointing pass hardware demos.
+    source: ROADMAP.md, New Work Track 2 (31 Aug 2026 →)
   - text: PQC deployment on extremely constrained devices is not blocked only by algorithm size — memory architecture is the key challenge.
     source: PQC-on-resource-constrained-devices README
-  - text: SPHINCS+-SHA2-128s is the only viable post-quantum signature scheme under the Arduino UNO's 32 KB Flash / 2 KB SRAM.
-    source: CONTENT-INVENTORY §4
   - text: A taxonomy of PQC-migration defects mined from 8 GitHub repositories.
     source: CONTENT-INVENTORY §4
 areas: [cryptography, systems]
-tags: [post-quantum-cryptography, sphincs-plus, arduino, embedded]
+tags: [post-quantum-cryptography, ml-kem, slh-dsa, sphincs-plus, arduino, embedded]
 ---
 
 ## Why it exists
 
-Post-quantum cryptography (PQC) is designed to stay secure against quantum computers, but many schemes need more memory than small microcontrollers have. This project tests which post-quantum signature schemes fit on an Arduino UNO, with 32 KB of Flash and 2 KB of SRAM.
+Post-quantum cryptography (PQC) is designed to stay secure against quantum computers, but its keys and signatures are large and small microcontrollers have almost no memory. This project asks how far NIST's post-quantum standards can run on an Arduino UNO — 2 KB of RAM, 32 KB of Flash and 1 KB of EEPROM — without leaving the chip.
 
 <Explainer id="pqc-memory-budget" />
 
-## What it covers
+## How it fits
 
-1. **Fit on the UNO** — SPHINCS+-SHA2-128s is the only viable scheme under these limits.
-2. **Migration defects** — a taxonomy of defects in PQC migrations, mined from 8 GitHub repositories.
+A direct port of the reference code fails: the keys alone are bigger than the RAM. What works is a set of memory tricks:
+
+- **Keys in Flash** (PROGMEM) and **ciphertext in EEPROM**, with only three polynomial buffers in RAM.
+- **Streaming** — one polynomial or one chunk at a time.
+- **Regenerate instead of store** — the matrix and noise are rebuilt from seeds when needed.
+- **Reuse** — a polynomial buffer doubles as the Keccak hash state.
 
 <Flow
-  title="Will a post-quantum signature fit?"
-  source="project notes (CONTENT-INVENTORY §4) and README"
+  title="From failure to a full key exchange on the UNO"
+  source="ROADMAP.md, Phase 1"
   steps={[
-    { label: 'Candidate schemes', detail: 'Post-quantum signature schemes.' },
-    { label: 'The budget', detail: 'Arduino UNO: 32 KB of Flash, 2 KB of SRAM.' },
-    { label: 'Only one fits', detail: 'SPHINCS+-SHA2-128s is the only viable scheme.' },
-    { label: 'Migration defects', detail: 'A taxonomy of PQC-migration defects mined from 8 GitHub repositories.' },
+    { label: 'Direct port', detail: 'Fails — the keys are bigger than the RAM.' },
+    { label: 'Shrunk math', detail: 'Works at n = 64, but with weak security.' },
+    { label: 'Streaming decrypt', detail: 'Real Kyber-512 decryption in 92 ms.' },
+    { label: 'Encrypt + decrypt', detail: '911 ms + 92 ms.' },
+    { label: 'CCA-secure KEM', detail: 'Full Fujisaki–Okamoto transform: 934 ms + 133 ms, tamper detection working.' },
   ]}
 />
 
-<Todo inline={false}>measured Flash/SRAM sizes and signing/verification timings</Todo>
+## What is still open
+
+ML-DSA (all three levels) and Falcon verification have not been started; the power-interruption evaluation of PQC-Restore is paused. Key generation cannot run on the chip, and the secret key sits in plain Flash — documented as a hardware limit, not hidden.
