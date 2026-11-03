@@ -27,6 +27,12 @@ learned:
 areas: [machine-learning, systems]
 tags: [llm, multi-agent, evaluation, fastapi, react]
 featured: true
+explainers:
+  - id: council-table
+    dim: 2d
+    title: A council session at the round table
+    caption: Step through one session — answers, blind ballots, rankings, consensus and the chairman’s ruling — and break it on purpose to see how it degrades.
+    verified: false
 ---
 
 ## Why it exists
@@ -44,6 +50,8 @@ Asking one model gives you one opinion. LLM Council asks several, then lets them
     { label: 'Round 3 — verdict', detail: 'A separate chairman model reads the answers, best first, and writes the ruling.' },
   ]}
 />
+
+<Explainer id="council-table" />
 
 ## How it is built
 
