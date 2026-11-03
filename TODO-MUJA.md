@@ -59,13 +59,20 @@ manuscripts are usually reusable on a personal site — check each publisher's a
 - [ ] Sleep: `results/*.json` from `run_experiments.py` (5-seed) and the gate's trigger rule
 - [ ] Lossmap: lattice type and parameters for E001 and what "loss" means in it — no explainer built until then
 
+## Refinement pass follow-ups (2026-11-04)
+- [ ] **LLM Council explainer** — review the round-table demo in dev (`npm run dev` → /projects/llm-council/), then set `verified: true` in `src/content/projects/llm-council.mdx` to publish it.
+- [x] **Dicke paper / ACDSA'27** — confirmed by the acceptance letter in `MCM/` (23 Oct 2026); status set to accepted.
+- [ ] **First-page previews** — send the accepted-manuscript PDFs for the KBS and QIP papers. The repo's `Final.pdf` is an early 6-page draft whose numbers differ from the published paper, so it is not used.
+- [ ] **BWA reference code** (your GitHub repo, not this site) — `core.py` `fit()` passes the weights to `ot.barycenter` as (replicates × features), but POT expects (features × replicates). Checked with POT 0.9.7: it raises `ValueError` whenever B ≠ d, and would silently compute the wrong thing if B = d. Fix: `ot.barycenter(weights.T, C, ...)`.
+- [ ] **Sound Society** — added as a public project page (live link only; the repo is private). Check you are happy for it to be listed, and that the description is right.
+
 <!-- AUTO-GENERATED BELOW — scripts/todos.ts rewrites everything under this line -->
 
-## Placeholders found in content (73)
+## Placeholders found in content (65)
 
 _Generated 2026-11-03 by `scripts/todos.ts`. In production builds each of these elements is hidden._
 
-### Public pages (73)
+### Public pages (65)
 
 - **src/content/awards/fujitsu-quantum-challenge.mdx**
   - [ ] date (YYYY-MM) (line 4)
@@ -95,15 +102,10 @@ _Generated 2026-11-03 by `scripts/todos.ts`. In production builds each of these 
   - [ ] Founder? (only if public) (line 7)
   - [ ] start month (line 9)
   - [ ] description and status (line 18)
-- **src/content/projects/pqc-arduino.mdx**
-  - [ ] your role (line 7)
-  - [ ] start month (YYYY-MM) (line 9)
-  - [ ] measured Flash/SRAM sizes and signing/verification timings (line 46)
 - **src/content/projects/pqc-openvpn.mdx**
   - [ ] what worked, what broke, and any handshake measurements (line 24)
 - **src/content/projects/qlnrs-fujitsu-challenge.mdx**
   - [ ] start month (YYYY-MM) (line 9)
-  - [ ] end month (YYYY-MM) (line 10)
   - [ ] link to the final report PDF (if public) (line 12)
 - **src/content/projects/quantum-cookbook.mdx**
   - [ ] your role (e.g. author) (line 7)
@@ -118,11 +120,6 @@ _Generated 2026-11-03 by `scripts/todos.ts`. In production builds each of these 
   - [ ] date (line 11)
   - [ ] problem statement (line 30)
   - [ ] the 11 workflow steps (line 36)
-- **src/content/research/dicke-measurement-timing.mdx**
-  - [ ] your role (line 7)
-  - [ ] date (line 10)
-  - [ ] problem statement (line 20)
-  - [ ] method summary (line 37)
 - **src/content/research/lossmap-photonic-loss.mdx**
   - [ ] your role (line 8)
 - **src/content/research/music-inspired-ml.mdx**
@@ -172,9 +169,3 @@ _Generated 2026-11-03 by `scripts/todos.ts`. In production builds each of these 
 
 ### Private entries — not built (0)
 
-
-## Refinement pass follow-ups (2026-11-04)
-- [ ] **LLM Council explainer** — review the round-table demo in dev (`npm run dev` → /projects/llm-council/), then set `verified: true` in `src/content/projects/llm-council.mdx` to publish it.
-- [ ] **Dicke paper / ACDSA'27** — an outside review says it was accepted for an oral/video presentation at ACDSA'27. Nothing in the CV or inventory confirms this; send the acceptance wording or link to change the status from archived.
-- [ ] **First-page previews** — send the accepted-manuscript PDFs for the KBS and QIP papers. The repo's `Final.pdf` is an early 6-page draft whose numbers differ from the published paper, so it is not used.
-- [ ] **BWA reference code** (your GitHub repo, not this site) — `core.py` `fit()` passes the weights to `ot.barycenter` as (replicates × features), but POT expects (features × replicates). Checked with POT 0.9.7: it raises `ValueError` whenever B ≠ d, and would silently compute the wrong thing if B = d. Fix: `ot.barycenter(weights.T, C, ...)`.
