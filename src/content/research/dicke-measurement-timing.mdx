@@ -6,10 +6,10 @@ status: accepted
 kind: conference-paper
 venue: ACDSA 2027 (accepted full paper; IEEE Xplore inclusion requires registration and presentation)
 authors: [M. Islam, F. Ozaydin] # accepted manuscript
-myRole: 'TODO(muja): your role'
+myRole: First author (author order in the accepted manuscript).
 areas: [quantum-computing]
 tags: [dicke-states, quantum-circuits]
-date: 'TODO(muja): date'
+date: 2026-10
 keyFindings:
   - text: Measuring the flag ancilla early — from gate 21 of 24, under the last-gate-targeting rule — leaves the successful output unchanged; the gate-cost saving is about 3% in the abstract cost model and about 1% with real two-qubit gate counts.
     source: Accepted manuscript abstract (ACDSA 2027)
@@ -19,23 +19,26 @@ keyFindings:
 
 ## The problem
 
-Measuring the flag ancilla early — from gate 21 of 24, under the last-gate-targeting rule — leaves the successful output unchanged; the gate-cost saving is about 3% in the abstract cost model and about 1% with real two-qubit gate counts.
+Dicke states are useful resources for quantum metrology and distributed quantum computing, but preparing them is hard when not every qubit can be reached directly. Thapa et al. gave a 24-gate circuit that expands a four-qubit Dicke state into a five-qubit one using two helper qubits, while one data qubit stays completely inaccessible. A "flag" helper qubit is measured only once, at the very end, to learn whether the expansion worked.
 
-<Todo inline={false}>problem statement</Todo>
+This paper asks whether the flag already knows the answer earlier — and if so, whether measuring it sooner saves cost without disturbing the successful result.
 
 ## Method
 
-The study analyses where measurements can be moved earlier in Dicke-state expansion circuits without changing the result. The accepted paper finds gate 21 of 24 is the earliest safe point; the saving is about 3% in the abstract model and about 1% with real two-qubit gate counts.
-
 <Flow
   title="Finding the earliest safe measurement"
-  source="corrected analysis (CONTENT-INVENTORY §3)"
+  source="accepted manuscript (ACDSA 2027)"
   steps={[
-    { label: 'Dicke-state expansion circuit', detail: 'A circuit that builds a Dicke state step by step.' },
-    { label: 'Candidate measurement points', detail: 'Where could measurement move earlier without changing the result?' },
-    { label: 'Corrected analysis', detail: 'The analysis was redone after an error was found.' },
-    { label: 'Gate 21 of 24', detail: 'Earliest safe measurement; about 1% fewer gates with real two-qubit counts.' },
+    { label: 'Reference circuit', detail: 'Thapa et al.’s 24-gate expansion, flag measured at the end.' },
+    { label: 'When does the flag know?', detail: 'Track how informative the flag is about success after each gate.' },
+    { label: 'Last-gate-targeting rule', detail: 'A checkable condition under which measuring early leaves the successful output exactly unchanged.' },
+    { label: 'Gate 21 of 24', detail: 'The earliest safe point for this circuit; also checked on a second, independently designed protocol.' },
+    { label: 'Honest cost', detail: 'About 3% fewer gates in the abstract model, about 1% with a real device’s two-qubit gate counts.' },
   ]}
 />
 
-<Todo inline={false}>method summary</Todo>
+All results come from exact statevector simulation, cross-checked against a real superconducting device's noise model. The paper also reports what did **not** hold up: once the recycled failure-branch state is counted honestly, an earlier claim of a free fidelity bonus disappears, and on a three-objective Pareto frontier the standard protocol is itself optimal. The paper's own simulation baseline for the reference circuit differs from the published value; a single-gate anomaly that reproduces the published number is reported as an open finding rather than adopted. A generic exact alternative built by isometry synthesis turns out less efficient than the hand-designed circuit, and a weak-value calculation for the flag qubit shows no anomalous behaviour.
+
+## Status
+
+Accepted as a full paper at **ACDSA 2027** (Rio de Janeiro, 2–4 February 2027). Under the conference's "no podium, no paper" policy, it goes to IEEE Xplore only after registration and presentation.
