@@ -569,3 +569,21 @@ button[class*='rounded-chip'] {
 .tab-hidden * {
   animation-play-state: paused !important;
 }
+
+/* Council seats "thinking" / "reviewing" — the same pulse as the LLM Council app. Stops when paused or reduced. */
+@keyframes ex-pulse {
+  50% {
+    stroke-opacity: 0.35;
+  }
+}
+.ex-pulse {
+  animation: ex-pulse 1.2s ease-in-out infinite;
+}
+[data-paused] .ex-pulse {
+  animation-play-state: paused;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ex-pulse {
+    animation: none;
+  }
+}

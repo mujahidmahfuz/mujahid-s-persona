@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { StepControls } from '../shared/StepControls';
 import { PlayPause } from '../shared/PlayPause';
-import { useStepper } from '../shared/useStepper';
+import { useStepper, isPosterMode } from '../shared/useStepper';
 import type { ExplainerProps } from '../types';
 import { SEATS, BALLOT_ORDER, LETTERS, LETTER_RANKING, runSession, type Seat } from './model';
 
@@ -33,15 +33,27 @@ const STEPS = [
   },
 ];
 
-const C = { x: 210, y: 240 };
-const CHAIR = { x: 210, y: 40 };
-const polar = (deg: number, r: number) => {
-  const a = (deg * Math.PI) / 180;
-  return { x: C.x + r * Math.cos(a), y: C.y + r * Math.sin(a) };
+// Same layout as the real app (frontend/src/components/RoundTable.jsx): the chairman at the head of the
+// table (top), the members round the ring, a live status under every seat.
+const SIZE = 460;
+const C = { x: SIZE / 2, y: 236 };
+const RING = 150;
+const slot = (k: number, r = RING) => {
+  const a = ((-90 + 60 * k) * Math.PI) / 180;
+  return { x: C.x + r * Math.cos(a), y: C.y + r * Math.sin(a), cos: Math.cos(a), sin: Math.sin(a) };
 };
-const ANGLES = [-54, 18, 90, 162, 234];
-const seatPos = (i: number) => polar(ANGLES[i]!, 166);
-const cardPos = (i: number) => polar(ANGLES[i]!, 84);
+const seatPos = (i: number) => slot(i + 1);
+const cardPos = (i: number) => slot(i + 1, 74);
+const CHAIR = slot(0);
+type Status = 'waiting' | 'thinking' | 'reviewing' | 'answered' | 'failed' | 'winner';
+const RING_STYLE: Record<Status, { stroke: string; width: number; dash?: string; fill: string; pulse?: boolean }> = {
+  waiting: { stroke: '#c9b186', width: 2.5, fill: '#fbf6ea' },
+  thinking: { stroke: '#354a87', width: 3, fill: '#fbf6ea', pulse: true },
+  reviewing: { stroke: '#354a87', width: 3, fill: '#fbf6ea', pulse: true },
+  answered: { stroke: '#1d4b45', width: 3, fill: '#fbf6ea' },
+  failed: { stroke: '#8e3b26', width: 3, dash: '5 4', fill: '#fbf6ea' },
+  winner: { stroke: '#d3a13c', width: 5, fill: '#f3ddc4' },
+};
 const pct = (x: number | null) => (x === null ? '—' : `${Math.round(x * 100)}%`);
 
 export default function CouncilTable({ onReady }: ExplainerProps) {
@@ -55,8 +67,26 @@ export default function CouncilTable({ onReady }: ExplainerProps) {
     () => runSession({ unparseable: unparseable ? 'Seat 4' : null, chairmanFails: chairFails }),
     [unparseable, chairFails],
   );
+  // Live feel, as in the app: on entering round 1 or 3 the seats "think" for a moment before answering.
+  const reduced = typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const [answering, setAnswering] = useState(false);
+  useEffect(() => {
+    if (reduced || isPosterMode() || (step !== 1 && step !== 5)) return setAnswering(false);
+    setAnswering(true);
+    const t = setTimeout(() => setAnswering(false), 1300);
+    return () => clearTimeout(t);
+  }, [step, reduced]);
   const order = session.leaderboard.map((e) => e.model);
   const ballot = BALLOT_ORDER[viewer];
+  const statusOf = (s: Seat): Status => {
+    if (step === 0) return 'waiting';
+    if (step === 1) return answering ? 'thinking' : 'answered';
+    if (step === 2) return 'reviewing';
+    if (unparseable && s === 'Seat 4') return 'failed';
+    if (step >= 4 && s === session.winner) return 'winner';
+    return 'answered';
+  };
+  const chairStatus: Status = step < 5 ? 'waiting' : answering ? 'thinking' : chairFails ? 'failed' : 'answered';
   const letterFor = (s: Seat) => (ballot.includes(s) ? LETTERS[ballot.indexOf(s)]! : null);
 
   return (
@@ -67,32 +97,13 @@ export default function CouncilTable({ onReady }: ExplainerProps) {
     >
       <div className="grid gap-4 md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] md:items-start">
         {/* The round table */}
-        <svg viewBox="0 0 420 440" className="mx-auto h-auto w-full max-w-[26rem]" aria-hidden="true">
-          {/* chairman */}
-          <g className="ex-fade" style={{ opacity: step === 5 ? 1 : 0.45 }}>
-            <line x1={CHAIR.x} y1={CHAIR.y + 28} x2={C.x} y2={C.y - 120} stroke="#c9b186" strokeDasharray="3 5" />
-            <rect
-              x={CHAIR.x - 62}
-              y={CHAIR.y - 24}
-              width={124}
-              height={48}
-              rx={10}
-              fill={step === 5 ? (chairFails ? '#efe3c8' : '#d3a13c') : '#efe3c8'}
-              stroke={chairFails && step === 5 ? '#8e3b26' : '#7a5410'}
-              strokeWidth={2}
-              strokeDasharray={chairFails && step === 5 ? '6 4' : undefined}
-              style={{ transition: 'fill 300ms var(--ease-out)' }}
-            />
-            <text x={CHAIR.x} y={CHAIR.y + 6} textAnchor="middle" fontSize="16" fontWeight={700} fill="#26332e">
-              Chairman
-            </text>
-          </g>
+        <svg viewBox={`0 0 ${SIZE} 480`} className="mx-auto h-auto w-full max-w-[28rem]" aria-hidden="true">
+          <circle cx={C.x} cy={C.y} r={RING - 38} fill="#efe3c8" stroke="#c9b186" strokeWidth={2} />
+          <text x={C.x} y={C.y + 52} textAnchor="middle" fontSize="13" fontWeight={600} fill="#4c574d" letterSpacing="1.5">
+            LLM COUNCIL
+          </text>
 
-          {/* table */}
-          <circle cx={C.x} cy={C.y} r={120} fill="#efe3c8" stroke="#c9b186" strokeWidth={2} />
-          <circle cx={C.x} cy={C.y} r={112} fill="none" stroke="#c9b186" strokeWidth={0.8} />
-
-          {/* question → seats */}
+          {/* question → members */}
           {SEATS.map((_, i) => {
             const p = seatPos(i);
             return (
@@ -114,7 +125,8 @@ export default function CouncilTable({ onReady }: ExplainerProps) {
             style={{
               transformBox: 'view-box',
               transformOrigin: `${C.x}px ${C.y}px`,
-              transform: `scale(${step === 0 ? 1 : 0.6})`,
+              transform: `scale(${step === 0 ? 1 : 0.62})`,
+              opacity: step === 5 ? 0 : 1,
             }}
           >
             <rect x={C.x - 50} y={C.y - 20} width={100} height={40} rx={8} fill="#354a87" />
@@ -123,12 +135,12 @@ export default function CouncilTable({ onReady }: ExplainerProps) {
             </text>
           </g>
 
-          {/* answer cards: appear in round 1, take letters in round 2, travel to the chairman in round 3 (best first) */}
+          {/* answer cards: written in round 1, lettered in round 2, carried to the chairman (best first) in round 3 */}
           {SEATS.map((s, i) => {
             const p = cardPos(i);
             const rank = order.indexOf(s);
             const atChair = step === 5;
-            const target = { x: CHAIR.x - 48 + rank * 24, y: CHAIR.y + 46 };
+            const target = { x: C.x - 60 + rank * 30, y: CHAIR.y + 62 };
             const own = step === 2 && s === viewer;
             const letter = step === 2 ? letterFor(s) : null;
             const winner = step >= 4 && s === session.winner;
@@ -137,26 +149,26 @@ export default function CouncilTable({ onReady }: ExplainerProps) {
                 key={s}
                 className="ex-move"
                 style={{
-                  opacity: step === 0 ? 0 : own ? 0.35 : 1,
-                  transform: atChair ? `translate(${target.x - p.x}px, ${target.y - p.y}px) scale(0.55)` : 'none',
+                  opacity: step === 0 || (step === 1 && answering) ? 0 : own ? 0.35 : 1,
+                  transform: atChair ? `translate(${target.x - p.x}px, ${target.y - p.y}px) scale(0.6)` : 'none',
                   transformBox: 'fill-box',
                   transformOrigin: 'center',
-                  transitionDelay: atChair ? `${rank * 90}ms` : `${i * 60}ms`,
+                  transitionDelay: atChair ? `${rank * 110}ms` : `${i * 70}ms`,
                 }}
               >
                 <rect
-                  x={p.x - 24}
-                  y={p.y - 18}
-                  width={48}
-                  height={36}
+                  x={p.x - 22}
+                  y={p.y - 16}
+                  width={44}
+                  height={32}
                   rx={5}
                   fill="#fbf6ea"
-                  stroke={winner ? '#8e3b26' : '#354a87'}
+                  stroke={winner ? '#d3a13c' : '#354a87'}
                   strokeWidth={winner ? 3 : 1.6}
                   strokeDasharray={own ? '4 3' : undefined}
                 />
                 {letter ? (
-                  <text x={p.x} y={p.y + 7} textAnchor="middle" fontSize="20" fontWeight={700} fill="#354a87">
+                  <text x={p.x} y={p.y + 7} textAnchor="middle" fontSize="19" fontWeight={700} fill="#354a87">
                     {letter}
                   </text>
                 ) : own ? (
@@ -167,10 +179,10 @@ export default function CouncilTable({ onReady }: ExplainerProps) {
                   [0, 1, 2].map((k) => (
                     <line
                       key={k}
-                      x1={p.x - 15}
-                      x2={p.x + (k === 2 ? 4 : 15)}
-                      y1={p.y - 8 + k * 8}
-                      y2={p.y - 8 + k * 8}
+                      x1={p.x - 13}
+                      x2={p.x + (k === 2 ? 3 : 13)}
+                      y1={p.y - 7 + k * 7}
+                      y2={p.y - 7 + k * 7}
                       stroke="#4c574d"
                       strokeWidth={2}
                     />
@@ -180,32 +192,52 @@ export default function CouncilTable({ onReady }: ExplainerProps) {
             );
           })}
 
-          {/* seats */}
-          {SEATS.map((s, i) => {
-            const p = seatPos(i);
-            const isViewer = step === 2 && s === viewer;
-            const reviewDropped = step >= 3 && unparseable && s === 'Seat 4';
+          {/* seats: chairman at the head, members round the ring, status under each name */}
+          {[
+            { key: 'chair', pos: CHAIR, glyph: '⚖', name: 'Chairman', st: chairStatus, large: true },
+            ...SEATS.map((s, i) => ({ key: s, pos: seatPos(i), glyph: String(i + 1), name: s, st: statusOf(s), large: false })),
+          ].map(({ key, pos, glyph, name, st, large }) => {
+            const r = large ? 33 : 27;
+            const look = RING_STYLE[st];
+            const lx = pos.x + pos.cos * (r + 10);
+            const ly = pos.y + pos.sin * (r + 14);
+            const anchor = Math.abs(pos.cos) < 0.3 ? 'middle' : pos.cos > 0 ? 'start' : 'end';
+            const above = pos.sin < -0.5;
+            const isViewer = step === 2 && key === viewer;
             return (
-              <g key={s}>
+              <g key={key}>
                 <circle
-                  cx={p.x}
-                  cy={p.y}
-                  r={26}
-                  strokeDasharray={reviewDropped ? '5 4' : undefined}
-                  fill={isViewer ? '#354a87' : '#fbf6ea'}
-                  stroke="#354a87"
-                  strokeWidth={2}
-                  style={{ transition: 'fill 200ms var(--ease-out)' }}
+                  cx={pos.x}
+                  cy={pos.y}
+                  r={r}
+                  fill={isViewer ? '#354a87' : look.fill}
+                  stroke={look.stroke}
+                  strokeWidth={look.width}
+                  strokeDasharray={look.dash}
+                  className={look.pulse ? 'ex-pulse' : undefined}
+                  style={{ transition: 'stroke 300ms var(--ease-out), fill 300ms var(--ease-out)' }}
                 />
                 <text
-                  x={p.x}
-                  y={p.y + 6}
+                  x={pos.x}
+                  y={pos.y + 6}
                   textAnchor="middle"
-                  fontSize="17"
+                  fontSize={large ? 22 : 17}
                   fontWeight={700}
                   fill={isViewer ? '#fbf6ea' : '#354a87'}
                 >
-                  {i + 1}
+                  {glyph}
+                </text>
+                <text x={lx} y={ly + (above ? -12 : 0)} textAnchor={anchor} fontSize="14" fontWeight={600} fill="#26332e">
+                  {name}
+                </text>
+                <text
+                  x={lx}
+                  y={ly + (above ? 3 : 15)}
+                  textAnchor={anchor}
+                  fontSize="12.5"
+                  fill={st === 'failed' ? '#8e3b26' : '#4c574d'}
+                >
+                  {st}
                 </text>
               </g>
             );

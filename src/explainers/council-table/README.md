@@ -10,6 +10,12 @@ Data provenance: (b) toy data — five anonymous seats, hand-written ballot orde
 letter rankings (`LETTER_RANKING`) in `model.ts`. Labelled "Illustrative example". No real model names, so
 no real model is shown winning or losing.
 
+## Visual source
+Layout and seat states follow the project's own interface, `frontend/src/components/RoundTable.jsx` and
+`App.css`: chairman at the head of the table, members round the ring, a status line under every seat
+(waiting · thinking · reviewing · answered · failed · winner), pulsing ring while thinking/reviewing, dashed when
+failed, gold when winner. Colours are the site palette, not the app's.
+
 ## Simplifications (also in "How to read this")
 - Answers are blank cards; the question is generic.
 - Member failures and retries (README failure table) are not drawn; only the unparseable-review and
