@@ -42,7 +42,21 @@ This paper asks whether the flag already knows the answer earlier — and if so,
   ]}
 />
 
-All results come from exact statevector simulation, cross-checked against a real superconducting device's noise model. The paper also reports what did **not** hold up: once the recycled failure-branch state is counted honestly, an earlier claim of a free fidelity bonus disappears, and on a three-objective Pareto frontier the standard protocol is itself optimal. The paper's own simulation baseline for the reference circuit differs from the published value; a single-gate anomaly that reproduces the published number is reported as an open finding rather than adopted. A generic exact alternative built by isometry synthesis turns out less efficient than the hand-designed circuit, and a weak-value calculation for the flag qubit shows no anomalous behaviour.
+## What I found
+
+- **The flag knows early.** Tracking the mutual information between the flag qubit and the final outcome shows it becomes informative well before the last gate.
+- **A rule for when early is safe.** The *last-gate-targeting rule* says when measuring early leaves the successful output exactly unchanged; for this circuit the earliest safe point is gate 21 of 24.
+- **It generalises.** The same rule holds on a second, structurally unrelated flag-qubit protocol (a W-state fusion scheme), checked at the size tested.
+- **The hand-made circuit is efficient.** An exact alternative built by generic isometry synthesis — verified to fidelity one — needs more resources than the hand-designed circuit.
+
+All results come from exact statevector simulation, cross-checked against a real superconducting device’s noise model, in an openly reproducible pipeline.
+
+## What did not hold up
+
+- **The “free” fidelity bonus.** Once the quality of the recycled failure-branch state is counted honestly, an earlier claim that early measurement improves fidelity at no cost disappears. On a three-objective Pareto frontier, the standard protocol is itself optimal.
+- **The size of the saving.** About 3% fewer gates in the abstract cost model shrinks to about 1% once a real device’s two-qubit gate counts are used.
+- **The published baseline.** My simulation of the reference circuit does not reproduce the published value. A single-gate change reproduces it exactly but contradicts the reference circuit’s own documentation, so it is reported as an open finding rather than adopted silently.
+- **Weak values.** A genuine weak-value calculation for the flag qubit shows no anomalous behaviour.
 
 ## Status
 
