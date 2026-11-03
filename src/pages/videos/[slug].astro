@@ -43,7 +43,7 @@ const titleOf = (p: (typeof pool)[number]): string => ('team' in p.data ? p.data
       <Epigraph page={`videos/${entry.id}`} treatment="margin" />
     </div>
     <p class="mt-2 text-muted">{formatDate(d.date)}</p>
-    <div class="mt-8 max-w-4xl">
+    <div class="mt-8 max-w-6xl">
       <VideoFacade videoId={d.videoId} title={d.title} start={d.start} />
     </div>
     <div class="prose-site mt-8">

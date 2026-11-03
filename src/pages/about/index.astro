@@ -31,7 +31,7 @@ const items = await timelineItems();
       {show(LONG_BIO) && (
         <div class="prose-site mt-8">{isTodo(LONG_BIO) ? <Todo text={LONG_BIO} inline={false} /> : <p>{LONG_BIO}</p>}</div>
       )}
-      <p class="mt-8 max-w-2xl text-ink-soft">
+      <p class="mt-8 max-w-4xl text-ink-soft">
         I work at the {SITE.affiliation}. The rest of this atlas is the long version: the{' '}
         <a href={withBase('/research/')}>research</a>, the <a href={withBase('/projects/')}>things I have built</a>, and the{' '}
         <a href={withBase('/sports/')}>pitch</a>.
@@ -67,11 +67,11 @@ const items = await timelineItems();
       <h2 id="chronology" class="mt-2">
         A chronology
       </h2>
-      <p class="mt-3 max-w-2xl text-ink-soft">The same years, seen twice: once as overlapping threads, once as a list.</p>
+      <p class="mt-3 max-w-4xl text-ink-soft">The same years, seen twice: once as overlapping threads, once as a list.</p>
       <div class="paper-card mt-10 rounded-card p-6">
         <ActivityChart />
       </div>
-      <div class="mt-14 max-w-3xl">
+      <div class="mt-14 max-w-5xl">
         <Timeline items={items} />
       </div>
     </div>

@@ -81,8 +81,8 @@
   --radius-card: 6px;
   --radius-chip: 999px;
 
-  --container-content: 88rem;
-  --container-prose: 46rem;
+  --container-content: 112rem;
+  --container-prose: 68rem;
 
   /* Strong curves (built-in CSS easings are too weak for UI). */
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
@@ -218,16 +218,12 @@
 }
 
 @layer components {
+  /* Full-width pages: content runs edge to edge with margins that scale with the screen. */
   .container-site {
     width: 100%;
     max-width: var(--container-content);
     margin-inline: auto;
-    padding-inline: 1.25rem;
-  }
-  @media (min-width: 768px) {
-    .container-site {
-      padding-inline: 2.5rem;
-    }
+    padding-inline: clamp(1.25rem, 3.5vw, 4rem);
   }
   /* Text keeps a readable measure; figures, explainers and flows use the full column. */
   .prose-site > :not(figure, [data-flow], [data-explainer]) {

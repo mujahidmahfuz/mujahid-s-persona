@@ -15,7 +15,7 @@ Muja: edit this file freely. Fix anything wrong, fill the TODOs, and delete rows
 | Current position | Undergraduate, Digital Business & Innovation (DBI) major, Tokyo International University (TIU), Japan — 7th semester (as of Nov 2026) | Yes |
 | Expected graduation | August 2027 | Yes |
 | Affiliation | Institute for International Strategy and Emerging Technologies | Yes |
-| Advisor | — | **Do not show** (Muja's request, Nov 2026) |
+| Advisor | — | **Do not show as advisor** (Muja, Nov 2026). Prof. Fatih Ozaydin is shown only as the supervisor of the TA and SA roles, linked to https://tiu-iis.org/fatih-ozaydin/ as evidence |
 | Research interests | Machine learning & explainable AI; quantum computing and quantum networking; neural networks & neuromorphic computing; computational biology; neuro/cognitive science | Yes |
 | Goal | Master's / PhD (targets not to be listed publicly unless Muja wants) | Bio wording: "seeking graduate research positions starting 2027" — TODO(muja): confirm |
 | Google Scholar | https://scholar.google.com/citations?hl=en&user=lgPRHn0AAAAJ | Yes |

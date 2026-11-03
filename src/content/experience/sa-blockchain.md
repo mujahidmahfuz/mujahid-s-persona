@@ -2,6 +2,8 @@
 role: Student Assistant
 org: Tokyo International University
 type: sa
+supervisor: Prof. Fatih Ozaydin
+supervisorUrl: https://tiu-iis.org/fatih-ozaydin/
 course: Blockchain
 start: 2026-04
 end: 2026-08

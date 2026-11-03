@@ -45,10 +45,10 @@ const title = `${d.team} — ${d.sport}`;
         ))}
       </ul>
     </div>
-    <div class="mt-10 max-w-3xl [&_figcaption]:text-ivory [&_span.bg-blue-050]:bg-ivory/15">
+    <div class="mt-10 max-w-5xl [&_figcaption]:text-ivory [&_span.bg-blue-050]:bg-ivory/15">
       <SeasonBar start={d.start} end={d.end} />
     </div>
-    <p class="mt-4 max-w-xl text-xs text-ivory/80">
+    <p class="mt-4 max-w-3xl text-xs text-ivory/80">
       Seal: Tokyo International University, via{' '}
       <a href="https://commons.wikimedia.org/wiki/File:Tokyo_International_University_Logo.png">Wikimedia Commons</a>{' '}
       (JeffFernandezJP, <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>).
@@ -58,7 +58,7 @@ const title = `${d.team} — ${d.sport}`;
     <div class="mb-10">
       <Epigraph page={`sports/${entry.id}`} treatment="verse" />
     </div>
-    <dl class="mt-6 grid max-w-4xl gap-4 text-sm sm:grid-cols-2 lg:grid-cols-4">
+    <dl class="mt-6 grid max-w-6xl gap-4 text-sm sm:grid-cols-2 lg:grid-cols-4">
       <div>
         <dt class="text-muted">Organisation</dt>
         <dd class="font-semibold">{d.org}</dd>
@@ -87,7 +87,7 @@ const title = `${d.team} — ${d.sport}`;
     {highlights.length > 0 && (
       <section class="mt-12" aria-labelledby="highlights">
         <h2 id="highlights">Highlights</h2>
-        <div class="mt-6 max-w-prose">
+        <div class="mt-6 max-w-[68rem]">
           <KeyFindings items={highlights} />
         </div>
       </section>

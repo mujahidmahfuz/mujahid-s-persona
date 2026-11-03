@@ -32,7 +32,7 @@ const siteUrl = new URL(withBase('/'), SITE.url).href;
 ---
 
 <BaseLayout title="CV" description={`Curriculum vitae of ${SITE.name}.`}>
-  <article class="cv container-site max-w-4xl py-12 print:max-w-none print:p-0 md:py-16">
+  <article class="cv container-site max-w-6xl py-12 print:max-w-none print:p-0 md:py-16">
     <header class="border-b-4 border-blue pb-6">
       <h1 class="print:text-[26pt]">{SITE.name}</h1>
       <p class="mt-2 font-semibold text-blue">Undergraduate researcher · Machine learning · Quantum computing</p>
@@ -81,7 +81,9 @@ const siteUrl = new URL(withBase('/'), SITE.url).href;
           </div>
           <p class="cv-org">
             {e.data.org}
-            {e.data.supervisor && ` (${e.data.supervisor})`}
+            {e.data.supervisor && (
+              <> ({e.data.supervisorUrl ? <a href={e.data.supervisorUrl}>{e.data.supervisor}</a> : e.data.supervisor})</>
+            )}
           </p>
           <div class="cv-body">
             <Content components={{ Todo }} />

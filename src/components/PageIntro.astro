@@ -32,11 +32,11 @@ const { eyebrow, title, lede, epigraph, treatment, layout = 'split', chapter } =
       <p class="label-mono text-terracotta-ink">{eyebrow}</p>
       <h1 class="mt-4">{title}</h1>
       {lede && (
-        <p class="mt-6 max-w-2xl font-serif text-[clamp(1.25rem,1.1rem+0.6vw,1.6rem)] leading-snug text-ink italic">{lede}</p>
+        <p class="mt-6 max-w-4xl font-serif text-[clamp(1.25rem,1.1rem+0.6vw,1.6rem)] leading-snug text-ink italic">{lede}</p>
       )}
       <slot />
     </div>
-    <div class:list={[layout === 'stacked' && 'max-w-4xl']}>
+    <div class:list={[layout === 'stacked' && 'max-w-6xl']}>
       <Epigraph page={epigraph} treatment={treatment} />
     </div>
   </div>

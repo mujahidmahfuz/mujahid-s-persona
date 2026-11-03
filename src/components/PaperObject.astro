@@ -82,7 +82,7 @@ const preprint = d.links.preprint && show(d.links.preprint) ? d.links.preprint :
             </>
           )}
         </dl>
-        {!compact && show(d.summary) && <p class="mt-4 max-w-prose text-ink">{d.summary}</p>}
+        {!compact && show(d.summary) && <p class="mt-4 max-w-[68rem] text-ink">{d.summary}</p>}
         <ul class="mt-5 flex flex-wrap gap-2" aria-label={`Actions for ${c.title}`}>
           <li>
             <a class="paper-action is-primary" href={entryPath(entry)}>

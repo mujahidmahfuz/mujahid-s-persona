@@ -2,6 +2,8 @@
 role: Teaching Assistant
 org: Tokyo International University
 type: ta
+supervisor: Prof. Fatih Ozaydin
+supervisorUrl: https://tiu-iis.org/fatih-ozaydin/
 course: Introduction to Python
 start: 2025-04
 end: 2025-08

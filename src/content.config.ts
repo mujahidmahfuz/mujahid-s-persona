@@ -194,6 +194,8 @@ const experience = defineCollection({
       start: dateOrTodo,
       end: dateOrTodo.optional(),
       supervisor: z.string().optional(),
+      /** Public profile of the supervisor (evidence for the role). */
+      supervisorUrl: z.url().optional(),
       course: z.string().optional(),
       description: z.union([PLACEHOLDER, z.string().min(1)]),
       tags: z.array(kebab).default([]),

@@ -1,5 +1,5 @@
 ---
-import { NAV, SITE } from '~/lib/site';
+import { NAV } from '~/lib/site';
 import { withBase, stripBase } from '~/lib/paths';
 
 const current = stripBase(Astro.url.pathname);
@@ -12,9 +12,12 @@ const isActive = (href: string) => current === href || current.startsWith(href);
   data-pagefind-ignore="all"
 >
   <div class="container-site flex h-16 items-center justify-between gap-4">
-    <a href={withBase('/')} class="group flex items-baseline gap-3 text-ink no-underline">
-      <span class="font-serif text-[1.35rem] leading-none font-semibold text-verdigris">{SITE.name}</span>
-      <span class="label-mono hidden text-ink-soft xl:inline">an atlas of questions</span>
+    <a
+      href={withBase('/')}
+      class="nav-link relative font-serif text-[1.35rem] leading-none font-semibold text-verdigris no-underline"
+      aria-current={current === '/' ? 'page' : undefined}
+    >
+      Home
     </a>
 
     <nav aria-label="Main" class="hidden lg:block">

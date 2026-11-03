@@ -38,7 +38,7 @@ const label = (e: E) => (e.data.course ? `${e.data.role} — ${e.data.course}` :
       <Epigraph page={`experience/${entry.id}`} treatment="margin" />
     </div>
     <p class="mt-3 text-lg text-muted">{d.org}</p>
-    <dl class="mt-6 grid max-w-2xl gap-4 text-sm sm:grid-cols-2">
+    <dl class="mt-6 grid max-w-4xl gap-4 text-sm sm:grid-cols-2">
       <div>
         <dt class="text-muted">Period</dt>
         <dd class="font-semibold">{formatRange(d.start, d.end) ?? <Todo>dates</Todo>}</dd>
@@ -46,7 +46,15 @@ const label = (e: E) => (e.data.course ? `${e.data.role} — ${e.data.course}` :
       {d.supervisor && (
         <div>
           <dt class="text-muted">Supervisor</dt>
-          <dd class="font-semibold">{d.supervisor}</dd>
+          <dd class="font-semibold">
+            {d.supervisorUrl ? (
+              <a href={d.supervisorUrl} rel="noopener">
+                {d.supervisor}
+              </a>
+            ) : (
+              d.supervisor
+            )}
+          </dd>
         </div>
       )}
     </dl>

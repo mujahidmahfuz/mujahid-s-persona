@@ -18,12 +18,12 @@ const d = [...EMAIL_PARTS.domain].reverse().join('');
     treatment="note"
     layout="split"
   >
-    <p class="mt-5 max-w-xl text-ink-soft">
+    <p class="mt-5 max-w-3xl text-ink-soft">
       I am an undergraduate researcher at {SITE.university}. For research questions or collaboration, email is best.
     </p>
   </PageIntro>
   <div class="container-site py-12 md:py-14">
-    <section class="mt-10 max-w-xl rounded-card bg-blue p-6 text-white" data-surface="dark" aria-labelledby="email">
+    <section class="mt-10 max-w-3xl rounded-card bg-blue p-6 text-white" data-surface="dark" aria-labelledby="email">
       <h2 id="email" class="text-h3">
         Email
       </h2>
@@ -44,7 +44,7 @@ const d = [...EMAIL_PARTS.domain].reverse().join('');
       <h2 id="profiles" class="text-h3">
         Profiles
       </h2>
-      <ul class="mt-4 grid max-w-xl gap-3 sm:grid-cols-2" data-reveal-group>
+      <ul class="mt-4 grid max-w-3xl gap-3 sm:grid-cols-2" data-reveal-group>
         {PROFILES.map((p) => (
           <li>
             <a

@@ -22,7 +22,7 @@ const rendered = await Promise.all(list.map(async (e) => ({ e, Content: (await r
   <div class="container-site py-12 md:py-14">
     <div class="mt-10 space-y-10">
       {rendered.map(({ e, Content }) => (
-        <article class="max-w-3xl rounded-card border border-blue-200 p-6" aria-labelledby={`edu-${e.id}`}>
+        <article class="max-w-5xl rounded-card border border-blue-200 p-6" aria-labelledby={`edu-${e.id}`}>
           <h2 id={`edu-${e.id}`} class="text-h3">
             {e.data.degree}, {e.data.major}
           </h2>

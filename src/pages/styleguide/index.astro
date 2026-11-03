@@ -55,7 +55,7 @@ const rows = pairs.map((p) => {
       <div class="mt-8">
         <Epigraph page="styleguide" treatment="note" />
       </div>
-      <p class="mt-3 max-w-prose text-muted">
+      <p class="mt-3 max-w-[68rem] text-muted">
         Every component, colour pair and focus state. Not linked in navigation; excluded from the sitemap.
       </p>
     </header>
@@ -120,7 +120,7 @@ const rows = pairs.map((p) => {
       <p class="font-display text-h1 font-bold text-blue">Heading 1 · Space Grotesk</p>
       <p class="font-display text-h2 font-bold text-blue">Heading 2</p>
       <p class="font-display text-h3 font-bold text-blue">Heading 3</p>
-      <p class="max-w-prose">Body text in Inter at 1.0625 rem with 1.6 line height. Long-form columns stay within 44 rem.</p>
+      <p class="max-w-[68rem]">Body text in Inter at 1.0625 rem with 1.6 line height. Long-form columns stay within 44 rem.</p>
       <p class="text-small text-muted">Small, muted secondary text.</p>
       <p class="font-mono text-sm">JetBrains Mono — code and math</p>
     </section>
@@ -206,11 +206,11 @@ const rows = pairs.map((p) => {
 
     <section aria-labelledby="sg-explainers">
       <SectionHeading id="sg-explainers">Explainer demos</SectionHeading>
-      <p class="max-w-prose text-muted">
+      <p class="max-w-[68rem] text-muted">
         Toy demos proving the pipeline: the poster renders first, the island loads when scrolled into view, reduced motion keeps
         the poster for animated scenes, and every control works from the keyboard.
       </p>
-      <div class="max-w-3xl">
+      <div class="max-w-5xl">
         <Explainer
           id="demo-toy-2d"
           demo={{
@@ -228,10 +228,10 @@ const rows = pairs.map((p) => {
 
     <section aria-labelledby="sg-video">
       <SectionHeading id="sg-video">Video facade</SectionHeading>
-      <p class="max-w-prose text-muted">
+      <p class="max-w-[68rem] text-muted">
         Nothing is requested from YouTube until the button is pressed. This sample uses a dummy ID, not a real video.
       </p>
-      <div class="mt-4 max-w-xl">
+      <div class="mt-4 max-w-3xl">
         <VideoFacade videoId="XXXXXXXXXXX" title="Sample facade (no real video)" />
       </div>
     </section>

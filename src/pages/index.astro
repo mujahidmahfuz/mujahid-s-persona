@@ -95,12 +95,12 @@ const person = {
           <br />
           <span class="italic">Islam</span>
         </h1>
-        <p class="mt-7 max-w-xl font-serif text-[clamp(1.35rem,1.15rem+0.8vw,1.85rem)] leading-snug text-ink italic">
+        <p class="mt-7 max-w-3xl font-serif text-[clamp(1.35rem,1.15rem+0.8vw,1.85rem)] leading-snug text-ink italic">
           An unfinished atlas of the questions I keep returning to — how machines explain themselves, how they remember, and how
           the quantum world computes.
         </p>
-        <p class="mt-6 max-w-xl text-ink-soft">{SHORT_BIO}</p>
-        <nav aria-label="Contents" class="mt-10 max-w-xl">
+        <p class="mt-6 max-w-3xl text-ink-soft">{SHORT_BIO}</p>
+        <nav aria-label="Contents" class="mt-10 max-w-3xl">
           <p class="label-mono text-ink-soft">Contents</p>
           <ol class="mt-3 divide-y divide-rule border-y border-rule">
             {CONTENTS.map((c) => (
@@ -162,7 +162,7 @@ const person = {
                 {r.data.title}
               </a>
             </h3>
-            <p class="mt-3 max-w-2xl text-ink">{r.data.summary}</p>
+            <p class="mt-3 max-w-4xl text-ink">{r.data.summary}</p>
             <div class="mt-4 flex flex-wrap items-center gap-3">
               <StatusBadge status={r.data.status} />
               <a href={entryPath(r)} class="text-sm font-semibold">
@@ -194,7 +194,7 @@ const person = {
             The workshop
           </h2>
         </div>
-        <p class="max-w-xl text-ink-soft md:justify-self-end">
+        <p class="max-w-3xl text-ink-soft md:justify-self-end">
           Things I have built to see whether an idea survives contact with reality. Each card turns over for a short account; the
           status says how far it got.
         </p>
@@ -228,7 +228,7 @@ const person = {
     <h2 id="library" class="mt-2">
       From the library
     </h2>
-    <p class="mt-3 max-w-2xl text-ink-soft">Work that has passed peer review and found a home in a journal.</p>
+    <p class="mt-3 max-w-4xl text-ink-soft">Work that has passed peer review and found a home in a journal.</p>
     <div class="mt-10 grid gap-12 xl:grid-cols-2">
       {publications.map((p, i) => (
         <PaperObject entry={p} folio={`P-${String(i + 1).padStart(2, '0')}`} compact />
@@ -330,6 +330,18 @@ const person = {
               <li>
                 <a href={entryPath(t)}>{t.data.course ? `${t.data.role} — ${t.data.course}` : t.data.role}</a>
                 <span class="label-mono ml-2 text-ivory/80 normal-case">{formatRange(t.data.start, t.data.end)}</span>
+                {t.data.supervisor && (
+                  <span class="block text-sm text-ivory/85">
+                    with{' '}
+                    {t.data.supervisorUrl ? (
+                      <a href={t.data.supervisorUrl} rel="noopener">
+                        {t.data.supervisor}
+                      </a>
+                    ) : (
+                      t.data.supervisor
+                    )}
+                  </span>
+                )}
               </li>
             ))}
           </ul>
@@ -344,7 +356,7 @@ const person = {
     <h2 id="questions" class="mt-2">
       Questions I keep coming back to
     </h2>
-    <ol class="mt-8 max-w-4xl" data-reveal-group>
+    <ol class="mt-8 max-w-6xl" data-reveal-group>
       {QUESTIONS.map((x, i) => (
         <li class="flex gap-5 border-b border-rule py-5" data-chapter={chapterFor(x.entry!.data.areas)}>
           <span class="label-mono pt-2 text-[var(--accent-ink)]">Q{i + 1}</span>

@@ -17,7 +17,7 @@ const notes = (await getPublic('notes')).sort((a, b) => b.data.date.localeCompar
     treatment="note"
     layout="split"
   >
-    <p class="mt-5 max-w-xl text-ink-soft">Short research notes. Also available as an RSS feed.</p>
+    <p class="mt-5 max-w-3xl text-ink-soft">Short research notes. Also available as an RSS feed.</p>
   </PageIntro>
   <div class="container-site py-12 md:py-14">
     {notes.length > 0 ? (

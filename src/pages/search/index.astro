@@ -14,12 +14,12 @@ const bundle = withBase('/pagefind/');
     treatment="margin"
     layout="split"
   >
-    <p class="mt-5 max-w-xl text-ink-soft">
+    <p class="mt-5 max-w-3xl text-ink-soft">
       Full-text search across every page. Tip: press <kbd>Ctrl</kbd> + <kbd>K</kbd> anywhere to search.
     </p>
   </PageIntro>
   <div class="container-site py-12 md:py-14">
-    <div class="mt-8 max-w-3xl" id="search" data-bundle={bundle}>
+    <div class="mt-8 max-w-5xl" id="search" data-bundle={bundle}>
       <form action={withBase('/search/')} method="get" role="search" data-search-form>
         <label for="q" class="block text-sm font-semibold text-blue">
           Search terms
