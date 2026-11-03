@@ -1,6 +1,7 @@
 ---
 # Title, authors, venue and year are replaced by Crossref data at build (SPEC §5).
-# Method and results text: BWA preprint abstract (SSRN, doi:10.2139/ssrn.7292748).
+# Method and results text: the revised manuscript bwa-research/fixed/bwa_paper_cas.tex (the version that
+# became the KBS paper) and the BWA preprint abstract (SSRN, doi:10.2139/ssrn.7292748).
 title: Bootstrap Wasserstein Alignment for stable feature attribution in low-data regimes
 summary: Bootstrap Wasserstein Alignment (BWA) combines SHAP attributions from bootstrap replicates through an entropic Wasserstein barycenter, aiming for stable feature explanations when training data are scarce.
 status: published
@@ -29,7 +30,7 @@ keyFindings:
     source: BWA preprint abstract (SSRN, doi:10.2139/ssrn.7292748)
 limitations:
   - On dense tabular UCI data, BWA-v2 ties Vanilla Mean on every metric. The paper states this scope limitation explicitly; the gains are on sparse-signal domains.
-  - The numbers on this page come from the preprint abstract. Check the published Knowledge-Based Systems version for the final tables.
+  - BWA-v2 produces sparser explanations, not more stable ones — plain averaging is marginally more stable on every stability measure in the paper.
 explainers:
   - id: bwa-collapse
     dim: 2d
@@ -77,15 +78,17 @@ where <Math tex="W_\varepsilon" /> is the entropy-regularised optimal-transport 
 The paper presents two versions:
 
 - **BWA-v1** — a hard binomial sign test with global normalisation.
-- **BWA-v2** — a magnitude-weighted Bayesian soft sign, and a per-feature median absolute-value scale that preserves natural attribution magnitudes.
+- **BWA-v2** — a magnitude-weighted soft sign <Math tex="s_j = \sum_b e_j^{(b)} / \sum_b |e_j^{(b)}|" /> times a per-feature median absolute-value scale, which keeps natural attribution magnitudes.
+
+The paper is explicit about what the barycenter does in each version. In **BWA-v1** it carries the consensus. In **BWA-v2** it does not: the paper proves that v2 is an exact positive per-feature rescaling of the bootstrap mean, so its signs are the mean’s signs and the cost matrix has no effect — checked numerically with zero sign disagreements across 8,465 features. v2 closes v1’s sign-accuracy gap *by construction*, and the barycenter remains in v2 only as an uncertainty diagnostic. The animation above shows the v1 pipeline.
 
 BWA also reports how reliable each explanation is: a bootstrap-level uncertainty <Math tex="\sigma_{UQ}" /> (the variance from retraining the model) and a continuous per-feature confidence from the soft sign.
 
-## Experiments and results
+## What I found
 
 The evaluation spans eight experiments: synthetic data (_N_ = 20, _d_ = 100, _B_ = 50 bootstrap replicates, 100 trials), MNIST saliency (_N_ = 100, _d_ = 784, 5 seeds × 50 images), Golub leukemia gene expression (_N_ = 72, _d_ ∈ {500, 2000}) and four UCI tabular datasets (_N_ ∈ {20, 50}).
 
-Across them, BWA-v2 closes a documented sign-accuracy gap of BWA-v1 by 5–15 percentage points. Where the true signal is sparse — images and gene expression — BWA-v2's attribution maps are significantly sparser than every Euclidean baseline. On dense tabular data it ties the simple average, which the paper reports as a limit of its scope.
+Across them, BWA-v2 closes BWA-v1's documented sign-accuracy gap by 5–15 percentage points. Where the true signal is sparse — images and gene expression — BWA-v2's attribution maps are significantly **sparser** than every Euclidean baseline. That is the real gain: sparser explanations, not more accurate or more stable ones (see below). On dense tabular data it ties the simple average.
 
 <Explainer id="bwa-sparsity" />
 
@@ -103,9 +106,23 @@ The figures below are the paper’s own, from the real experiments — not illus
 </figure>
 <figure class="my-8">
   <Image src={figBoot} alt="Three line charts against the number of bootstrap replicates B from 5 to 100: sign accuracy rising, top-10 Jaccard overlap flat near 0.13, and attribution norm rising slightly." widths={[800, 1400, 2200]} sizes="(min-width: 1024px) 68rem, 100vw" class="h-auto w-full rounded-md border border-rule bg-white p-2" />
-  <figcaption class="mt-2 text-sm text-ink-soft"><strong>How many bootstrap replicates?</strong> Sign accuracy rises steadily from 0.541 to 0.786 as B grows from 5 to 100 (50 trials each), while top-10 overlap stays flat at about 0.13. Figure from the paper (Islam & Dubey, <em>Knowledge-Based Systems</em>, 2026).</figcaption>
+  <figcaption class="mt-2 text-sm text-ink-soft"><strong>How many bootstrap replicates? (BWA-v1)</strong> Sign accuracy rises steadily from 0.541 to 0.786 as B grows from 5 to 100 (50 trials each), while top-10 overlap stays flat at about 0.13. Figure from the paper (Islam & Dubey, <em>Knowledge-Based Systems</em>, 2026).</figcaption>
 </figure>
 <figure class="my-8">
   <Image src={figEps} alt="Three line charts against the Sinkhorn regularisation epsilon: sign accuracy flat, attribution norm nearly flat, and convergence rate jumping from 0 to 100 percent at epsilon 0.05." widths={[800, 1400, 2200]} sizes="(min-width: 1024px) 68rem, 100vw" class="h-auto w-full rounded-md border border-rule bg-white p-2" />
-  <figcaption class="mt-2 text-sm text-ink-soft"><strong>The regularisation ε.</strong> Sign accuracy stays near 0.76 and the attribution norm varies by about 5% — but the Sinkhorn solver never converges below ε = 0.05 and always converges above it: a hard cliff worth knowing before using BWA. Figure from the paper (Islam & Dubey, <em>Knowledge-Based Systems</em>, 2026).</figcaption>
+  <figcaption class="mt-2 text-sm text-ink-soft"><strong>The regularisation ε (BWA-v1 — v2 has no ε).</strong> Sign accuracy stays near 0.76 and the attribution norm varies by about 5% — but the Sinkhorn solver never converges below ε = 0.05 and always converges above it: a hard cliff worth knowing before using BWA-v1. Figure from the paper (Islam & Dubey, <em>Knowledge-Based Systems</em>, 2026).</figcaption>
 </figure>
+
+## What was hard
+
+- **Finding out what the method really does.** The revised paper proves that BWA-v2’s sign is exactly the bootstrap mean’s sign and that its cost matrix is inert — so the Wasserstein machinery, the paper’s namesake, matters for v1 but not for v2. It says so plainly instead of crediting optimal transport for v2’s gains.
+- **Keeping figures and numbers consistent.** The revision found a gene-expression figure that did not match its caption, a metric labelled Jaccard that was really precision, and tables reporting a different run than the abstract. Each was traced to its cause and corrected.
+- **The solver’s cliff.** v1’s Sinkhorn barycenter never converges below ε = 0.05 and always converges above it, so the regularisation is not a free choice.
+- **A major revision.** The paper went through a full major revision with two reviewers, including new experiments (an ablation and run-to-run stability) before acceptance.
+
+## What it did not show
+
+- **Not more stable.** Plain averaging is marginally but consistently *more* stable run to run than BWA-v2 on every measure tested (cosine, norm variation, Spearman, top-10 overlap). Readers who want stability rather than sparsity should use the mean.
+- **Not more accurate.** Sign accuracy is the bootstrap mean’s by construction, and no method — BWA included — separates on top-10 feature recovery.
+- **No gain on dense data.** On tabular datasets where many features matter, BWA-v2 ties the simple average on every metric.
+
