@@ -35,6 +35,8 @@ explainers:
     verified: false
 ---
 
+import BarList from '~/components/charts/BarList.astro';
+
 ## Why it exists
 
 Asking one model gives you one opinion. LLM Council asks several, then lets them judge each other — blind — so that the ranking, not any single model, decides which answer is best. Judging answers blind and aggregating many judges is the approach studied in the paper [_Language Model Council_](https://arxiv.org/abs/2406.08598) (arXiv:2406.08598), which the project builds on.
@@ -52,6 +54,29 @@ Asking one model gives you one opinion. LLM Council asks several, then lets them
 />
 
 <Explainer id="council-table" />
+
+## A first test
+
+A small pilot asked the council 8 multiple-choice questions about IoT, each with a known answer, and compared it with each member answering alone. The council had five free OpenRouter models, with a separate, larger model as chairman.
+
+<div class="my-8">
+<BarList
+  title="Correct answers out of 8"
+  items={[
+    { label: 'Council — chairman’s ruling', value: 8 },
+    { label: 'Council — peer-ranked winner', value: 8 },
+    { label: 'Majority vote of members', value: 8 },
+    { label: 'nemotron-3-super-120b (alone)', value: 8 },
+    { label: 'apodex-1.1-mini (alone)', value: 8 },
+    { label: 'lfm-2.5-2.6b (alone)', value: 8 },
+    { label: 'dots-3-note-preview (alone)', value: 7 },
+    { label: 'gemma-4-31b (alone)', value: 2 },
+  ]}
+  note="Source: experiments/results/pilot_raw.json in the LLM-Council repo (recomputed with analyze.py’s definitions). gemma answered only 2 of the 8 questions — free-tier rate limits — and both were right."
+/>
+</div>
+
+What it shows, honestly: the council got every question right, but so did a plain majority vote and three of the five models on their own; the average single model scored 82.5%. Its value here is **robustness** — a member that drops out or answers badly does not sink the result — not higher accuracy than the best model. Eight questions is far too few to say more, and on 2 of the 8 the chairman call failed, so the top-ranked answer was returned as a fallback. A session took about a minute (63 seconds on average) on free models.
 
 ## How it is built
 
