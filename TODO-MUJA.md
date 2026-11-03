@@ -172,3 +172,9 @@ _Generated 2026-11-03 by `scripts/todos.ts`. In production builds each of these 
 
 ### Private entries — not built (0)
 
+
+## Refinement pass follow-ups (2026-11-04)
+- [ ] **LLM Council explainer** — review the round-table demo in dev (`npm run dev` → /projects/llm-council/), then set `verified: true` in `src/content/projects/llm-council.mdx` to publish it.
+- [ ] **Dicke paper / ACDSA'27** — an outside review says it was accepted for an oral/video presentation at ACDSA'27. Nothing in the CV or inventory confirms this; send the acceptance wording or link to change the status from archived.
+- [ ] **First-page previews** — send the accepted-manuscript PDFs for the KBS and QIP papers. The repo's `Final.pdf` is an early 6-page draft whose numbers differ from the published paper, so it is not used.
+- [ ] **BWA reference code** — `core.py` passes the weights to `ot.barycenter` as (replicates × features); POT expects (features × replicates). Worth checking in your repo.
