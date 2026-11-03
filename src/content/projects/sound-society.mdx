@@ -28,15 +28,17 @@ tags: [civic-tech, moderation, anonymity, fastapi, react]
 
 ## Why it exists
 
-In many places, people who question the powerful are silenced. Sound Society is a social website where anyone in a community can raise a problem — a broken road, a ruined hospital, a false promise — and ask the people responsible to answer, without giving their name. The whole community sees the question, and the office it concerns can answer in public.
+In many places, people who question the powerful are silenced — by threats, by violence, or simply because no one is listening. Roads break, hospitals fall apart, promises are made and forgotten, and asking about it openly is dangerous. Sound Society is a social website where anyone in a community can raise a problem and ask the people responsible to answer, **without giving their name**. The whole community sees the question, and the office it concerns can answer in public.
 
-There are deliberately no private messages, no followers and no blocking: the platform is for public questions, not for fights. Abusive or hateful posts are removed, and a report button sends false or harmful posts to the admins.
+It is deliberately narrow: no private messages, no followers, no blocking — it is for public questions, not for fights. The rules say abusive or hateful posts are removed and their authors banned, and a report button sends false or harmful posts to the admins.
+
+## How it works
 
 <Flow
   title="The life of a report"
   source="backend/app/services/post_status.py"
   steps={[
-    { label: 'Post', detail: 'An anonymous member writes a report, optionally with photos or video.' },
+    { label: 'Post', detail: 'An anonymous member writes a report for a place — down to the village — optionally with photos or video.' },
     { label: 'Checked', detail: 'Moderation blocks personal details, threats and abuse before it goes live.' },
     { label: 'Seen', detail: 'A responder for that office marks it seen.' },
     { label: 'In progress', detail: 'The responder says work has started.' },
@@ -44,12 +46,39 @@ There are deliberately no private messages, no followers and no blocking: the pl
   ]}
 />
 
-## How it is ordered
+- **Anonymous by construction.** Emails and device IDs are stored only as keyed hashes (HMAC with a server secret): the same email always finds the same account and the ban list, but the hash cannot be turned back into the email — and without the key nobody can even test a guess.
+- **Moderation before publishing.** Text is checked for phone numbers, emails and long ID numbers (to stop doxxing), threat sentences, and abusive words in English, Bangla and regional dialects — including disguised spellings like “f.u.c.k”, look-alike characters and Bangla digits.
+- **Answerable offices.** A *responder* — a union office, a ward member, a journalist — is set by hand and can move a report forward (open → seen → in progress) and reply in the name of that office; only an admin can mark it resolved. Every step is a row on the post’s public timeline.
+- **A trust score that only rewards.** Points for truth (+20 when an admin marks a post true), responsibility (+5 for a correct report), kindness and courage (+25 when a problem is solved). Votes from accounts younger than 3 days give nothing, nobody earns from their own vote, and others see only a tier badge.
+- **What is urgent.** The “Most Urgent” tab ranks by `(votes + 1) / (hours since posting + 2)^1.2` — Hacker News’ shape with gentler gravity, so an important report in a small community does not sink too fast.
 
-The “Most Urgent” tab ranks posts by `(votes + 1) / (hours since posting + 2)^1.2` — the same shape as Hacker News’ formula, with gentler gravity, so an important report in a small community does not sink too fast. The “Recent” tab shows the newest first.
+## What I built
+
+Every report is tied to a real place. The site carries a complete place directory for Bangladesh, built by scripts that crawl and match public lists:
+
+<ul class="my-6 grid grid-cols-2 gap-3 md:grid-cols-4">
+  <li class="rounded-card border border-rule bg-ivory p-4"><span class="block font-serif text-3xl font-semibold tabular-nums text-verdigris">64</span><span class="mt-1 block text-sm text-ink-soft">districts</span></li>
+  <li class="rounded-card border border-rule bg-ivory p-4"><span class="block font-serif text-3xl font-semibold tabular-nums text-verdigris">516</span><span class="mt-1 block text-sm text-ink-soft">upazilas and city corporations</span></li>
+  <li class="rounded-card border border-rule bg-ivory p-4"><span class="block font-serif text-3xl font-semibold tabular-nums text-verdigris">4,926</span><span class="mt-1 block text-sm text-ink-soft">unions and pourashavas</span></li>
+  <li class="rounded-card border border-rule bg-ivory p-4"><span class="block font-serif text-3xl font-semibold tabular-nums text-verdigris">104,045</span><span class="mt-1 block text-sm text-ink-soft">villages</span></li>
+</ul>
+
+Around it: email, phone and Google sign-in with a remembered device; posts and comments that can be edited and voted on; a profile page and account deletion; search-engine pages (sitemap, robots, titles); and about 510 backend tests. It runs on free tiers only — Render for the app, Supabase for the database and media, Brevo for email, Cloudflare Turnstile against bots.
+
+## What was hard
+
+- **Login codes never arrived.** Render’s free servers could not reliably reach Gmail’s mail port (most tries ended in `OSError`), so codes were lost. Email moved to Brevo over HTTPS, which is never blocked — and codes sent “from” a Gmail address still risk the spam folder until the site has its own domain.
+- **Free hosting sleeps.** After 15 minutes without visitors the first request waits about 50 seconds. The app server (Oregon) and the database (Singapore) are also far apart, so every database step is slow.
+- **Google sign-in inside in-app browsers** needed a redirect flow instead of a popup.
+- **A locked table could hang the database** — updates now give up after 30 seconds instead of freezing the site.
+- **The place lists** existed only in pieces; unions created after 2017 and some village lists had to be found, crawled and matched by hand-written tools.
+
+## What it does not do yet
+
+It is a working prototype, not a launched service: there is no claim here about users or impact. Moderation is rule-based (patterns and word lists) — the open-source machine-learning moderation planned in the design is not in yet — and rules can be evaded by new spellings. Anonymity depends on the server secret staying secret and on users not revealing themselves in what they post.
 
 ## How it is built
 
-- **Backend** — FastAPI with Pydantic, SQLAlchemy and Alembic on PostgreSQL; per-route rate limits; Cloudflare Turnstile against bots; email or Google sign-in.
+- **Backend** — FastAPI with Pydantic, SQLAlchemy and Alembic on PostgreSQL; per-route rate limits; keyed hashing for identities.
 - **Frontend** — React, TypeScript and Tailwind CSS.
-- **Deployment** — one Docker image serving both, on free tiers (Render, Supabase for the database and media).
+- **Deployment** — one Docker image serving both, on free tiers.
