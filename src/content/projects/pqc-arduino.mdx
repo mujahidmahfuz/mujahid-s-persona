@@ -27,33 +27,58 @@ areas: [cryptography, systems]
 tags: [post-quantum-cryptography, ml-kem, slh-dsa, sphincs-plus, arduino, embedded]
 ---
 
+import PqcCharts from '~/components/projects/PqcCharts.astro';
+
 ## Why it exists
 
-Post-quantum cryptography (PQC) is designed to stay secure against quantum computers, but its keys and signatures are large and small microcontrollers have almost no memory. This project asks how far NIST's post-quantum standards can run on an Arduino UNO — 2 KB of RAM, 32 KB of Flash and 1 KB of EEPROM — without leaving the chip.
+Post-quantum cryptography (PQC) is built to stay secure once large quantum computers exist — but its keys, ciphertexts and signatures are big, and the smallest devices that will need it have almost no memory. An Arduino UNO has **2 KB of RAM, 32 KB of Flash and 1 KB of EEPROM**. The question: can NIST's new standards run **entirely on that chip**, with no PC doing the work?
 
-<Explainer id="pqc-memory-budget" />
+An early version got this wrong — the PC did the crypto and the Arduino only checked a hash. The project restarted with the real goal: the chip must do the cryptography itself.
 
-## How it fits
+## How it works
 
-A direct port of the reference code fails: the keys alone are bigger than the RAM. What works is a set of memory tricks:
-
-- **Keys in Flash** (PROGMEM) and **ciphertext in EEPROM**, with only three polynomial buffers in RAM.
-- **Streaming** — one polynomial or one chunk at a time.
-- **Regenerate instead of store** — the matrix and noise are rebuilt from seeds when needed.
-- **Reuse** — a polynomial buffer doubles as the Keccak hash state.
+A direct port of the reference code fails before it runs: its global data alone needs about 4,000 bytes of RAM, nearly twice what the UNO has. Everything that works comes from changing **where data lives and when it exists**:
 
 <Flow
   title="From failure to a full key exchange on the UNO"
   source="ROADMAP.md, Phase 1"
   steps={[
-    { label: 'Direct port', detail: 'Fails — the keys are bigger than the RAM.' },
-    { label: 'Shrunk math', detail: 'Works at n = 64, but with weak security.' },
+    { label: 'Direct port', detail: 'Fails — the keys alone are bigger than the RAM.' },
+    { label: 'Shrunk math', detail: 'Works at n = 64, but with weak security — a dead end.' },
     { label: 'Streaming decrypt', detail: 'Real Kyber-512 decryption in 92 ms.' },
     { label: 'Encrypt + decrypt', detail: '911 ms + 92 ms.' },
     { label: 'CCA-secure KEM', detail: 'Full Fujisaki–Okamoto transform: 934 ms + 133 ms, tamper detection working.' },
   ]}
 />
 
-## What is still open
+- **Keys in Flash** (PROGMEM), **ciphertext in EEPROM**, and only three polynomial buffers in RAM at any moment.
+- **Streaming** — one polynomial, or one chunk, at a time.
+- **Regenerate instead of store** — the public matrix and the noise are rebuilt from short seeds whenever they are needed.
+- **Reuse** — one polynomial buffer doubles as the Keccak (SHA-3) state.
+- **Predict before flashing** — a timing model (11.58 ms per SHA-256 compression) estimates a run before it is uploaded.
 
-ML-DSA (all three levels) and Falcon verification have not been started; the power-interruption evaluation of PQC-Restore is paused. Key generation cannot run on the chip, and the secret key sits in plain Flash — documented as a hardware limit, not hidden.
+<PqcCharts chart="ram" />
+
+## What I found
+
+**1 · Key exchange works at every security level.** ML-KEM-512, -768 and -1024 all run on the UNO. At the top level the ciphertext (1,568 B) is bigger than all writable storage on the board combined, so it is held by a PC relay — the PC only stores bytes; all cryptography stays on the chip.
+
+**2 · Signatures split into "can verify" and "can sign".** SLH-DSA-128s verifies in 25.5 s with 142 B of RAM to spare, but signing takes about 13 hours. SLH-DSA-128f signs in 38 minutes — but its code plus signature no longer fit in Flash to verify. Falcon signing is ruled out: it needs about 40 KB of RAM and floating point.
+
+<PqcCharts chart="time" />
+
+**3 · Small chips hide real security bugs.** An audit of the 8-bit ML-KEM-512 found that the rejection branch took measurably longer than the success branch — a **timing leak** an attacker could use. It was fixed with constant-time code and confirmed on hardware. The same audit found a decoding bug for negative coefficients, an AVR quirk where `(1 << 25)` silently becomes 0 (16-bit `int`), and an in-place trick that overwrote its own unread input.
+
+**4 · Crypto can survive a power cut.** *PQC-Restore* saves an encrypted checkpoint in EEPROM mid-operation and resumes later; secure and adaptive checkpointing both pass hardware demos.
+
+## What was hard
+
+- **A one-character typo in a Keccak constant** broke every hash output, which then looked like a key-exchange failure everywhere else.
+- **Stack overflows with no error message.** The UNO simply restarts or prints garbage; several "crypto failures" were the test wrappers themselves overflowing the stack.
+- **Bugs that were not crypto at all** — ML-KEM-1024 failed twice on hardware because of the PC relay, not the algorithm.
+- **EEPROM is slow**: writing a 768-byte ciphertext takes about 2.5 seconds.
+- **The toolchain**: C/C++ linkage mismatches in the Arduino IDE, and a key-generation tool that failed to compile silently on Windows.
+
+## What it did not show
+
+Key generation cannot run on the UNO — keys are made on a PC and placed in Flash, where the **secret key sits unencrypted** (a hardware limit, documented rather than hidden). ML-DSA (all three levels) and Falcon verification have not been started, and the power-interruption tests of PQC-Restore are paused, so its fault tolerance is not yet proven.
