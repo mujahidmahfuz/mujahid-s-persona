@@ -6,7 +6,22 @@ import globals from 'globals';
 
 export default [
   {
-    ignores: ['dist/', '.astro/', 'node_modules/', 'test-results/', 'playwright-report/', '.lighthouseci/', 'src/data/cache/'],
+    ignores: [
+      'dist/',
+      '.astro/',
+      'node_modules/',
+      'test-results/',
+      'playwright-report/',
+      '.lighthouseci/',
+      'src/data/cache/',
+      'MCM/',
+      'bwa-research/',
+      'Portable_PQC_Container/',
+      'fujitsu_results/',
+      'fujitsu_vrp/',
+      'llm-council/',
+      'sound_society/',
+    ],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,

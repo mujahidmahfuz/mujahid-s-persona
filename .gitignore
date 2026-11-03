@@ -15,3 +15,12 @@ playwright-report/
 *.pdf
 !public/**/*.pdf
 .DS_Store
+
+# Muja's local working copies of other projects (multi-GB) — source material, not part of the site
+MCM/
+bwa-research/
+Portable_PQC_Container/
+fujitsu_results/
+fujitsu_vrp/
+llm-council/
+sound_society/
