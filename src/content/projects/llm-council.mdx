@@ -41,6 +41,8 @@ import BarList from '~/components/charts/BarList.astro';
 
 Asking one model gives you one opinion. LLM Council asks several, then lets them judge each other — blind — so that the ranking, not any single model, decides which answer is best. Judging answers blind and aggregating many judges is the approach studied in the paper [_Language Model Council_](https://arxiv.org/abs/2406.08598) (arXiv:2406.08598), which the project builds on.
 
+## How it works
+
 <Flow
   title="How a council session works"
   source="LLM-Council README"
@@ -55,7 +57,12 @@ Asking one model gives you one opinion. LLM Council asks several, then lets them
 
 <Explainer id="council-table" />
 
-## A first test
+- **Blind, shuffled ballots.** Each reviewer sees everyone else’s answer labelled A, B, C… in its own random order, and never its own, so it cannot favour itself or a brand.
+- **A score anyone can check.** Each placing is worth 1 − (position − 1)/(n − 1) — first is 100%, last is 0% — averaged over the reviews a member received, so reviewers who saw different subsets count equally.
+- **A warning when the council is split.** Agreement is the mean Kendall τ between reviewers’ rankings (+1 identical, −1 reversed); when it is low, the ruling deserves less trust and the answers should be read directly.
+- **Other models’ answers are untrusted input.** Reviewer and chairman prompts tell each model to judge them, never to follow instructions written inside them.
+
+## What I found
 
 A small pilot asked the council 8 multiple-choice questions about IoT, each with a known answer, and compared it with each member answering alone. The council had five free OpenRouter models, with a separate, larger model as chairman.
 
@@ -77,6 +84,16 @@ A small pilot asked the council 8 multiple-choice questions about IoT, each with
 </div>
 
 What it shows, honestly: the council got every question right, but so did a plain majority vote and three of the five models on their own; the average single model scored 82.5%. Its value here is **robustness** — a member that drops out or answers badly does not sink the result — not higher accuracy than the best model. Eight questions is far too few to say more, and on 2 of the 8 the chairman call failed, so the top-ranked answer was returned as a fallback. A session took about a minute (63 seconds on average) on free models.
+
+## What was hard
+
+- **Free models are unreliable.** One question with peer review is about 11 model calls (5 answers, 5 reviews, 1 ruling). Free OpenRouter models are rate limited and come and go, so seats fail mid-session — in the pilot one member answered only 2 of 8 questions. The council had to be built to carry on with whoever answers: retries with backoff, then the seat is marked failed and the rest continue.
+- **Models do not follow the answer format.** A reviewer’s ranking must be read from free text; a reply that does not list every answer exactly once is thrown away rather than guessed.
+- **Too few members breaks peer review.** With fewer than 3 answers a lone reviewer would rank a single answer, so peer review is skipped and the chairman still rules.
+
+## What it did not show
+
+The pilot is 8 questions in one topic, on free models only — enough to see the pipeline work end to end, not enough to claim the council is more accurate than its best member. It was not: three members alone also scored 8/8. A real test needs hundreds of questions across topics, harder items where models disagree, and a comparison at equal cost (a council spends about 11 calls where one model spends one).
 
 ## How it is built
 
