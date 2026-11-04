@@ -34,7 +34,7 @@ const pdf = d.links.pdf && show(d.links.pdf) ? d.links.pdf : undefined;
 const preprint = d.links.preprint && show(d.links.preprint) ? d.links.preprint : undefined;
 ---
 
-<article class="paper-object group mr-4 mb-4" data-paper data-chapter={chapter} data-tilt>
+<article class="paper-object group mr-4 mb-4" data-paper data-chapter={chapter} data-paper-tilt>
   <div class="paper-body">
     <div class="paper-sheets" aria-hidden="true"></div>
     <div class="paper-face relative grid gap-6 p-5 sm:grid-cols-[minmax(9rem,13rem)_1fr] sm:p-7">
@@ -232,7 +232,7 @@ const preprint = d.links.preprint && show(d.links.preprint) ? d.links.preprint :
   const fine = matchMedia('(hover: hover) and (pointer: fine)').matches;
   const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (fine && !calm) {
-    document.querySelectorAll<HTMLElement>('[data-tilt]').forEach((el) => {
+    document.querySelectorAll<HTMLElement>('[data-paper-tilt]').forEach((el) => {
       el.addEventListener('pointermove', (e) => {
         const r = el.getBoundingClientRect();
         const x = (e.clientX - r.left) / r.width - 0.5;
