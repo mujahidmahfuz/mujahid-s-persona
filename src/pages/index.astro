@@ -10,10 +10,9 @@ import Epigraph from '~/components/Epigraph.astro';
 import CelestialInstrument from '~/components/CelestialInstrument.astro';
 import HeroObject from '~/components/HeroObject.astro';
 import PaperObject from '~/components/PaperObject.astro';
-import PaperCover from '~/components/PaperCover.astro';
-import JournalCoverImage from '~/components/JournalCoverImage.astro';
 import { journalCover } from '~/lib/journals';
 import StatusBadge from '~/components/StatusBadge.astro';
+import Card from '~/components/Card.astro';
 import { getResearch, getPublic, dateKey, formatDate, formatRange, yearOf, CATEGORY_LABEL } from '~/lib/content';
 import { chapterFor, CHAPTER_LABEL } from '~/lib/chapters';
 import { entryPath, withBase } from '~/lib/paths';
@@ -70,7 +69,6 @@ const CONTENTS = [
   { n: 'V', label: 'Sports', href: '/sports/', note: 'the pitch' },
   { n: 'VI', label: 'About', href: '/about/', note: 'the person' },
 ];
-const roman = ['I', 'II', 'III'];
 
 const person = {
   '@context': 'https://schema.org',
@@ -150,52 +148,39 @@ const person = {
         All research <span aria-hidden="true">→</span>
       </a>
     </div>
-    <ol class="mt-2" data-reveal-group>
-      {featuredResearch.map((r, i) => (
-        <li
-          class="research-row grid gap-6 border-b border-rule py-8 md:grid-cols-[4rem_minmax(0,1fr)_12rem] md:items-start"
-          data-chapter={chapterFor(r.data.areas)}
-        >
-          <span class="font-serif text-4xl text-[var(--accent)] italic">{roman[i]}</span>
-          <div>
-            <p class="label-mono text-ink-soft">
-              {CHAPTER_LABEL[chapterFor(r.data.areas)]} ·{' '}
-              {[r.cite.venue, r.cite.year ?? yearOf(r.data.date)].filter(Boolean).join(' · ')}
-            </p>
-            <h3 class="mt-2 text-[clamp(1.5rem,1.25rem+0.9vw,2.1rem)]">
-              <a href={entryPath(r)} class="text-verdigris no-underline hover:underline">
-                {r.data.title}
-              </a>
-            </h3>
-            <p class="mt-3 max-w-4xl text-ink">{r.data.summary}</p>
-            <div class="mt-4 flex flex-wrap items-center gap-3">
-              <StatusBadge status={r.data.status} />
-              <a href={entryPath(r)} class="text-sm font-semibold">
-                Enter the paper <span aria-hidden="true">→</span>
-              </a>
-            </div>
-          </div>
-          {(() => {
-            const jc = journalCover(r.cite?.venue);
-            return jc ? (
-              <div class="hidden md:block">
-                <JournalCoverImage cover={jc} size="sm" showNote={false} />
-              </div>
-            ) : (
-              <a href={entryPath(r)} class="hidden md:block" tabindex="-1" aria-hidden="true">
-                <PaperCover
-                  id={r.id}
-                  title={r.data.title}
-                  chapter={chapterFor(r.data.areas)}
-                  folio={`R-${String(i + 1).padStart(2, '0')}`}
-                  size="thumb"
+    <ul class="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3" data-reveal-group>
+      {featuredResearch.map((r) => {
+        const jc = journalCover(r.cite?.venue);
+        return (
+          <li data-chapter={chapterFor(r.data.areas)}>
+            <Card
+              variant="research"
+              href={entryPath(r)}
+              title={r.data.title}
+              summary={r.data.summary}
+              status={r.data.status}
+              tags={r.data.tags}
+              meta={[CHAPTER_LABEL[chapterFor(r.data.areas)], r.cite.venue, r.cite.year ?? yearOf(r.data.date)]
+                .filter(Boolean)
+                .join(' · ')}
+            >
+              {jc && (
+                <Image
+                  slot="cover-inset"
+                  src={jc.src}
+                  alt={jc.alt}
+                  height={150}
+                  class="h-full w-auto rounded-[2px] shadow-[0_6px_14px_-6px_rgba(23,54,61,0.6)]"
                 />
-              </a>
-            );
-          })()}
-        </li>
-      ))}
-    </ol>
+              )}
+              {jc && (
+                <p class="label-mono text-[0.6rem] text-ink-soft">Journal cover · © {jc.publisher} · representative issue</p>
+              )}
+            </Card>
+          </li>
+        );
+      })}
+    </ul>
   </section>
 
   <!-- 4 · The workshop -->

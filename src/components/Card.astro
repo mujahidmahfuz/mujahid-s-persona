@@ -80,6 +80,11 @@ const uid = `card-${Math.random().toString(36).slice(2, 9)}`;
           <div class="absolute top-2 right-2">
             <slot name="badge" />
           </div>
+          {Astro.slots.has('cover-inset') && (
+            <div class="absolute inset-y-[9%] right-4 flex">
+              <slot name="cover-inset" />
+            </div>
+          )}
         </div>
       )}
       <div class="flex flex-1 flex-col gap-3 p-5">
