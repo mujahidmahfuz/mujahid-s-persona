@@ -143,11 +143,12 @@ const uid = `card-${Math.random().toString(36).slice(2, 9)}`;
     {flippable && (
       <div
         id={uid}
-        class="flip-face flip-back js-only absolute inset-0 flex flex-col overflow-hidden rounded-card bg-verdigris p-6 text-ivory shadow-md"
+        class="flip-face flip-back js-only absolute inset-0 flex cursor-pointer flex-col overflow-hidden rounded-card bg-verdigris p-6 text-ivory shadow-md"
         data-surface="dark"
         data-flip-back
         tabindex="-1"
-        aria-label={`Summary: ${title}`}
+        aria-label={`Summary: ${title}. Press Enter or Escape to turn back.`}
+        role="group"
         inert
       >
         <p class="label-mono text-saffron-light">In short</p>
@@ -161,9 +162,9 @@ const uid = `card-${Math.random().toString(36).slice(2, 9)}`;
             </span>
             <span class="sr-only">: {title}</span>
           </a>
-          <button type="button" class="rounded-chip border border-white/50 px-3 py-1 text-sm hover:border-pink" data-flip-close>
-            <span aria-hidden="true">↺ </span>Flip back
-          </button>
+          <span class="text-xs text-white/75" aria-hidden="true">
+            Tap anywhere to turn back
+          </span>
         </div>
       </div>
     )}
@@ -185,7 +186,8 @@ const uid = `card-${Math.random().toString(36).slice(2, 9)}`;
   document.addEventListener('click', (e) => {
     const t = e.target as HTMLElement;
     const toggle = t.closest<HTMLElement>('[data-flip-toggle]');
-    const close = t.closest<HTMLElement>('[data-flip-close]');
+    // Anywhere on the back turns the card over again — except the "Read more" link.
+    const close = t.closest('a') ? null : t.closest<HTMLElement>('[data-flip-back]');
     if (toggle) {
       const card = toggle.closest<HTMLElement>('[data-card]')!;
       // one card open at a time
@@ -196,6 +198,13 @@ const uid = `card-${Math.random().toString(36).slice(2, 9)}`;
     }
   });
   document.addEventListener('keydown', (e) => {
+    // Enter / Space on the back itself (it is focused when the card opens) turns it back, like a tap.
+    const t = e.target as HTMLElement;
+    if ((e.key === 'Enter' || e.key === ' ') && t.matches('[data-flip-back]')) {
+      e.preventDefault();
+      setFlipped(t.closest<HTMLElement>('[data-card]')!, false);
+      return;
+    }
     if (e.key !== 'Escape') return;
     const card = (document.activeElement as HTMLElement | null)?.closest<HTMLElement>('[data-card].is-flipped');
     if (card) setFlipped(card, false);

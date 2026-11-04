@@ -16,6 +16,20 @@ test('tapping a card flips it to a summary with "Read more →", Escape flips ba
   await expect(card.locator('[data-flip-toggle]')).toBeFocused();
 });
 
+test('clicking anywhere on the back turns the card over again (no "Flip back" button)', async ({ page }) => {
+  await page.goto('research/');
+  const card = page.locator('[data-filter-scope="research"] [data-card][data-flippable]').first();
+  await card.scrollIntoViewIfNeeded();
+  await page.waitForTimeout(700);
+  await card.click({ force: true });
+  await expect(card).toHaveClass(/is-flipped/);
+  await expect(card.getByRole('button', { name: /Flip back/ })).toHaveCount(0);
+  await page.waitForTimeout(700); // let the turn finish
+  await card.locator('[data-flip-back]').click({ position: { x: 30, y: 30 } });
+  await expect(card).not.toHaveClass(/is-flipped/);
+  await expect(card.locator('[data-flip-toggle]')).toBeFocused();
+});
+
 test.describe('without JS', () => {
   test.use({ javaScriptEnabled: false });
   test('cards show their summary and a title link', async ({ page }) => {
