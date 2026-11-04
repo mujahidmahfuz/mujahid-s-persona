@@ -21,6 +21,9 @@ import { getPublic, getResearch, related, formatRange, CATEGORY_LABEL, githubRep
 import { entryPath, topicPath, withBase } from '~/lib/paths';
 import { show, visible, isTodo } from '~/lib/todo';
 import { SITE } from '~/lib/site';
+import HeroObject from '~/components/HeroObject.astro';
+import StatPanel from '~/components/StatPanel.astro';
+import CoverPattern from '~/components/CoverPattern.astro';
 
 export async function getStaticPaths() {
   const list = (await getPublic('projects')).sort(
@@ -49,6 +52,12 @@ const videos = (await getPublic('videos')).filter((v) =>
 );
 const period = formatRange(d.period.start, d.period.end, 'ongoing');
 const chapter = chapterFor(d.areas);
+const stats = d.stats;
+// The summary is the opening plate's standfirst; the TL;DR section is kept only while it is a placeholder.
+const summaryInHero = show(d.summary) && !isTodo(d.summary);
+// "How it works" call to action jumps to that section when the page has one.
+const how = headings.find((h) => h.depth === 2 && /^how it works/i.test(h.text));
+const howAnchor = how ? `#${how.slug}` : undefined;
 // Honest stage notes — an idea is never presented as a product.
 const STATUS_NOTE: Record<string, string> = {
   concept: 'An idea at the concept stage. Nothing described here is built yet.',
@@ -62,12 +71,12 @@ const STATUS_NOTE: Record<string, string> = {
 };
 
 const toc = [
-  { id: 'tldr', label: 'TL;DR' },
+  ...(summaryInHero ? [] : [{ id: 'tldr', label: 'TL;DR' }]),
   ...headings.filter((h) => h.depth === 2).map((h) => ({ id: h.slug, label: h.text })),
   ...(videos.length ? [{ id: 'demo', label: 'Demo' }] : []),
   ...(highlights.length || !import.meta.env.PROD ? [{ id: 'highlights', label: 'Highlights' }] : []),
   ...(learned.length || !import.meta.env.PROD ? [{ id: 'learned', label: 'What I learned' }] : []),
-  ...(show(d.role) ? [{ id: 'role', label: 'Role' }] : []),
+  { id: 'specs', label: 'Specs' },
   ...(d.repo && githubRepo(d.repo) ? [{ id: 'github', label: 'GitHub' }] : []),
   ...(rel.length || relatedResearch.length ? [{ id: 'related', label: 'Related' }] : []),
 ];
@@ -100,53 +109,58 @@ const jsonLd = d.repo
   epigraph={`projects/${entry.id}`}
   epigraphTreatment="margin"
 >
-  <header slot="header" class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
-    <div class="max-w-6xl">
-      <nav aria-label="Breadcrumb" class="label-mono text-ink-soft">
-        <a href={withBase('/')} class="text-ink-soft">
+  <header slot="header" data-surface="dark" class="grid gap-12 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:items-center">
+    <div class="max-w-5xl">
+      <nav aria-label="Breadcrumb" class="label-mono text-ivory/75">
+        <a href={withBase('/')} class="text-ivory/75">
           Atlas
         </a>{' '}
         <span aria-hidden="true">›</span>{' '}
-        <a href={withBase('/projects/')} class="text-ink-soft">
+        <a href={withBase('/projects/')} class="text-ivory/75">
           Workshop
         </a>{' '}
-        <span aria-hidden="true">›</span> <span class="text-[var(--accent-ink)]">{CATEGORY_LABEL[d.category]}</span>
+        <span aria-hidden="true">›</span> <span class="text-saffron-light">{CATEGORY_LABEL[d.category]}</span>
       </nav>
-      <h1 class="mt-5 text-[clamp(2.4rem,1.9rem+2.2vw,4rem)]">{d.title}</h1>
-      <div class="mt-5 flex flex-wrap items-center gap-3">
+      <h1 class="mt-6 text-[clamp(2.8rem,2rem+3.6vw,5.75rem)] leading-[0.95] tracking-[-0.02em]">{d.title}</h1>
+      {summaryInHero && (
+        <p class="mt-6 max-w-3xl font-serif text-[clamp(1.25rem,1.1rem+0.6vw,1.65rem)] leading-snug text-ivory/90 italic">
+          {d.summary}
+        </p>
+      )}
+      <div class="mt-6 flex flex-wrap items-center gap-3">
         <StatusBadge status={d.status} />
-        {period && <span class="label-mono text-ink-soft">{period}</span>}
+        {period && <span class="label-mono text-ivory/75">{period}</span>}
+        <span class="text-sm text-ivory/75">{STATUS_NOTE[d.status]}</span>
       </div>
-      <p class="mt-3 max-w-3xl text-sm text-ink-soft">{STATUS_NOTE[d.status]}</p>
-      <div class="mt-6">
-        <LinkRow links={links} label="Project links" />
+      <div class="mt-9">
+        <LinkRow links={[...links, { label: 'How it works', href: howAnchor }]} label="Project links" variant="buttons" />
       </div>
     </div>
-    <dl class="paper-card grid gap-3 rounded-card p-5 text-sm">
-      <div>
-        <dt class="label-mono text-ink-soft">Built with</dt>
-        <dd class="mt-2 flex flex-wrap gap-1.5">{d.stack.length ? d.stack.map((t) => <Chip>{t}</Chip>) : '—'}</dd>
-      </div>
-      {show(d.role) && !isTodo(d.role) && (
-        <div>
-          <dt class="label-mono text-ink-soft">My part</dt>
-          <dd class="mt-1">{d.role}</dd>
+    <HeroObject class="w-full max-w-[34rem] justify-self-center lg:justify-self-end">
+      {stats.length > 0 ? (
+        <StatPanel stats={stats} />
+      ) : (
+        <div class="overflow-hidden rounded-card border border-ivory/20 bg-ivory/[0.06] p-6" data-spotlight>
+          <p class="label-mono text-saffron-light">Built with</p>
+          <ul class="mt-4 flex flex-wrap gap-2" aria-label="Built with">
+            {d.stack.map((t) => (
+              <li class="rounded-chip border border-ivory/30 px-3 py-1 text-sm text-ivory">{t}</li>
+            ))}
+          </ul>
+          <div class="mt-6 aspect-[8/3] overflow-hidden rounded-card opacity-90">
+            <CoverPattern seed={d.title} />
+          </div>
+          <p class="mt-2 text-xs text-ivory/70">Original cover art</p>
         </div>
       )}
-      {d.repo && (
-        <div>
-          <dt class="label-mono text-ink-soft">Repository</dt>
-          <dd class="mt-1 break-all">
-            <a href={`https://github.com/${d.repo}`}>{d.repo}</a>
-          </dd>
-        </div>
-      )}
-    </dl>
+    </HeroObject>
   </header>
 
-  <Section id="tldr" title="TL;DR">
-    {show(d.summary) ? <p class="text-lg">{d.summary}</p> : <Todo text={d.summary} />}
-  </Section>
+  {!summaryInHero && (
+    <Section id="tldr" title="TL;DR">
+      {show(d.summary) ? <p class="text-lg">{d.summary}</p> : <Todo text={d.summary} />}
+    </Section>
+  )}
 
   <div class="prose-site mt-12">
     <Content components={{ Explainer, Todo, Math: MathTex, Flow, DotRank }} />
@@ -182,11 +196,46 @@ const jsonLd = d.repo
     </Section>
   )}
 
-  {show(d.role) && (
-    <Section id="role" title="Role">
-      {isTodo(d.role) ? <Todo text={d.role} /> : <p>{d.role}</p>}
-    </Section>
-  )}
+  <section aria-labelledby="specs" class="mt-14" data-reveal>
+    <h2 id="specs">Specs</h2>
+    <dl
+      class="mt-6 grid overflow-hidden rounded-card border border-rule bg-ivory text-[0.98rem] sm:grid-cols-2 [&>div]:border-b [&>div]:border-rule [&>div]:p-5 sm:[&>div:nth-child(odd)]:border-r"
+      data-spotlight
+    >
+      <div>
+        <dt class="label-mono text-ink-soft">Status</dt>
+        <dd class="mt-2 flex flex-wrap items-center gap-2">
+          <StatusBadge status={d.status} /> <span class="text-sm">{STATUS_NOTE[d.status]}</span>
+        </dd>
+      </div>
+      <div>
+        <dt class="label-mono text-ink-soft">Period</dt>
+        <dd class="mt-2">{period ?? '—'}</dd>
+      </div>
+      {show(d.role) && (
+        <div class="sm:col-span-2 sm:!border-r-0">
+          <dt class="label-mono text-ink-soft">My part</dt>
+          <dd class="mt-2">{isTodo(d.role) ? <Todo text={d.role} /> : d.role}</dd>
+        </div>
+      )}
+      <div>
+        <dt class="label-mono text-ink-soft">Built with</dt>
+        <dd class="mt-2 flex flex-wrap gap-1.5">{d.stack.length ? d.stack.map((t) => <Chip>{t}</Chip>) : '—'}</dd>
+      </div>
+      <div>
+        <dt class="label-mono text-ink-soft">Kind</dt>
+        <dd class="mt-2">{CATEGORY_LABEL[d.category]}</dd>
+      </div>
+      {d.repo && (
+        <div class="sm:col-span-2 sm:!border-r-0">
+          <dt class="label-mono text-ink-soft">Repository</dt>
+          <dd class="mt-2 break-all">
+            <a href={`https://github.com/${d.repo}`}>{d.repo}</a>
+          </dd>
+        </div>
+      )}
+    </dl>
+  </section>
 
   {d.repo && <GithubStats repo={d.repo} />}
 

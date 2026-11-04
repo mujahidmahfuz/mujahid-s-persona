@@ -1,9 +1,12 @@
 ---
 /**
- * Animated process flow, used in MDX: <Flow title="…" source="…" steps={[{ label, detail, fan? }]} />.
+ * Process flow as a scroll story, used in MDX: <Flow title="…" source="…" steps={[{ label, detail, fan? }]} />.
  * Every step must come from the cited source (README, paper, code). Purpose: explanation.
- * Motion: a highlight walks the steps in order (CSS only); steps with `fan` show n parallel
- * workers pulsing; connectors flow. Pauses on hover/focus; static under reduced motion.
+ *
+ * ≥1024 px: the steps run down the right column while a sticky panel on the left shows the step
+ * being read (large number, label, detail) and a progress meter — native scrolling, never hijacked.
+ * Narrower screens: the steps wrap in a grid, and the step crossing the middle of the screen lights up.
+ * Without JS: a plain numbered list. Steps with `fan` show n parallel workers.
  */
 interface Step {
   label: string;
@@ -19,11 +22,17 @@ interface Props {
 }
 const { title, steps, source, kind = 'documented' } = Astro.props;
 const n = steps.length;
+const pad = (i: number) => String(i + 1).padStart(2, '0');
 ---
 
-<figure class="flow my-10 rounded-card border border-blue-200 bg-blue-050 p-5 md:p-6" data-flow data-reveal style={`--n:${n}`}>
+<figure
+  class="flow my-12 rounded-card border border-rule bg-paper-light p-5 md:p-7"
+  data-flow
+  data-scrollstory
+  data-pause-offscreen
+>
   <figcaption class="flex flex-wrap items-baseline justify-between gap-2">
-    <span class="font-serif text-xl font-semibold text-verdigris">{title}</span>
+    <span class="font-serif text-2xl font-semibold text-verdigris">{title}</span>
     <span class="flex flex-wrap items-center gap-2 text-xs text-ink-soft">
       <span class="label-mono rounded-[2px] border border-ink-soft px-1.5 py-0.5">
         {kind === 'conceptual' ? 'Conceptual diagram' : 'Documented process'}
@@ -31,58 +40,76 @@ const n = steps.length;
       Source: {source}
     </span>
   </figcaption>
-  <ol class="flow-steps mt-5 grid gap-3">
-    {steps.map((s, i) => (
-      <li class="flex min-w-0">
-        <div
-          class="flow-step relative min-w-0 flex-1 rounded-card border-2 border-blue-200 bg-white p-4 break-words"
-          style={`--i:${i}`}
-        >
-          <span class="flow-num inline-flex h-7 w-7 items-center justify-center rounded-full bg-blue text-sm font-bold text-white">
-            {i + 1}
-          </span>
-          <p class="mt-2 font-semibold text-blue">{s.label}</p>
-          {s.detail && <p class="mt-1 text-sm text-ink">{s.detail}</p>}
-          {s.fan && (
-            <span class="mt-3 flex flex-wrap gap-1.5" aria-hidden="true">
-              {Array.from({ length: s.fan }, (_, k) => (
-                <span class="flow-fan h-3 w-3 rounded-full bg-blue" style={`--k:${k}`} />
-              ))}
-            </span>
-          )}
+
+  <div class="mt-6 lg:grid lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-10">
+    <!-- Sticky panel (lg + JS): the step being read. Decorative duplicate of the list → aria-hidden. -->
+    <div class="js-only hidden lg:block" aria-hidden="true">
+      <div class="sticky top-36 overflow-hidden rounded-card bg-petrol p-7 text-ivory" data-surface="dark" data-spotlight>
+        <div class="flex items-start gap-5">
+          <div class="relative mt-1 h-40 w-1 shrink-0 rounded-full bg-ivory/15">
+            <span
+              class="absolute inset-0 rounded-full bg-saffron-light"
+              data-story-meter
+              style={`transform:scaleY(${1 / n})`}
+            ></span>
+          </div>
+          <div class="relative min-h-[15rem] flex-1">
+            {steps.map((s, i) => (
+              <div class:list={['story-panel absolute inset-0', i === 0 && 'is-active']} data-story-panel>
+                <p class="label-mono text-saffron-light">
+                  Step {i + 1} of {n}
+                </p>
+                <p class="stat-value mt-2 text-[5.5rem] text-ivory/90">{pad(i)}</p>
+                <p class="mt-2 font-serif text-[1.7rem] leading-tight font-semibold text-ivory">{s.label}</p>
+                {s.detail && <p class="mt-2 text-[0.98rem] text-ivory/85">{s.detail}</p>}
+              </div>
+            ))}
+          </div>
         </div>
-      </li>
-    ))}
-  </ol>
+      </div>
+    </div>
+
+    <ol class="flow-steps grid gap-3 lg:grid-cols-1 lg:gap-4">
+      {steps.map((s, i) => (
+        <li class="flex min-w-0">
+          <div
+            class="story-step relative min-w-0 flex-1 rounded-card border-2 border-rule bg-ivory p-5 break-words lg:flex lg:min-h-[10rem] lg:items-start lg:gap-5"
+            data-story-step
+            data-spotlight
+          >
+            <span class="flow-num label-mono inline-flex h-8 min-w-8 shrink-0 items-center justify-center rounded-full bg-verdigris px-2 text-sm font-bold text-ivory">
+              {pad(i)}
+            </span>
+            <div class="min-w-0">
+              <p class="mt-2 text-[1.05rem] font-semibold text-verdigris lg:mt-1">{s.label}</p>
+              {s.detail && <p class="mt-1 text-sm text-ink">{s.detail}</p>}
+              {s.fan && (
+                <span class="mt-3 flex flex-wrap gap-1.5" aria-hidden="true">
+                  {Array.from({ length: s.fan }, (_, k) => (
+                    <span class="flow-fan h-3 w-3 rounded-full bg-verdigris" style={`--k:${k}`} />
+                  ))}
+                </span>
+              )}
+            </div>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </div>
 </figure>
 
 <style>
-  /* As many steps per row as fit at a readable width (never squeezed); order is shown by the numbers
-     and the walking highlight. */
+  /* Narrow screens: as many steps per row as fit at a readable width (never squeezed). */
   .flow-steps {
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
   }
-  .flow-step {
-    animation: flow-walk calc(var(--n) * 1.6s) var(--ease-out, ease-out) infinite;
-    animation-delay: calc(var(--i) * 1.6s);
+  @media (min-width: 1024px) {
+    .flow-steps {
+      grid-template-columns: minmax(0, 1fr);
+    }
   }
-  @keyframes flow-walk {
-    0% {
-      border-color: #b65d42;
-      box-shadow: 0 0 0 4px #f3ddc4;
-      transform: translateY(-2px);
-    }
-    18% {
-      border-color: #b65d42;
-      box-shadow: 0 0 0 4px #f3ddc4;
-      transform: translateY(-2px);
-    }
-    30%,
-    100% {
-      border-color: #c9b186;
-      box-shadow: 0 0 0 0 transparent;
-      transform: none;
-    }
+  :global(.story-step.is-active) .flow-num {
+    background: var(--color-terracotta-ink);
   }
   .flow-fan {
     animation: flow-fan 1.2s ease-in-out infinite alternate;
@@ -98,12 +125,7 @@ const n = steps.length;
       opacity: 1;
     }
   }
-  .flow:hover *,
-  .flow:focus-within * {
-    animation-play-state: paused;
-  }
   @media (prefers-reduced-motion: reduce) {
-    .flow-step,
     .flow-fan {
       animation: none;
     }

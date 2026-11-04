@@ -63,6 +63,8 @@ const summary = z.string().min(1).max(280, 'summary must be ≤ 280 characters')
 
 /** A claim with the place it comes from ("Paper §4.2, Table 3" or a URL). */
 const sourced = z.object({ text: z.string().min(1), source: z.string().min(1) }).strict();
+/** A headline figure for the "by the numbers" panel. Value as written (e.g. "1,886 B"); always sourced. */
+const stat = z.object({ value: z.string().min(1).max(14), label: z.string().min(1).max(90), source: z.string().min(1) }).strict();
 
 const explainer = z
   .object({
@@ -106,6 +108,7 @@ const research = defineCollection({
         cover: image().optional(),
         coverAlt: z.string().optional(),
         keyFindings: z.array(sourced).default([]),
+        stats: z.array(stat).max(4).default([]),
         limitations: z.array(z.string().min(1)).default([]),
         explainers: z.array(explainer).default([]),
         featured: z.boolean().default(false),
@@ -134,6 +137,7 @@ const projects = defineCollection({
           .regex(/^[\w.-]+\/[\w.-]+$/)
           .optional(),
         highlights: z.array(sourced).default([]),
+        stats: z.array(stat).max(4).default([]),
         learned: z.array(z.string().min(1)).default([]),
         relatedResearch: z.array(reference('research')).default([]),
         explainers: z.array(explainer).default([]),

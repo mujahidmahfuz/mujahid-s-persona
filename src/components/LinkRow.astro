@@ -5,12 +5,36 @@ import { show } from '~/lib/todo';
 interface Props {
   links: { label: string; href?: string | undefined }[];
   label?: string;
+  /** buttons: pill buttons for the dark opening plate (first one filled), magnetic under a fine pointer */
+  variant?: 'text' | 'buttons';
 }
-const { links, label = 'Links' } = Astro.props;
+const { links, label = 'Links', variant = 'text' } = Astro.props;
 const items = links.filter((l): l is { label: string; href: string } => typeof l.href === 'string' && show(l.href));
 ---
 
-{items.length > 0 && (
+{items.length > 0 && variant === 'buttons' && (
+  <ul class="flex flex-wrap items-center gap-3" aria-label={label}>
+    {items.map((l, i) => (
+      <li>
+        <a
+          href={l.href}
+          data-magnetic
+          class:list={[
+            'inline-flex items-center gap-2 rounded-chip border px-5 py-2.5 text-sm font-semibold no-underline',
+            i === 0
+              ? 'border-ivory bg-ivory text-petrol hover:bg-blush'
+              : 'border-ivory/45 text-ivory hover:border-ivory hover:bg-ivory/10',
+          ]}
+        >
+          {l.label}
+          <span aria-hidden="true">{l.href.startsWith('#') ? '↓' : '→'}</span>
+        </a>
+      </li>
+    ))}
+  </ul>
+)}
+
+{items.length > 0 && variant === 'text' && (
   <ul class="flex flex-wrap items-center gap-x-1 gap-y-2 text-sm" aria-label={label}>
     {items.map((l, i) => (
       <li class="flex items-center gap-1">

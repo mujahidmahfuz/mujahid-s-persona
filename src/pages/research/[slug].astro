@@ -36,6 +36,8 @@ import {
 import { entryPath, topicPath, withBase } from '~/lib/paths';
 import { show, visible, isTodo } from '~/lib/todo';
 import { SITE } from '~/lib/site';
+import HeroObject from '~/components/HeroObject.astro';
+import StatPanel from '~/components/StatPanel.astro';
 
 export async function getStaticPaths() {
   const list = (await getResearch()).sort(
@@ -118,38 +120,38 @@ const description = isTodo(d.summary) ? SITE.description : d.summary;
   chapter={chapter}
   epigraph={`research/${entry.id}`}
 >
-  <header slot="header" class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_17rem] lg:items-start">
+  <header slot="header" data-surface="dark" class="grid gap-12 lg:grid-cols-[minmax(0,1fr)_19rem] lg:items-center">
     <div class="max-w-6xl">
-      <nav aria-label="Breadcrumb" class="label-mono text-ink-soft">
-        <a href={withBase('/')} class="text-ink-soft">
+      <nav aria-label="Breadcrumb" class="label-mono text-ivory/75">
+        <a href={withBase('/')} class="text-ivory/75">
           Atlas
         </a>{' '}
         <span aria-hidden="true">›</span>{' '}
-        <a href={withBase('/research/')} class="text-ink-soft">
+        <a href={withBase('/research/')} class="text-ivory/75">
           Research
         </a>{' '}
-        <span aria-hidden="true">›</span> <span class="text-[var(--accent-ink)]">{CHAPTER_LABEL[chapter]}</span>
+        <span aria-hidden="true">›</span> <span class="text-saffron-light">{CHAPTER_LABEL[chapter]}</span>
       </nav>
-      <h1 class="mt-5 text-[clamp(2.3rem,1.8rem+2.2vw,3.9rem)]">{cite.title}</h1>
+      <h1 class="mt-6 text-[clamp(2.4rem,1.8rem+2.6vw,4.4rem)] leading-[1.0] tracking-[-0.015em]">{cite.title}</h1>
       <div class="mt-5 flex flex-wrap items-center gap-3">
         <StatusBadge status={d.status} />
-        <span class="label-mono text-ink-soft">{KIND_LABEL[d.kind]}</span>
+        <span class="label-mono text-ivory/75">{KIND_LABEL[d.kind]}</span>
         {(cite.venue || cite.year) && (
-          <span class="label-mono text-ink-soft">{[cite.venue, cite.year].filter(Boolean).join(' · ')}</span>
+          <span class="label-mono text-ivory/75">{[cite.venue, cite.year].filter(Boolean).join(' · ')}</span>
         )}
-        {!cite.year && dateLabel && <span class="label-mono text-ink-soft">{dateLabel}</span>}
+        {!cite.year && dateLabel && <span class="label-mono text-ivory/75">{dateLabel}</span>}
       </div>
       <div class="mt-4">
-        <AuthorList authors={cite.authors} />
+        <AuthorList authors={cite.authors} onDark />
       </div>
-      {d.advisor && <p class="mt-1 text-sm text-ink-soft">Advisor: {d.advisor}</p>}
+      {d.advisor && <p class="mt-1 text-sm text-ivory/75">Advisor: {d.advisor}</p>}
       {d.doi && (
-        <p class="label-mono mt-3 text-ink-soft normal-case">
+        <p class="label-mono mt-3 text-ivory/75 normal-case">
           DOI <a href={`https://doi.org/${d.doi}`}>{d.doi}</a>
         </p>
       )}
-      <div class="mt-6">
-        <LinkRow links={links} label="Paper links" />
+      <div class="mt-8">
+        <LinkRow links={links} label="Paper links" variant="buttons" />
       </div>
       <ul class="mt-5 flex flex-wrap gap-2" aria-label="Areas">
         {d.areas.map((a) => (
@@ -159,9 +161,9 @@ const description = isTodo(d.summary) ? SITE.description : d.summary;
         ))}
       </ul>
     </div>
-    <div class="hidden max-w-[17rem] lg:block">
+    <HeroObject class="hidden max-w-[19rem] lg:block" tilt={8}>
       {jc ? (
-        <JournalCoverImage cover={jc} />
+        <JournalCoverImage cover={jc} onDark />
       ) : (
         <PaperCover
           id={entry.id}
@@ -172,7 +174,12 @@ const description = isTodo(d.summary) ? SITE.description : d.summary;
           year={cite.year ?? yearOf(d.date)}
         />
       )}
-    </div>
+    </HeroObject>
+    {d.stats.length > 0 && (
+      <div class="lg:col-span-2">
+        <StatPanel stats={d.stats} layout="row" />
+      </div>
+    )}
   </header>
 
   <Section id="tldr" title="TL;DR">

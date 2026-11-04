@@ -1,0 +1,35 @@
+---
+/**
+ * Sticky in-page navigation under the site header (replaces the sidebar TOC on detail pages).
+ * Plain anchor links — works without JS; with JS the section being read is marked aria-current.
+ */
+interface Props {
+  items: { id: string; label: string }[];
+  title: string;
+}
+const { items, title } = Astro.props;
+---
+
+{items.length > 1 && (
+  <nav
+    aria-label="On this page"
+    class="subnav sticky top-16 z-30 border-b border-rule bg-parchment/92 backdrop-blur-[6px] print:hidden"
+    data-subnav
+    data-pagefind-ignore="all"
+  >
+    <div class="container-site flex items-center gap-4">
+      <p class="hidden max-w-[16rem] truncate font-serif text-lg font-semibold text-verdigris xl:block" aria-hidden="true">
+        {title}
+      </p>
+      <ol class="subnav-strip -mx-3 flex flex-1 overflow-x-auto text-[0.92rem] xl:justify-end" data-subnav-strip>
+        {items.map((i) => (
+          <li>
+            <a href={`#${i.id}`} class="block px-3 py-3.5">
+              {i.label}
+            </a>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </nav>
+)}

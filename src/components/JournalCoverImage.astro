@@ -11,8 +11,9 @@ interface Props {
   cover: JournalCover;
   size?: 'sm' | 'md';
   showNote?: boolean;
+  onDark?: boolean;
 }
-const { cover, size = 'md', showNote = true } = Astro.props;
+const { cover, size = 'md', showNote = true, onDark = false } = Astro.props;
 const w = Math.min(cover.src.width, size === 'sm' ? 110 : cover.src.width);
 ---
 
@@ -20,7 +21,7 @@ const w = Math.min(cover.src.width, size === 'sm' ? 110 : cover.src.width);
   <div class="journal-cover-img">
     <Image src={cover.src} alt={cover.alt} width={w} class="block h-auto w-full" />
   </div>
-  <figcaption class="mt-2 text-[0.7rem] leading-snug text-ink-soft">
+  <figcaption class:list={['mt-2 text-[0.7rem] leading-snug', onDark ? 'text-ivory/80' : 'text-ink-soft']}>
     <span class="label-mono block text-[0.62rem]">Journal cover · © {cover.publisher}</span>
     {showNote && <span class="mt-0.5 block">{cover.note}</span>}
   </figcaption>

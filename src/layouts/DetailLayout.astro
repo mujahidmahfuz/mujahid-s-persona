@@ -1,10 +1,11 @@
 ---
 /**
- * Detail page shell (research, projects): a chapter-coloured header plate, the page's epigraph,
- * a numbered long-form column and a sticky table of contents (≥1024px).
+ * Detail page shell (research, projects), laid out like a product page:
+ * a dark full-width opening plate (title, status, calls to action, the hero object), an optional
+ * band under it, a sticky sub-navigation strip, the epigraph, then the numbered long-form column.
  */
 import BaseLayout from './BaseLayout.astro';
-import TOC from '~/components/TOC.astro';
+import SubNav from '~/components/SubNav.astro';
 import Epigraph from '~/components/Epigraph.astro';
 import type { Chapter } from '~/lib/chapters';
 import type { Treatment } from '~/data/epigraphs';
@@ -26,22 +27,21 @@ const { toc, chapter, epigraph, epigraphTreatment = 'verse', ...rest } = Astro.p
 
 <BaseLayout {...rest}>
   <div data-chapter={chapter}>
-    <div class="graticule relative border-b border-rule">
+    <div class="hero-plate relative overflow-hidden" data-surface="dark" data-tilt-zone>
       <span class="absolute inset-x-0 top-0 h-1 bg-[var(--accent)]" aria-hidden="true"></span>
-      <div class="container-site py-12 md:py-16">
+      <div class="container-site py-14 md:py-20 lg:py-24">
         <slot name="header" />
       </div>
     </div>
+    <slot name="band" />
+    <SubNav items={toc} title={rest.title} />
     <div class="container-site pt-12">
       <Epigraph page={epigraph} treatment={epigraphTreatment} />
     </div>
-    <div class="container-site grid gap-10 py-12 lg:grid-cols-[minmax(0,1fr)_15rem] lg:gap-16">
-      <div class="atlas-article order-2 min-w-0 lg:order-1">
+    <div class="container-site py-12">
+      <div class="atlas-article min-w-0">
         <slot />
       </div>
-      <aside class="order-1 lg:order-2">
-        <TOC items={toc} />
-      </aside>
     </div>
   </div>
 </BaseLayout>
@@ -52,6 +52,8 @@ const { toc, chapter, epigraph, epigraphTreatment = 'verse', ...rest } = Astro.p
   }
   .atlas-article h2[id] {
     counter-increment: atlas-sec;
+    /* clear the site header (4rem) and the sub-nav strip (~3.2rem) when jumped to */
+    scroll-margin-top: 8.5rem;
   }
   .atlas-article h2[id]::before {
     content: '§' counter(atlas-sec);

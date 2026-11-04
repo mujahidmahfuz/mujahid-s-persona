@@ -2,15 +2,27 @@
 import { isMe } from '~/lib/content';
 interface Props {
   authors: string[];
+  onDark?: boolean;
 }
-const { authors } = Astro.props;
+const { authors, onDark = false } = Astro.props;
 ---
 
 {authors.length > 0 && (
   <p class="text-[0.95rem]">
     {authors.map((a, i) => (
       <>
-        {isMe(a) ? <strong class="font-semibold text-blue">{a}</strong> : <span>{a}</span>}
+        {isMe(a) ? (
+          <strong
+            class:list={[
+              'font-semibold',
+              onDark ? 'text-ivory underline decoration-saffron-light decoration-2 underline-offset-4' : 'text-blue',
+            ]}
+          >
+            {a}
+          </strong>
+        ) : (
+          <span>{a}</span>
+        )}
         {i < authors.length - 1 && ', '}
       </>
     ))}
