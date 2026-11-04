@@ -7,7 +7,7 @@
 - Limits (GitHub docs, checked Nov 2026): published site ≤ 1 GB, soft bandwidth 100 GB/month, deployments time out after 10 minutes, one user site per account. A personal academic site uses a small fraction of this, **provided videos are on YouTube and not in the repo**.
 - GitHub Pages is not for commercial sites. A personal research portfolio is fine.
 
-- Here is the github repo for this: https://github.com/mujahidmahfuz/mujahid-s-persona
+- Here is the github repo for this: https://github.com/mujahidmahfuz/mujaverse
 
 ## 2. One-time setup (Muja does these by hand)
 

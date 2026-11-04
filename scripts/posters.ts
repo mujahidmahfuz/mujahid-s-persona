@@ -10,7 +10,7 @@ import { join } from 'node:path';
 import { chromium } from '@playwright/test';
 
 const PORT = 4329;
-const BASE = (process.env.SITE_BASE ?? '/mujahid-s-persona').replace(/\/+$/, '');
+const BASE = (process.env.SITE_BASE ?? '/mujaverse').replace(/\/+$/, '');
 const dir = join(process.cwd(), 'src/explainers');
 const only = process.argv.slice(2);
 const ids = readdirSync(dir).filter((d) => existsSync(join(dir, d, 'meta.ts')) && (only.length === 0 || only.includes(d)));

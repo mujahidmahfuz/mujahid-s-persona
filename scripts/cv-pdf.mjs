@@ -9,7 +9,7 @@ import { extname, join, normalize } from 'node:path';
 import { chromium } from '@playwright/test';
 
 const DIST = join(process.cwd(), 'dist');
-const BASE = (process.env.SITE_BASE ?? '/mujahid-s-persona').replace(/\/+$/, '');
+const BASE = (process.env.SITE_BASE ?? '/mujaverse').replace(/\/+$/, '');
 const TYPES = {
   '.html': 'text/html',
   '.css': 'text/css',

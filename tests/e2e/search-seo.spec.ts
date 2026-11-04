@@ -22,7 +22,7 @@ test('every page has canonical, description and an OG image that exists', async 
     await expect(page.locator('link[rel="canonical"]')).toHaveCount(1);
     expect((await page.locator('meta[name="description"]').getAttribute('content'))?.length).toBeGreaterThan(20);
     const og = await page.locator('meta[property="og:image"]').getAttribute('content');
-    const path = new URL(og!).pathname.replace(/^\/mujahid-s-persona/, '');
+    const path = new URL(og!).pathname.replace(/^\/mujaverse/, '');
     expect(existsSync(`dist${path}`), `${route} → ${path}`).toBe(true);
   }
 });

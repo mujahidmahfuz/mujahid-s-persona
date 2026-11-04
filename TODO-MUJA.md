@@ -11,8 +11,8 @@ These were inventory "Ask" rows. They are now public pages; their missing facts 
 
 ## Questions
 
-- [ ] **Repo / URL.** DEPLOY.md names `mujahidmahfuz/mujahid-s-persona`, so the site is served at
-      `https://mujahidmahfuz.github.io/mujahid-s-persona/` (base path set in `astro.config.mjs`). CLAUDE.md says the
+- [ ] **Repo / URL.** DEPLOY.md names `mujahidmahfuz/mujaverse`, so the site is served at
+      `https://mujahidmahfuz.github.io/mujaverse/` (base path set in `astro.config.mjs`). CLAUDE.md says the
       root user site `mujahidmahfuz.github.io`. To move to the root later: rename the repo and build with `SITE_BASE=/`.
 - [ ] **Email.** The contact page uses the address on your CV (`mujahid168216@…`, assembled client-side). Confirm, or name another.
 - [ ] **Sleep paper numbers.** Are the Binary-MNIST (239 vs 555) and Split CIFAR-10 (0.8733 / 0.8665 / 0.7926) numbers final after the 5-seed run? The CV says "sequential MNIST", the inventory "Binary-MNIST" — which is right?
@@ -71,11 +71,11 @@ manuscripts are usually reusable on a personal site — check each publisher's a
 
 <!-- AUTO-GENERATED BELOW — scripts/todos.ts rewrites everything under this line -->
 
-## Placeholders found in content (65)
+## Placeholders found in content (62)
 
-_Generated 2026-11-03 by `scripts/todos.ts`. In production builds each of these elements is hidden._
+_Generated 2026-11-04 by `scripts/todos.ts`. In production builds each of these elements is hidden._
 
-### Public pages (65)
+### Public pages (62)
 
 - **src/content/awards/fujitsu-quantum-challenge.mdx**
   - [ ] date (YYYY-MM) (line 4)
@@ -96,11 +96,8 @@ _Generated 2026-11-03 by `scripts/todos.ts`. In production builds each of these 
   - [ ] start month (line 9)
   - [ ] project description (line 30)
 - **src/content/projects/doombreak.mdx**
-  - [ ] your role (e.g. sole developer) (line 7)
-  - [ ] start month (YYYY-MM) (line 9)
   - [ ] Play Store link once public (line 11)
-  - [ ] repository URL (if public) (line 12)
-  - [ ] one paragraph: why you built DoomBreak and who it is for (line 36)
+  - [ ] one or two sentences: why you built DoomBreak and who it is for (line 50)
 - **src/content/projects/mujaverse.mdx**
   - [ ] Founder? (only if public) (line 7)
   - [ ] start month (line 9)
@@ -162,11 +159,11 @@ _Generated 2026-11-03 by `scripts/todos.ts`. In production builds each of these 
 - **src/pages/experience/[slug].astro**
   - [ ] dates (line 44)
 - **src/pages/projects/[slug].astro**
-  - [ ] highlights, each with a source (line 167)
-  - [ ] what you learned, and the project's limitations (line 180)
+  - [ ] highlights, each with a source (line 181)
+  - [ ] what you learned, and the project's limitations (line 194)
 - **src/pages/research/[slug].astro**
-  - [ ] key findings, each with its source (paper section/table) (line 200)
-  - [ ] limitations and honest notes (required section) (line 214)
+  - [ ] key findings, each with its source (paper section/table) (line 207)
+  - [ ] limitations and honest notes (required section) (line 221)
 - **src/pages/styleguide/index.astro**
   - [ ] sample placeholder (line 242)
 

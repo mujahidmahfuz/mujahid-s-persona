@@ -11,7 +11,7 @@ export const SITE = {
     'I am Md Mujahidul Islam, known as Muja — an undergraduate researcher at Tokyo International University working on explainable AI, continual learning and quantum information.',
   affiliation: 'Institute for International Strategy and Emerging Technologies, Tokyo International University',
   university: 'Tokyo International University',
-  sourceRepo: 'https://github.com/mujahidmahfuz/mujahid-s-persona',
+  sourceRepo: 'https://github.com/mujahidmahfuz/mujaverse',
   quantumCookbook: 'https://mujahidmahfuz.github.io/quantum-cookbook/',
   orcidId: '0009-0007-8507-3370',
 } as const;

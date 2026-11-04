@@ -8,7 +8,7 @@ import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 
 const DIST = join(process.cwd(), 'dist');
-const BASE = (process.env.SITE_BASE ?? '/mujahid-s-persona').replace(/\/+$/, '');
+const BASE = (process.env.SITE_BASE ?? '/mujaverse').replace(/\/+$/, '');
 const SITE = 'https://mujahidmahfuz.github.io';
 const checkExternal = process.argv.includes('--external');
 

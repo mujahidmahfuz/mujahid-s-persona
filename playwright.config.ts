@@ -1,7 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 
 const PORT = 4321;
-const BASE = (process.env.SITE_BASE ?? '/mujahid-s-persona').replace(/\/+$/, '');
+const BASE = (process.env.SITE_BASE ?? '/mujaverse').replace(/\/+$/, '');
 
 export default defineConfig({
   testDir: 'tests/e2e',

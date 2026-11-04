@@ -1,6 +1,6 @@
 /**
  * Every internal link goes through withBase() (CLAUDE.md rule 14) so the site works
- * at https://mujahidmahfuz.github.io/mujahid-s-persona/ today and at a root domain later.
+ * at https://mujahidmahfuz.github.io/mujaverse/ today and at a root domain later.
  */
 const RAW_BASE: string = import.meta.env.BASE_URL ?? '/';
 const BASE = RAW_BASE.replace(/\/+$/, '');

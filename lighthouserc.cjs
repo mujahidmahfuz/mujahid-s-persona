@@ -1,6 +1,6 @@
 // Lighthouse CI — SPEC §8 budgets (mobile): Performance ≥ 0.9, Accessibility / Best Practices / SEO = 1.
-// Uses `astro preview` so the /mujahid-s-persona/ base path resolves. Run: npm run lighthouse
-const base = `http://localhost:4321${process.env.SITE_BASE ?? '/mujahid-s-persona'}`;
+// Uses `astro preview` so the /mujaverse/ base path resolves. Run: npm run lighthouse
+const base = `http://localhost:4321${process.env.SITE_BASE ?? '/mujaverse'}`;
 module.exports = {
   ci: {
     collect: {

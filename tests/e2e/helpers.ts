@@ -1,7 +1,7 @@
 import { readFileSync, readdirSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 
-const BASE = (process.env.SITE_BASE ?? '/mujahid-s-persona').replace(/\/+$/, '');
+const BASE = (process.env.SITE_BASE ?? '/mujaverse').replace(/\/+$/, '');
 
 /** All routes from the built sitemap, as paths relative to the base (e.g. "research/bwa/"). */
 export function sitemapRoutes(): string[] {

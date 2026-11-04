@@ -7,10 +7,10 @@ import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
 
-// The repo is `mujahidmahfuz/mujahid-s-persona` (docs/DEPLOY.md §1), which GitHub Pages
-// serves as a project site under /mujahid-s-persona/. If the repo is ever renamed to
+// The repo is `mujahidmahfuz/mujaverse` (docs/DEPLOY.md §1), which GitHub Pages
+// serves as a project site under /mujaverse/. If the repo is ever renamed to
 // `mujahidmahfuz.github.io`, set SITE_BASE='/' — every internal link goes through withBase().
-const base = process.env.SITE_BASE ?? '/mujahid-s-persona';
+const base = process.env.SITE_BASE ?? '/mujaverse';
 
 export default defineConfig({
   site: 'https://mujahidmahfuz.github.io',

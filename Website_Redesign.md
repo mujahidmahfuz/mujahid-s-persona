@@ -1,9 +1,9 @@
 # MASTER PROJECT DIRECTIVE
 ## Redesign of Mujahid's Personal Website
 
-Website: https://mujahidmahfuz.github.io/mujahid-s-persona/
+Website: https://mujahidmahfuz.github.io/mujaverse/
 
-Repository: https://github.com/mujahidmahfuz/mujahid-s-persona
+Repository: https://github.com/mujahidmahfuz/mujaverse
 
 Your task is to transform this website into an extraordinary personal digital experience.
 

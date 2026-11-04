@@ -4,7 +4,7 @@ import { chromium } from '@playwright/test';
 import { mkdirSync } from 'node:fs';
 
 const [, , out = 'screenshots', ...routes] = process.argv;
-const base = `http://localhost:${process.env.PORT ?? 4321}${process.env.SITE_BASE ?? '/mujahid-s-persona'}/`;
+const base = `http://localhost:${process.env.PORT ?? 4321}${process.env.SITE_BASE ?? '/mujaverse'}/`;
 mkdirSync(out, { recursive: true });
 const browser = await chromium.launch();
 for (const [w, h] of [

@@ -1,6 +1,6 @@
 # Independent review: Muja's research site (built `dist/`, 2026-11-02)
 
-**Scope:** I tested the built site at `http://localhost:4321/mujahid-s-persona/` (69 sitemap URLs plus `/styleguide/` and `404.html`). I checked it against `CLAUDE.md` and `docs/*`, and checked facts against `docs/CONTENT-INVENTORY.md` and the owner's CV file in the repo root (`CV — Letter.pdf`, gitignored). Since that CV is in the repo, I used it to tell CV-sourced facts apart from invented ones.
+**Scope:** I tested the built site at `http://localhost:4321/mujaverse/` (69 sitemap URLs plus `/styleguide/` and `404.html`). I checked it against `CLAUDE.md` and `docs/*`, and checked facts against `docs/CONTENT-INVENTORY.md` and the owner's CV file in the repo root (`CV — Letter.pdf`, gitignored). Since that CV is in the repo, I used it to tell CV-sourced facts apart from invented ones.
 
 **Tools:** curl, Playwright/Chromium, @axe-core/playwright (tags wcag2a/aa, 21a/aa, 22aa, best-practice) at 1280×900 and 360×800, gzip-9 sizes of the actual `dist/` files, and screenshots.
 
@@ -22,7 +22,7 @@
 
 | # | Sev | Role | Page / location | Finding |
 |---|---|---|---|---|
-| 1 | **High** | Privacy | Public source repo (footer "Source code" → `github.com/mujahidmahfuz/mujahid-s-persona`) | `private: true` content and pre-publication details are tracked in git. If the repo is public (which free Pages requires), they are published. |
+| 1 | **High** | Privacy | Public source repo (footer "Source code" → `github.com/mujahidmahfuz/mujaverse`) | `private: true` content and pre-publication details are tracked in git. If the repo is public (which free Pages requires), they are published. |
 | 2 | **High** | WCAG | `/styleguide/` video facade and 3D explainer (these components will be used on real pages) | Focus indicator is invisible. The outline is clipped by the parent's `overflow:hidden`. |
 | 3 | **High** | Admissions | All research pages | No figure or explainer appears on any research page in production, and the flagship paper's page has no results at all. |
 | 4 | **High** | Admissions | `/research/qip-2025/`, `/research/lossmap-photonic-loss/`, `/projects/doombreak/`, `/achievements/fujitsu-quantum-challenge/` | Empty sections and fields are shipped: headings with no body, and a "Date" label with an empty value. |
@@ -33,7 +33,7 @@
 | 9 | **Medium** | WCAG | `/styleguide/` explainers | The screen-reader description is hidden inside a collapsed `<details>`. `aria-describedby` sits on a role-less `div`. The 3D canvas has no `role="img"`/label; its wrapper is a focusable `div` with `aria-label` and no role. |
 | 10 | **Medium** | Privacy / SEO | `/contact/`, `src/lib/site.ts`, `scripts/sync.ts` | The email is unconfirmed (inventory says TODO) and is in plain text in the public repo, which defeats the client-side obfuscation. |
 | 11 | **Medium** | Perf | `/styleguide/` (any page with a 3D explainer) | The 3D chunk is 242.5 KB gz (945 KB raw). Scrolling past both explainers adds 322.5 KB gz of JS. |
-| 12 | **Medium** | SEO | `dist/robots.txt` | On a project site, `robots.txt` at `/mujahid-s-persona/robots.txt` is ignored by crawlers, so its `Disallow` and `Sitemap:` lines have no effect. |
+| 12 | **Medium** | SEO | `dist/robots.txt` | On a project site, `robots.txt` at `/mujaverse/robots.txt` is ignored by crawlers, so its `Disallow` and `Sitemap:` lines have no effect. |
 | 13 | **Medium** | Admissions | Site-wide | Things a reviewer expects are missing: a research statement, a photo, code/PDF links on research items, dates on in-progress research, and the in-preparation papers the CV lists. |
 | 14 | Low | Perf | All pages | About 102 KB of fonts per page with no preload. JetBrains Mono (21 KB) is loaded site-wide only to render "Ctrl K". KaTeX fonts use `font-display:block`. |
 | 15 | Low | WCAG | `/styleguide/` at 360 px | axe `scrollable-region-focusable` (serious): the colour table's `.overflow-x-auto` wrapper cannot be reached by keyboard. |
@@ -101,7 +101,7 @@
 | Low | Images | No content images except posters (webp `srcset` 480/800/1200, `loading=lazy`). The largest image in `dist/` is `_astro/poster.DzL57bHE.png`, 65 KB, which no built HTML references (orphaned). OG PNGs are 37–48 KB at 1200×630. All are well under the 250 KB budget. | Find out why the orphan poster is emitted (an unverified explainer's import) and exclude it. |
 | Low | `/contact/` and others | A page-specific inline `<script type="module">` is emitted after `</html>`. | Move the script inside the component markup or `<body>`. |
 | Low | Hosting / caching | Assets are content-hashed (`_astro/*.[hash].*`), so caching is correct by construction. GitHub Pages fixes `Cache-Control: max-age=600` and ignores custom headers. HTML is about 7–8 KB gz per page, and CSS is `global` 6.9 KB gz plus KaTeX `Math` 7.8 KB gz (render-blocking on math pages only). | Acceptable for $0 hosting. Optionally inline critical CSS for the hero. |
-| Medium (SEO) | `dist/robots.txt` | Served at `/mujahid-s-persona/robots.txt`. Crawlers only read `https://mujahidmahfuz.github.io/robots.txt`, so the `Disallow: /mujahid-s-persona/styleguide/` and `Sitemap:` lines are inert. The styleguide is still protected by `<meta name="robots" content="noindex, nofollow">` and is excluded from the sitemap and Pagefind (verified: searching "facade" or "styleguide" returns nothing). | Submit the sitemap via Google Search Console. Keep the `noindex` meta. Or move to the `mujahidmahfuz.github.io` user-site repo as DEPLOY.md §2 originally planned. |
+| Medium (SEO) | `dist/robots.txt` | Served at `/mujaverse/robots.txt`. Crawlers only read `https://mujahidmahfuz.github.io/robots.txt`, so the `Disallow: /mujaverse/styleguide/` and `Sitemap:` lines are inert. The styleguide is still protected by `<meta name="robots" content="noindex, nofollow">` and is excluded from the sitemap and Pagefind (verified: searching "facade" or "styleguide" returns nothing). | Submit the sitemap via Google Search Console. Keep the `noindex` meta. Or move to the `mujahidmahfuz.github.io` user-site repo as DEPLOY.md §2 originally planned. |
 
 ## Privacy (cross-cutting; filed under (a)/(b) severity)
 

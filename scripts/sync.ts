@@ -14,7 +14,7 @@ const ROOT = process.cwd();
 const CACHE = join(ROOT, 'src/data/cache');
 const ORCID = '0009-0007-8507-3370';
 // Crossref etiquette: identify the client with a contact address.
-const UA = 'muja-research-site/1.0 (https://mujahidmahfuz.github.io/mujahid-s-persona/; mailto:mujahid168216@gmail.com)';
+const UA = 'muja-research-site/1.0 (https://mujahidmahfuz.github.io/mujaverse/; mailto:mujahid168216@gmail.com)';
 const TIMEOUT = 20_000;
 
 mkdirSync(CACHE, { recursive: true });
