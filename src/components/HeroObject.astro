@@ -1,0 +1,22 @@
+---
+/**
+ * The object in a page's opening plate (journal cover, paper cover, numbers panel).
+ * Three layers so the transforms never fight: parallax drift (scroll) › float (idle) › tilt (cursor).
+ * All three are inert under reduced motion and without JS; tilt needs a fine pointer.
+ */
+interface Props {
+  class?: string;
+  /** maximum tilt in degrees */
+  tilt?: number;
+  float?: boolean;
+}
+const { class: className, tilt = 6, float = true } = Astro.props;
+---
+
+<div class:list={['relative', className]} data-parallax="0.06" data-pause-offscreen>
+  <div class:list={[float && 'float']}>
+    <div data-tilt={tilt}>
+      <slot />
+    </div>
+  </div>
+</div>

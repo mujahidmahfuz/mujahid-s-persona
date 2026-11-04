@@ -587,3 +587,215 @@ button[class*='rounded-chip'] {
     animation: none;
   }
 }
+
+/* =====================================================================================
+   Motion layer (src/scripts/motion.ts). Purpose of each: spotlight & magnetic = feedback,
+   tilt / float / parallax = depth on hero objects only, count-up & scroll story = explanation.
+   Fine pointers only (.fine-pointer is set by the script); nothing moves under reduced motion.
+   ===================================================================================== */
+
+/* Spotlight: a soft saffron light under the cursor. Sits above the surface, below the content. */
+[data-spotlight] {
+  position: relative;
+  isolation: isolate;
+}
+.fine-pointer [data-spotlight]::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  pointer-events: none;
+  opacity: 0;
+  background: radial-gradient(
+    260px circle at var(--mx, 50%) var(--my, 50%),
+    color-mix(in srgb, var(--color-saffron) 22%, transparent),
+    transparent 70%
+  );
+  transition: opacity 200ms ease;
+}
+.fine-pointer [data-spotlight]:hover::after {
+  opacity: 1;
+}
+.fine-pointer [data-surface='dark'] [data-spotlight]::after,
+.fine-pointer [data-surface='dark'][data-spotlight]::after {
+  background: radial-gradient(
+    320px circle at var(--mx, 50%) var(--my, 50%),
+    color-mix(in srgb, var(--color-saffron-light) 16%, transparent),
+    transparent 70%
+  );
+}
+
+/* Tilt / magnetic: transforms are written by script; these transitions smooth and retarget them. */
+[data-tilt] {
+  transition: transform 500ms var(--ease-out);
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+[data-magnetic] {
+  transition:
+    transform 250ms var(--ease-out),
+    background-color 200ms ease,
+    color 200ms ease,
+    border-color 200ms ease;
+}
+[data-parallax] {
+  will-change: transform;
+}
+
+/* Float: hero objects breathe slowly (6 s, 6 px). Paused off-screen and in hidden tabs. */
+@keyframes float-y {
+  from {
+    transform: translate3d(0, -4px, 0);
+  }
+  to {
+    transform: translate3d(0, 4px, 0);
+  }
+}
+.float {
+  animation: float-y 6s var(--ease-in-out) infinite alternate;
+}
+
+/* Dark hero plate on research and project pages (DESIGN §7 "Hero"). */
+.hero-plate {
+  background-color: var(--color-petrol);
+  background-image:
+    radial-gradient(
+      70rem 40rem at 85% 10%,
+      color-mix(in srgb, var(--accent, var(--color-indigo)) 38%, transparent),
+      transparent 60%
+    ),
+    radial-gradient(50rem 30rem at 0% 100%, color-mix(in srgb, var(--color-verdigris) 90%, transparent), transparent 70%),
+    linear-gradient(to right, rgba(251, 246, 234, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(251, 246, 234, 0.06) 1px, transparent 1px);
+  background-size:
+    auto,
+    auto,
+    64px 64px,
+    64px 64px;
+  color: var(--color-ivory);
+}
+
+/* Big-number band. */
+.stat-value {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  line-height: 0.95;
+  font-variant-numeric: tabular-nums lining-nums;
+  letter-spacing: -0.02em;
+}
+
+/* Sub-navigation strip (sticky under the site header). */
+.subnav a {
+  position: relative;
+  white-space: nowrap;
+  color: var(--color-ink-soft);
+  text-decoration: none;
+  transition: color 150ms ease;
+}
+.subnav a:hover {
+  color: var(--color-verdigris);
+}
+.subnav a[aria-current] {
+  color: var(--color-verdigris);
+  font-weight: 600;
+}
+.subnav a::after {
+  content: '';
+  position: absolute;
+  left: 0.75rem;
+  right: 0.75rem;
+  bottom: -1px;
+  height: 2px;
+  background: var(--color-terracotta);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform 250ms var(--ease-out);
+}
+.subnav a[aria-current]::after {
+  transform: scaleX(1);
+}
+.subnav-strip {
+  scrollbar-width: none;
+}
+.subnav-strip::-webkit-scrollbar {
+  display: none;
+}
+
+/* Horizontal rail of project panels (home). Native scroll + snap; never hijacked. */
+.rail {
+  /* first panel lines up with the page column (container-site padding, centred at wide widths) */
+  --rail-pad: max(clamp(1.25rem, 3.5vw, 4rem), calc((100vw - var(--container-content)) / 2 + clamp(1.25rem, 3.5vw, 4rem)));
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--rail-pad);
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--color-ivory) 35%, transparent) transparent;
+}
+.rail > * {
+  scroll-snap-align: start;
+}
+@media (hover: hover) and (pointer: fine) {
+  .rail-panel {
+    transition:
+      transform 300ms var(--ease-out),
+      border-color 200ms ease;
+  }
+  .rail-panel:hover {
+    transform: translateY(-4px);
+    border-color: color-mix(in srgb, var(--color-saffron-light) 60%, transparent);
+  }
+  .rail-panel:hover .rail-arrow {
+    transform: translateX(4px);
+  }
+}
+.rail-arrow {
+  display: inline-block;
+  transition: transform 200ms var(--ease-out);
+}
+
+/* Scroll story: steps light up as they pass the middle of the screen; the sticky panel follows. */
+.story-step {
+  transition:
+    border-color 300ms ease,
+    box-shadow 300ms ease;
+}
+.story-step.is-active {
+  border-color: var(--color-terracotta);
+  box-shadow: 0 0 0 4px var(--color-blush);
+}
+.story-panel {
+  transition:
+    opacity 350ms var(--ease-out),
+    transform 350ms var(--ease-out);
+}
+.js .story-panel:not(.is-active) {
+  opacity: 0;
+  transform: translate3d(0, 10px, 0);
+  pointer-events: none;
+}
+[data-story-meter] {
+  transform-origin: 50% 0;
+  transition: transform 400ms var(--ease-out);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .float {
+    animation: none;
+  }
+  [data-tilt],
+  [data-parallax],
+  [data-magnetic] {
+    transform: none !important;
+    will-change: auto;
+  }
+  .story-panel,
+  .js .story-panel:not(.is-active) {
+    transform: none;
+  }
+  [data-story-meter] {
+    transition: none;
+  }
+}
+.subnav-strip {
+  mask-image: linear-gradient(to right, transparent, #000 1.25rem, #000 calc(100% - 1.25rem), transparent);
+}

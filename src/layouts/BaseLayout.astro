@@ -51,6 +51,7 @@ const { searchable = true, ...seo } = Astro.props;
     <SearchDialog />
     <slot name="end" />
     <script>
+      import '~/scripts/motion';
       // Scroll reveal: mark [data-reveal] / [data-reveal-group] once they enter the viewport.
       const io = new IntersectionObserver(
         (entries) => {

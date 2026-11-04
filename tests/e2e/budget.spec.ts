@@ -4,6 +4,9 @@ import { sitemapRoutes } from './helpers';
 
 /** Gzipped bytes of every script loaded so far (SPEC §8: ≤ 15 KB before scrolling). */
 async function jsBytes(page: Page, route: string): Promise<number> {
+  // Intercepting requests disables the HTTP cache, so every page is measured with a full download
+  // (a cached shared chunk would come back as a 304 with no body).
+  await page.route('**/*', (r) => r.continue());
   const bodies: Promise<Buffer>[] = [];
   page.on('response', (r) => {
     if (r.request().resourceType() === 'script') bodies.push(r.body());

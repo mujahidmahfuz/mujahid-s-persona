@@ -106,12 +106,23 @@ Registry: `src/data/epigraphs.ts`. Component: `src/components/Epigraph.astro`. T
 | Quiet | navigation, links | ≤ 200 ms colour/underline; 200 ms page cross-fade (view transitions) |
 | Reveal | sections, lists | opacity + ≤ 12 px rise, once, 40 ms stagger; hidden only when JS runs |
 | Object | cards, papers | lift via inner layer (hover target never moves), ≤ 4° tilt on fine pointers, 600 ms flip |
-| Explanatory | explainers, flows, instrument | step-throughs with Play/Pause; slow linear rete (240 s) |
+| Pointer | cards, panels, buttons | spotlight (`data-spotlight`: soft saffron light under the cursor), magnetic buttons (`data-magnetic`, ≤ ~10 px lean) |
+| Hero | opening plates | `HeroObject`: light parallax drift (≤ 60 px), 6 s idle float (±4 px), tilt toward the cursor (≤ 8°) inside `data-tilt-zone` |
+| Explanatory | explainers, flows, instrument | step-throughs with Play/Pause; `Flow` is a scroll story (sticky panel + steps lit as they pass mid-screen); count-up numbers (`data-countup`, once); slow linear rete (240 s) |
+
+Detail pages (research, projects) read like product pages: a dark full-width opening plate
+(`hero-plate`: title, standfirst, status, pill calls-to-action, the hero object or a "By the numbers"
+`StatPanel` of ≤ 4 sourced figures), a sticky `SubNav` strip, the epigraph, then the long-form column
+ending in a Specs sheet (projects). The home workshop is a horizontal rail of project panels (native
+scroll + snap, arrow buttons for mice).
 
 Strong curves only: `--ease-out` (0.23,1,0.32,1), `--ease-in-out` (0.77,0,0.175,1). Animate transform and
-opacity. Continuous motion pauses off-screen (`data-pause-offscreen`) and in hidden tabs.
-`prefers-reduced-motion`: no travel, no autoplay, no rotation; explainers show their final step.
-Never: particles, cursor trails, parallax, scroll-jacking, autoplaying sound or video.
+opacity. Continuous motion pauses off-screen (`data-pause-offscreen`) and in hidden tabs. All pointer
+effects run only on `(hover: hover) and (pointer: fine)`; the code is `src/scripts/motion.ts`.
+`prefers-reduced-motion`: no travel, no autoplay, no rotation, no tilt/parallax/float/count-up; explainers
+show their final step.
+Never: particles, cursor trails, custom cursors, scroll-jacking, autoplaying sound or video, motion on
+data a reader is comparing.
 
 ## 8. Quality questions before a page is done
 
