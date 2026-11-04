@@ -8,13 +8,13 @@ import { Image } from 'astro:assets';
 import BaseLayout from '~/layouts/BaseLayout.astro';
 import Epigraph from '~/components/Epigraph.astro';
 import CelestialInstrument from '~/components/CelestialInstrument.astro';
+import HeroObject from '~/components/HeroObject.astro';
 import PaperObject from '~/components/PaperObject.astro';
 import PaperCover from '~/components/PaperCover.astro';
 import JournalCoverImage from '~/components/JournalCoverImage.astro';
 import { journalCover } from '~/lib/journals';
-import Card from '~/components/Card.astro';
 import StatusBadge from '~/components/StatusBadge.astro';
-import { getResearch, getPublic, dateKey, formatDate, formatRange, yearOf } from '~/lib/content';
+import { getResearch, getPublic, dateKey, formatDate, formatRange, yearOf, CATEGORY_LABEL } from '~/lib/content';
 import { chapterFor, CHAPTER_LABEL } from '~/lib/chapters';
 import { entryPath, withBase } from '~/lib/paths';
 import { SHORT_BIO } from '~/lib/bio';
@@ -28,15 +28,16 @@ const featuredResearch = research
   .filter((r) => r.data.status !== 'concept')
   .sort((a, b) => Number(b.data.featured) - Number(a.data.featured) || dateKey(b.data.date).localeCompare(dateKey(a.data.date)))
   .slice(0, 3);
-const featuredProjects = projects
+// The workshop rail: everything that is built (concepts stay on /projects/), numbers first.
+const railProjects = projects
   .filter((p) => p.data.status !== 'concept')
   .sort(
     (a, b) =>
       Number(b.data.featured) - Number(a.data.featured) ||
+      b.data.stats.length - a.data.stats.length ||
       b.data.highlights.length - a.data.highlights.length ||
       a.id.localeCompare(b.id),
-  )
-  .slice(0, 3);
+  );
 const publications = research.filter((r) => r.data.doi).sort((a, b) => (b.cite.year ?? 0) - (a.cite.year ?? 0));
 const onDesk = [...research, ...projects]
   .filter((e) => e.data.status === 'in-progress' || e.data.status === 'in-preparation')
@@ -88,7 +89,7 @@ const person = {
 
 <BaseLayout title={SITE.name} description={SHORT_BIO} jsonLd={person} type="profile">
   <!-- 1 · Opening -->
-  <section class="graticule relative overflow-hidden" aria-labelledby="hero-title">
+  <section class="graticule relative overflow-hidden" aria-labelledby="hero-title" data-tilt-zone>
     <div class="container-site grid items-center gap-10 py-14 md:py-20 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
       <div class="relative">
         <p class="label-mono text-terracotta-ink">Folio I · Tokyo International University</p>
@@ -119,7 +120,9 @@ const person = {
         </nav>
       </div>
       <div class="mx-auto w-full max-w-[40rem]">
-        <CelestialInstrument />
+        <HeroObject tilt={4}>
+          <CelestialInstrument />
+        </HeroObject>
         <p class="label-mono mt-3 text-center text-ink-soft normal-case">
           Six chapters of work — the markers grow with what each holds. Choose one to begin.
         </p>
@@ -196,40 +199,83 @@ const person = {
   </section>
 
   <!-- 4 · The workshop -->
-  <section class="bg-paper-light py-20" aria-labelledby="workshop">
+  <section class="hero-plate relative overflow-hidden py-20 md:py-24" data-surface="dark" aria-labelledby="workshop">
     <div class="container-site">
       <div class="grid gap-6 md:grid-cols-[1fr_1.2fr] md:items-end">
         <div>
-          <p class="label-mono text-terracotta-ink">Chapter II</p>
-          <h2 id="workshop" class="mt-2">
+          <p class="label-mono text-saffron-light">Chapter II</p>
+          <h2 id="workshop" class="mt-2 text-[clamp(2.4rem,1.8rem+2.4vw,4rem)]">
             The workshop
           </h2>
         </div>
-        <p class="max-w-3xl text-ink-soft md:justify-self-end">
-          Things I have built to see whether an idea survives contact with reality. Each card turns over for a short account; the
-          status says how far it got.
+        <p class="max-w-3xl text-ivory/85 md:justify-self-end">
+          Things I have built to see whether an idea survives contact with reality — with the numbers they produced, and a status
+          that says how far each one got. Scroll sideways for more.
         </p>
       </div>
-      <ul class="mt-10 grid gap-6 md:grid-cols-3" data-reveal-group>
-        {featuredProjects.map((p) => (
-          <li data-chapter={chapterFor(p.data.areas)}>
-            <Card
-              variant="project"
-              href={entryPath(p)}
-              title={p.data.title}
-              summary={p.data.summary}
-              status={p.data.status}
-              tags={p.data.stack}
-              meta={formatRange(p.data.period.start, p.data.period.end, 'ongoing')}
-            />
-          </li>
-        ))}
+    </div>
+    <div class="relative mt-10">
+      <ul class="rail flex gap-5 overflow-x-auto px-(--rail-pad) pb-6" aria-label="Projects" data-rail data-reveal-group>
+        {railProjects.map((p) => {
+          const top = p.data.stats[0];
+          return (
+            <li class="w-[min(86vw,26rem)] shrink-0" data-chapter={chapterFor(p.data.areas)}>
+              <article
+                class="rail-panel relative flex h-full min-h-[27rem] flex-col rounded-card border border-ivory/20 bg-ivory/[0.05] p-6 md:p-7"
+                data-spotlight
+              >
+                <div class="flex flex-wrap items-center gap-2">
+                  <StatusBadge status={p.data.status} />
+                  <span class="label-mono text-ivory/75">{CATEGORY_LABEL[p.data.category]}</span>
+                </div>
+                <h3 class="mt-5 text-[2rem] leading-[1.05]">
+                  <a href={entryPath(p)} class="no-underline after:absolute after:inset-0">
+                    {p.data.title}
+                  </a>
+                </h3>
+                <p class="mt-3 line-clamp-4 text-[0.95rem] text-ivory/85">{p.data.summary}</p>
+                {top && (
+                  <p class="mt-auto border-t border-ivory/20 pt-5">
+                    <span class="stat-value block text-[2.6rem] text-ivory" data-countup>
+                      {top.value}
+                    </span>
+                    <span class="mt-1 block text-sm text-ivory/80">{top.label}</span>
+                  </p>
+                )}
+                <p class:list={['flex items-center justify-between gap-3 pt-5 text-sm', !top && 'mt-auto']}>
+                  <span class="truncate text-ivory/75">{p.data.stack.slice(0, 3).join(' · ')}</span>
+                  <span class="shrink-0 font-semibold text-saffron-light" aria-hidden="true">
+                    Explore <span class="rail-arrow">→</span>
+                  </span>
+                </p>
+              </article>
+            </li>
+          );
+        })}
       </ul>
-      <p class="mt-8 text-right">
-        <a href={withBase('/projects/')} class="font-semibold">
-          Everything in the workshop <span aria-hidden="true">→</span>
-        </a>
-      </p>
+    </div>
+    <div class="container-site mt-4 flex flex-wrap items-center justify-between gap-4">
+      <div class="js-only flex gap-2" aria-hidden="true">
+        <button
+          type="button"
+          class="rounded-chip border border-ivory/45 px-4 py-2 text-ivory hover:border-ivory"
+          data-rail-step="-1"
+          tabindex="-1"
+        >
+          ←
+        </button>
+        <button
+          type="button"
+          class="rounded-chip border border-ivory/45 px-4 py-2 text-ivory hover:border-ivory"
+          data-rail-step="1"
+          tabindex="-1"
+        >
+          →
+        </button>
+      </div>
+      <a href={withBase('/projects/')} class="font-semibold" data-magnetic>
+        Everything in the workshop <span aria-hidden="true">→</span>
+      </a>
     </div>
   </section>
 
@@ -397,6 +443,18 @@ const person = {
       </div>
     </div>
   </section>
+  <script>
+    // Rail arrows (mouse convenience; the rail itself scrolls natively and by keyboard/touch).
+    document.querySelectorAll<HTMLButtonElement>('[data-rail-step]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const rail = document.querySelector<HTMLElement>('[data-rail]');
+        const card = rail?.querySelector<HTMLElement>('li');
+        if (!rail || !card) return;
+        const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        rail.scrollBy({ left: Number(btn.dataset.railStep) * (card.offsetWidth + 20), behavior: reduce ? 'auto' : 'smooth' });
+      });
+    });
+  </script>
 </BaseLayout>
 
 <style>

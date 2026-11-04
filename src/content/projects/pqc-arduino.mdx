@@ -10,6 +10,19 @@ stack: [C, Arduino UNO (AVR), ML-KEM, SLH-DSA, liboqs (PC reference)]
 role: Creator — porting, optimisation, hardware testing and the security audit.
 period:
   start: 2026-06
+stats:
+  - value: '133 ms'
+    label: ML-KEM-512 decapsulation on a 16 MHz Arduino UNO
+    source: ROADMAP.md (Phase 1, Method 5)
+  - value: '934 ms'
+    label: ML-KEM-512 encapsulation on the same board
+    source: ROADMAP.md (Phase 1, Method 5)
+  - value: '1,886 B'
+    label: RAM used by streaming ML-KEM-1024, of the UNO’s 2,048 B
+    source: llm-wiki2.txt (ML-KEM-1024 build)
+  - value: '25.5 s'
+    label: to verify an SLH-DSA-128s signature on the UNO
+    source: problem_faced.txt Phase2-I
 highlights:
   - text: Full CCA-secure ML-KEM-512 (Fujisaki–Okamoto transform) runs on the UNO — encapsulation in 934 ms, decapsulation in 133 ms — with tamper detection working.
     source: ROADMAP.md, Phase 1, Method 5

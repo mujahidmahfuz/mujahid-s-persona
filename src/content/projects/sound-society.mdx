@@ -11,6 +11,19 @@ period:
 stack: [Python, FastAPI, SQLAlchemy, PostgreSQL, React, TypeScript, Tailwind CSS, Docker]
 links:
   live: https://sound-society.onrender.com/
+stats:
+  - value: '104,045'
+    label: villages in the place directory
+    source: place-directory scripts
+  - value: '4,926'
+    label: unions and pourashavas
+    source: place-directory scripts
+  - value: '≈510'
+    label: backend tests (pytest)
+    source: backend/tests, counted 2026-11-04
+  - value: '4'
+    label: stages on every report’s public timeline
+    source: backend/app/services/post_status.py
 highlights:
   - text: Posts are anonymous. Emails and device IDs are stored only as keyed hashes, which cannot be turned back into the original.
     source: backend/app/services/hashing.py

@@ -10,6 +10,19 @@ period:
   end: 2026-05
 links:
   report: 'TODO(muja): link to the final report PDF (if public)'
+stats:
+  - value: '100%'
+    label: of CP-QAOA samples are valid routes, at every tested size
+    source: quantum/exp2_penalty_20260519T000311.json
+  - value: '≈1 in 95M'
+    label: random penalty-QUBO samples is a valid route at k = 6 (36 qubits)
+    source: quantum/exp2_penalty_20260519T000311.json
+  - value: '3.46%'
+    label: shorter routes than greedy at 15 stops — exactly as much as classical LNS
+    source: hybrid/exp5_hybrid_20260519T000833.json
+  - value: '1,024'
+    label: shots of a 16-qubit circuit on Fujitsu’s mpiQulacs
+    source: fujitsu_jobs.json, job 7911328
 highlights:
   - text: Classical large-neighbourhood search with a chaos-risk-weighted destroy step and a constraint-preserving QAOA (CP-QAOA) repair step, using a transposition mixer and a k²-qubit one-hot encoding.
     source: QLNRS final report §2, §5, §8
